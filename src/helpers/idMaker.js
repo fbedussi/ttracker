@@ -1,12 +1,11 @@
-function* idMaker(collection, prefix = '') {
-    const getNumericPart = (id) => Number(id.replace(/[^\d]/g, ''));
-    const getMaxId = (collection) => collection.reduce((max, curr) => Math.max(max, getNumericPart(curr.id)), 0);
+import db from '../db/dbFacade';
 
-    
-    var start = getMaxId(collection);
+function* idMaker(collection) {
+    const data = db.readAll(collection);
+    var maxId = data.reduce((max, curr) => Math.max(max, getNumericPart(curr.id)), 0);
 
     while (true) {
-        yield String(prefix + ++start);
+        yield ++maxId;
     }
 }
 
