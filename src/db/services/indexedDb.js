@@ -1,6 +1,5 @@
 if (!('indexedDB' in window)) {
-    console.log('This browser doesn\'t support IndexedDB');
-    return;
+    //throw new Error('This browser doesn\'t support IndexedDB');
 }
 
 var db;
@@ -113,9 +112,9 @@ export default {
     openDb,
     deleteDb,
 
-    create: createInStore(collection, batch),
-    read: readInStore(collection, id),
-    readAll: readAllInStore(collection),
-    update: updateInStore(collection, batch),
-    delete: deleteInStore(collection, id),
+    create: createInStore,
+    read: readInStore,
+    readAll: readAllInStore,
+    update: updateInStore,
+    delete: deleteInStore,
 };

@@ -2,12 +2,12 @@ import db from './services/indexedDb';
 
 //All methods return a promise
 export default {
-    openDb: db.openDb(dbName),
-    deleteDb: db.deleteDb(dbName),
+    openDb: db.openDb,
+    deleteDb: db.deleteDb,
 
-    create: db.create(collection, batch),
-    read: db.read(collection, id),
-    readAll: db.read(collection),
-    update: db.update(collection, batch),
-    delete: db.delete(collection, id),
+    create: db.create,
+    read: db.read,
+    readAll: db.read,
+    update: db.update,
+    delete: db.delete,
 };

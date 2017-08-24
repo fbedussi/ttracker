@@ -1,77 +1,49 @@
 import createTimeEntry from '../backend/timeEntry';
+import db from '../db/dbFacade';
 
-const mockDb = {
-    create: jest.fn(),
-    read: jest.fn(),
-    update: jest.fn(),
-    delete: jest.fn()
-}
-
-// function* mockIdMaker() {
-//     var maxId = 0;
-
-//     while (true) {
-//         yield ++maxId;
-//     }
-// }
-
-// const timeEntryIdMaker = mockIdMaker();
+jest.mock('../db/dbFacade');
+jest.mock('../helpers/idMaker');
 
 test('Create timeEntry', () => {
-    const timeEntry = createTimeEntry(1, mockDb);
-    expect(timeEntry.id).toBe(1);
-    expect(isNaN(timeEntry.startTime)).toBe(false);
-    expect(timeEntry.db).toBe(mockDb);
-    expect(mockDb.create).toBeCalled();
+    const timeEntry = createTimeEntry();
+    expect(timeEntry.id > 0).toBe(true);
+    expect(timeEntry.startTime > 0).toBe(true);
+    expect(db.create).toBeCalled();
 });
 
 test('timeEntry.stop()', () => {
-    const timeEntry = createTimeEntry(1, mockDb);
-    expect(timeEntry.id).toBe(1);
-    expect(timeEntry.db).toBe(mockDb);
-    expect(isNaN(timeEntry.startTime)).toBe(false);
+    const timeEntry = createTimeEntry();
     timeEntry.stop();
-    expect(isNaN(timeEntry.endTime)).toBe(false);
+    expect(timeEntry.endTime > 0).toBe(true);
     expect(timeEntry.startTime <= timeEntry.endTime).toBe(true);
-    expect(mockDb.update).toBeCalled();
+    expect(db.update).toBeCalled();
 });
 
 test('timeEntry.delete()', () => {
-    const timeEntry = createTimeEntry(1, mockDb);
+    const timeEntry = createTimeEntry();
     timeEntry.delete();
-    expect(mockDb.delete).toBeCalled();
+    expect(db.delete).toBeCalled();
 });
 
 test('timeEntry.update()', () => {
-    const mockDb = {
-        create: jest.fn(),
-        read: jest.fn(),
-        update: jest.fn(),
-        delete: jest.fn()
-    }
-
-    const timeEntry = createTimeEntry(1, mockDb);
-    expect(isNaN(timeEntry.startTime)).toBe(false);
-    expect(timeEntry.endTime).toBe(null);
+    const timeEntry = createTimeEntry();
     timeEntry.update({startTime: 1, endTime: 2});
     expect(timeEntry.startTime).toBe(1);
     expect(timeEntry.endTime).toBe(2);
-    expect(mockDb.update).toBeCalled();
+    expect(db.update).toBeCalled();
 });
 
 test('timeEntry.update() with invalid attributes', () => {
-    const timeEntry = createTimeEntry(1, mockDb);
-    expect(isNaN(timeEntry.startTime)).toBe(false);
-    expect(timeEntry.endTime).toBe(null);
+    const timeEntry = createTimeEntry();
     timeEntry.update({startTime: 1, endTime: 2, invalid: true});
     expect(timeEntry.startTime).toBe(1);
     expect(timeEntry.endTime).toBe(2);
     expect(timeEntry.invalid).toBe(undefined);
-    expect(mockDb.update).toBeCalled();
+    expect(db.update).toBeCalled();
 });
 
 test('timeEntry.getTotalTime()', () => {
-    const timeEntry = createTimeEntry(1, mockDb);
+    const timeEntry = createTimeEntry();
     timeEntry.update({startTime: 1, endTime: 2});
     var totalTime = timeEntry.getTotalTime();
     expect(totalTime).toBe(1);

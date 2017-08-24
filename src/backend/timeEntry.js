@@ -1,27 +1,29 @@
 import merge from '../helpers/merge';
+import idMaker from '../helpers/idMaker';
+import db from '../db/dbFacade';
+
+const timeEntryIdMaker = idMaker('timeEntry');
 
 const TimeEntry = {
-    id: null,
-    db: null,
-    startTime: null,
-    endTime: null,
+    id: 0,
+    startTime: 0,
+    endTime: 0,
     stop: function() {
         this.endTime = Date.now();
-        this.db.update('timeEntry', this);
+        db.update('timeEntry', this);
     },
-    create: function(id, db) {
-        this.id = id;
-        this.db = db;
+    create: function() {
+        this.id = timeEntryIdMaker.next().value;
         this.startTime = Date.now();
-        this.db.create('timeEntry', this);
+        db.create('timeEntry', this);
         return this;
     },
     update: function(newData) {
         merge(this, newData);
-        this.db.update('timeEntry', this);
+        db.update('timeEntry', this);
     },
     delete: function() {
-        this.db.delete('timeEntry', this);
+        db.delete('timeEntry', this);
     },
     getTotalTime: function() {
         return this.endTime - this.startTime
