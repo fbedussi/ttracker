@@ -56,9 +56,12 @@ test('activity.getTotaleTime()', () => {
         hourlyRate: 10
     });
 
-    activity.update({subactivities: [{getTotalTime: function() {return 3600000}}, {getTotalTime: function() {return 3600000}}]});
+    activity.update({
+        subactivities: [{getTotalTime: function() {return 3600000}}, {getTotalTime: function() {return 3600000}}],
+        timeEntries: [{getTotalTime: function() {return 3600000}}, {getTotalTime: function() {return 3600000}}]
+    });
 
-    expect(activity.getTotalTime()).toBe(3600000 * 2);
+    expect(activity.getTotalTime()).toBe(3600000 * 4);
 });
 
 test('activity.getTotaleCost()', () => {
@@ -86,33 +89,37 @@ test('activity.addSubactivity()', () => {
     expect(db.update).toBeCalled();    
 });
 
-test('activity.addSubactivity() avoid duplicate entries', () => {
-    const activity = createActivity({
-        subactivities: [{id: 1}, {id: 2}],        
-        hourlyRate: 10
-    });
-
-    const subactivity = {
-        id: 2,
-        name: 'subactivity1'
-    }
-    const result = activity.addSubactivity(subactivity);
-    expect(activity.subactivities.length).toBe(2);
-    expect(result).toBe(false);
-    expect(db.update).not.toBeCalled();    
-});
-
 test('activity.removeSubactivity()', () => {
     const activity = createActivity({
         hourlyRate: 10,
         subactivities: [{id: 1}, {id: 2}]
     });
 
-    const subactivity = {
-        id: 2,
-        name: 'subactivity1'
-    }
     activity.removeSubactivity(2);
     expect(activity.subactivities.length).toBe(1);
+    expect(db.update).toBeCalled();    
+});
+
+test('activity.addTimeEntry()', () => {
+    const activity = createActivity({
+        timeEntries: [{id: 1}]
+    });
+
+    const timeEntry = {
+        id: 2
+    }
+    const result = activity.addTimeEntry(timeEntry);
+    expect(activity.timeEntries.length).toBe(2);
+    expect(result).toBe(true);
+    expect(db.update).toBeCalled();    
+});
+
+test('activity.removeTimeEntry()', () => {
+    const activity = createActivity({
+        timeEntries: [{id: 1}]
+    });
+
+    activity.removeTimeEntry(1);
+    expect(activity.timeEntries.length).toBe(0);
     expect(db.update).toBeCalled();    
 });

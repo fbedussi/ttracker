@@ -1,12 +1,11 @@
 import idMaker from '../helpers/idMaker';
 import merge from '../helpers/merge';
 import db from '../db/dbFacade';
+import {convertMsToH} from '../helpers/helpers';
 
 const activityIdMaker = idMaker('activity');
 
-function convertMsToH(ms) {
-    return ms/3600000;    
-}
+const DBCOLLECTION = 'activity';
 
 var Activity = {
     id: 0,
@@ -17,45 +16,45 @@ var Activity = {
     timeEntries: [],
     create: function(conf) {
         this.id = activityIdMaker.next().value;
-        this.hourlyRate = conf.hourlyRate;
         this.startTime = Date.now();
+        merge(this, conf);
 
-        if (conf.name) {
-            this.name = conf.name;
-        }
-
-        if (conf.subactivities) {
-            this.subactivities = conf.subactivities;
-        }
-
-        db.create('activity', this);
+        db.create(DBCOLLECTION, this);
         return this;
     },
     update: function(newProps) {
         merge(this, newProps);
-        db.update('activity', this);
+        db.update(DBCOLLECTION, this);
     },
     delete: function() {
-        db.delete('activity', this);
+        db.delete(DBCOLLECTION, this);
     },
     getTotalTime: function() {
-        return this.subactivities.reduce((totalTime, subactivity) => totalTime + subactivity.getTotalTime(), 0);
+        var subactivitiesTotalTime = this.subactivities.reduce((totalTime, subactivity) => totalTime + subactivity.getTotalTime(), 0);
+        var timeEntriesTotalTime = this.timeEntries.reduce((totalTime, timeEntry) => totalTime + timeEntry.getTotalTime(), 0);
+        
+        return subactivitiesTotalTime + timeEntriesTotalTime;
     },
     getTotalCost: function() {
         return convertMsToH(this.getTotalTime()) * this.hourlyRate;
     },
     addSubactivity: function(subactivity) {
-        if (this.subactivities.filter(storedSubactivity => storedSubactivity.id === subactivity.id).length) {
-            return false;
-        }
-
         this.subactivities.push(subactivity);
-        db.update('activity', this);
+        db.update(DBCOLLECTION, this);
         return true;
     },
     removeSubactivity: function(id) {
         this.subactivities = this.subactivities.filter(subactivity => subactivity.id !== id);
-        db.update('activity', this);
+        db.update(DBCOLLECTION, this);
+    },
+    addTimeEntry: function(timeEntry) {
+        this.timeEntries.push(timeEntry);
+        db.update(DBCOLLECTION, this);
+        return true;
+    },
+    removeTimeEntry: function(id) {
+        this.timeEntries = this.timeEntries.filter(timeEntry => timeEntry.id !== id);
+        db.update(DBCOLLECTION, this);
     }
 }
 

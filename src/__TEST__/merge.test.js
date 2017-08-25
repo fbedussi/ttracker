@@ -12,3 +12,12 @@ test('merge', () => {
     expect(destObj.a).toBe('b');
     expect(destObj.b).toBe(undefined);
 });
+
+test('merge with no sourceObj', () => {
+    const destObj = {
+        a: 'a'
+    };
+    
+    merge(destObj)
+    expect(destObj.a).toBe('a');
+});

@@ -4,26 +4,28 @@ import db from '../db/dbFacade';
 
 const timeEntryIdMaker = idMaker('timeEntry');
 
+const DBCOLLECTION = 'activity';
+
 const TimeEntry = {
     id: 0,
     startTime: 0,
     endTime: 0,
     stop: function() {
         this.endTime = Date.now();
-        db.update('timeEntry', this);
+        db.update(DBCOLLECTION, this);
     },
     create: function() {
         this.id = timeEntryIdMaker.next().value;
         this.startTime = Date.now();
-        db.create('timeEntry', this);
+        db.create(DBCOLLECTION, this);
         return this;
     },
     update: function(newData) {
         merge(this, newData);
-        db.update('timeEntry', this);
+        db.update(DBCOLLECTION, this);
     },
     delete: function() {
-        db.delete('timeEntry', this);
+        db.delete(DBCOLLECTION, this);
     },
     getTotalTime: function() {
         return this.endTime - this.startTime
