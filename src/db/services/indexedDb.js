@@ -1,6 +1,5 @@
 if (!('indexedDB' in window)) {
-    console.log('This browser doesn\'t support IndexedDB');
-    return;
+    //throw new Error('This browser doesn\'t support IndexedDB');
 }
 
 var db;
@@ -13,7 +12,7 @@ const openDb = (dbName) => new Promise((resolve, reject) => {
     request.onupgradeneeded = (event) => {
         const db = event.target.result;
 
-        db.createObjectStore('batch', { keyPath: "id" });
+        db.createObjectStore('timeEntry', { keyPath: "id" });
         db.createObjectStore('activity', { keyPath: "id" });
         db.createObjectStore('client', { keyPath: "id" });
     };
@@ -53,6 +52,18 @@ const readInStore = (storeName, contentId) => new Promise((resolve, reject) => {
         ;
 
     request.onerror = (event) => reject(`Error reading ID ${contentId} from ${storeName}: ${request.error}`);
+
+    request.onsuccess = (event) => resolve(request.result);
+});
+
+const readAllInStore = (storeName) => new Promise((resolve, reject) => {
+    const request = db
+        .transaction([storeName])
+        .objectStore(storeName)
+        .getAll()
+        ;
+
+    request.onerror = (event) => reject(`Error reading ${contentId} from ${storeName}: ${request.error}`);
 
     request.onsuccess = (event) => resolve(request.result);
 });
@@ -101,18 +112,9 @@ export default {
     openDb,
     deleteDb,
 
-    createBatch: createInStore('batch', batch),
-    readBatch: readInStore('batch', id),
-    updateBatch: updateInStore('batch', batch),
-    deleteBatch: deleteInStore('batch', id),
-
-    createActivity: createInStore('activity', activity),
-    readActivity: readInStore('activity', id),
-    updateActivity: updateInStore('activity', activity),
-    deleteActivity: deleteInStore('activity', id),
-
-    createClient: createInStore('client', client),
-    readClient: readInStore('client', id),
-    updateClient: updateInStore('client', client),
-    deleteClient: deleteInStore('client', id)
+    create: createInStore,
+    read: readInStore,
+    readAll: readAllInStore,
+    update: updateInStore,
+    delete: deleteInStore,
 };
