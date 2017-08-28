@@ -1,4 +1,4 @@
-import createTimeEntry from '../backend/timeEntry';
+import {createTimeEntry} from '../backend/timeEntry';
 import db from '../db/dbFacade';
 
 jest.mock('../db/dbFacade');

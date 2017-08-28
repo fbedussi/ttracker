@@ -21,3 +21,26 @@ test('merge with no sourceObj', () => {
     merge(destObj)
     expect(destObj.a).toBe('a');
 });
+
+test('merge with nested objects', () => {
+    const destObj = {
+        a: 'a',
+        b: {
+            b1: 'b1'
+        }
+    }
+    const sourceObj = {
+        b: {
+            b1: 'b2',
+            b2: 'b2'
+        }
+    }
+
+    merge(destObj, sourceObj);
+    expect(destObj).toEqual({
+        a: 'a',
+        b: {
+            b1: 'b2'
+        }
+    });
+});

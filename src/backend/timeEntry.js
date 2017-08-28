@@ -20,6 +20,10 @@ const TimeEntry = {
         db.create(DBCOLLECTION, this);
         return this;
     },
+    load: function(props) {
+        merge(this, props);        
+        return this;
+    },
     update: function(newData) {
         merge(this, newData);
         db.update(DBCOLLECTION, this);
@@ -32,8 +36,15 @@ const TimeEntry = {
     }
 }
 
-const createTimeEntry = (id, db) => {
-    return Object.create(TimeEntry).create(id, db);
+const createTimeEntry = () => {
+    return Object.create(TimeEntry).create();
 }
 
-export default createTimeEntry;
+const loadTimeEntry = (props) => {
+    return Object.create(TimeEntry).load(props);
+}
+
+export {
+    createTimeEntry,
+    loadTimeEntry
+} 

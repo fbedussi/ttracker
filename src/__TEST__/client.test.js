@@ -1,4 +1,4 @@
-import createClient from '../backend/client';
+import {createClient, loadClient} from '../backend/client';
 import db from '../db/dbFacade';
 
 jest.mock('../db/dbFacade');
@@ -78,16 +78,15 @@ test('client.addActivity()', () => {
     const client = createClient();
     
     const activity = {
-        id: 1,
         name: 'activity1'
     }
     const result = client.addActivity(activity);
     expect(client.activities.length).toBe(1);
-    expect(result).toBe(true);
+    expect(result.name).toBe('activity1');
     expect(db.update).toBeCalled();    
 });
 
-test('activity.removeActivity()', () => {
+test('client.removeActivity()', () => {
     const client = createClient({
         name: 'Custom name',
         activities: [{id: 1, getTotalTime: function() {return 3600000}}, {id: 2, getTotalTime: function() {return 3600000}}],
@@ -97,4 +96,28 @@ test('activity.removeActivity()', () => {
     client.removeActivity(2);
     expect(client.activities.length).toBe(1);
     expect(db.update).toBeCalled();    
+});
+
+test('client.getTotalToBill()', () => {
+    const client = loadClient({
+        id: 1,
+        name: 'Client name',
+        lastBilledTime: new Date("2/1/2017 16:00:00").getTime(),
+        activities: [{
+            id: 1, 
+            hourlyRate: 10,
+            timeEntries: [{ //completed before lastBilledTime
+                startTime: new Date("1/1/2017 15:00:00").getTime(),
+                endTime: new Date("1/1/2017 16:00:00").getTime()
+            }]}, 
+            {id: 2, 
+            hourlyRate: 10,
+            timeEntries: [{ //completed after lastBilledTime
+                startTime: new Date("3/1/2017 15:00:00").getTime(),
+                endTime: new Date("3/1/2017 16:00:00").getTime()
+            }]}],
+        defaultHourlyRate: 10
+    });
+
+    expect(client.getTotalToBill()).toBe(10);
 });

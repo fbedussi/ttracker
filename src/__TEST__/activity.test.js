@@ -1,4 +1,4 @@
-import createActivity from '../backend/activity';
+import {createActivity, loadActivity} from '../backend/activity';
 import db from '../db/dbFacade';
 
 jest.mock('../db/dbFacade');
@@ -58,10 +58,34 @@ test('activity.getTotaleTime()', () => {
 
     activity.update({
         subactivities: [{getTotalTime: function() {return 3600000}}, {getTotalTime: function() {return 3600000}}],
-        timeEntries: [{getTotalTime: function() {return 3600000}}, {getTotalTime: function() {return 3600000}}]
+        timeEntries: [{
+            endTime: 1,
+            getTotalTime: function() {return 3600000}
+        }, {
+            endTime: 2,
+            getTotalTime: function() {return 3600000}
+        }]
     });
 
     expect(activity.getTotalTime()).toBe(3600000 * 4);
+});
+
+test('activity.getTotaleTime() since a specific time', () => {
+    const activity = createActivity({
+        hourlyRate: 10
+    });
+
+    activity.update({
+        timeEntries: [{
+            endTime: new Date("1/1/2017 15:00:00").getTime(),
+            getTotalTime: function() {return 3600000}
+        }, {
+            endTime: new Date("3/1/2017 15:00:00").getTime(),
+            getTotalTime: function() {return 3600000}
+        }]
+    });
+
+    expect(activity.getTotalTime(new Date("2/1/2017 15:00:00").getTime(),)).toBe(3600000);
 });
 
 test('activity.getTotaleCost()', () => {
@@ -74,18 +98,32 @@ test('activity.getTotaleCost()', () => {
     expect(activity.getTotalCost()).toBe(20);
 });
 
+test('activity.getTotaleCost() since a specific time', () => {
+    const activity = loadActivity({
+        hourlyRate: 10,
+        timeEntries: [{
+            startTime: new Date("1/1/2017 15:00:00").getTime(),
+            endTime: new Date("1/1/2017 16:00:00").getTime()
+        }, { 
+            startTime: new Date("3/1/2017 15:00:00").getTime(),
+            endTime: new Date("3/1/2017 16:00:00").getTime()
+        }]
+    });
+
+    expect(activity.getTotalCost(new Date("2/1/2017 16:00:00").getTime())).toBe(10);
+});
+
 test('activity.addSubactivity()', () => {
     const activity = createActivity({
         hourlyRate: 10
     });
 
     const subactivity = {
-        id: 2,
         name: 'subactivity1'
     }
     const result = activity.addSubactivity(subactivity);
     expect(activity.subactivities.length).toBe(1);
-    expect(result).toBe(true);
+    expect(result.name).toBe('subactivity1');
     expect(db.update).toBeCalled();    
 });
 
@@ -105,12 +143,9 @@ test('activity.addTimeEntry()', () => {
         timeEntries: [{id: 1}]
     });
 
-    const timeEntry = {
-        id: 2
-    }
-    const result = activity.addTimeEntry(timeEntry);
+    const result = activity.addTimeEntry();
     expect(activity.timeEntries.length).toBe(2);
-    expect(result).toBe(true);
+    expect(isNaN(result.id)).toBe(false);
     expect(db.update).toBeCalled();    
 });
 
