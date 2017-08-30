@@ -43,7 +43,7 @@ class App extends Component {
 
     this.state = {
       menuOpen: false,
-      clients: ttracker
+      clients: []
     }
   }
   render() {

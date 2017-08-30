@@ -48,8 +48,8 @@ var Client = {
     getTotalCost: function() {
         return convertMsToH(this.getTotalTime()) * this.defaultHourlyRate;
     },
-    addActivity: function(conf) {
-        var newActivity = createActivity(conf);
+    addActivity: function(props) {
+        var newActivity = createActivity(props);
         if (!newActivity.hourlyRate) {
             newActivity.hourlyRate = this.defaultHourlyRate;
         }
