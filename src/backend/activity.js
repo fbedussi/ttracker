@@ -1,22 +1,26 @@
-import idMaker from '../helpers/idMaker';
+import initIdMaker from '../helpers/idMaker';
 import merge from '../helpers/merge';
 import db from '../db/dbFacade';
 import {convertMsToH} from '../helpers/helpers';
 import {createTimeEntry, loadTimeEntry} from './timeEntry';
 
-const activityIdMaker = idMaker('activity');
-
+var activityIdMaker = null;
+initIdMaker('activity').then((idMaker) => activityIdMaker = idMaker);
 
 const DBCOLLECTION = 'activity';
 
-var Activity = {
+const defaultProps = {
     id: 0,
     name: 'new activity',
     startTime: 0,
     hourlyRate: 0,
     subactivities: [],
-    timeEntries: [],
+    timeEntries: []
+};
+
+var Activity = {
     create: function(props) {
+        Object.assign(this, defaultProps);        
         this.id = activityIdMaker.next().value;
         this.startTime = Date.now();
         merge(this, props);
@@ -35,7 +39,7 @@ var Activity = {
         db.update(DBCOLLECTION, this);
     },
     delete: function() {
-        db.delete(DBCOLLECTION, this);
+        db.delete(DBCOLLECTION, this.id);
     },
     getTotalTime: function(sinceTime = 0) {
         var subactivitiesTotalTime = this.subactivities.reduce((totalTime, subactivity) => totalTime + subactivity.getTotalTime(sinceTime), 0);
@@ -63,12 +67,15 @@ var Activity = {
         this.subactivities = this.subactivities.filter(subactivity => subactivity.id !== id);
         db.update(DBCOLLECTION, this);
     },
-    addTimeEntry: function() {
+    start: function() {
         var newTimeEntry = createTimeEntry();
         
         this.timeEntries.push(newTimeEntry);
         db.update(DBCOLLECTION, this);
         return newTimeEntry;
+    },
+    stop: function() {
+        return this.timeEntries[this.timeEntries.length - 1].stop();
     },
     removeTimeEntry: function(id) {
         this.timeEntries = this.timeEntries.filter(timeEntry => timeEntry.id !== id);
@@ -76,12 +83,12 @@ var Activity = {
     }
 }
 
-const createActivity = (conf) => {
-    return Object.create(Activity).create(conf);
+const createActivity = (props) => {
+    return Object.create(Activity).create(props);
 }
 
-const loadActivity = (conf) => {
-    return Object.create(Activity).load(conf);
+const loadActivity = (props) => {
+    return Object.assign(Object.create(Activity), defaultProps).load(props);
 }
 
 export {

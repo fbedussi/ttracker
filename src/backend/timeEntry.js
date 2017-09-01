@@ -1,24 +1,29 @@
 import merge from '../helpers/merge';
-import idMaker from '../helpers/idMaker';
+import initIdMaker from '../helpers/idMaker';
 import db from '../db/dbFacade';
 
-const timeEntryIdMaker = idMaker('timeEntry');
+var timeEntryIdMaker = null;
+initIdMaker('timeEntry').then((idMaker) => timeEntryIdMaker = idMaker);
 
 const DBCOLLECTION = 'activity';
 
-const TimeEntry = {
+const defaultProps = {
     id: 0,
     startTime: 0,
     endTime: 0,
-    stop: function() {
-        this.endTime = Date.now();
-        db.update(DBCOLLECTION, this);
-    },
+};
+
+const TimeEntry = {  
     create: function() {
+        Object.assign(this, defaultProps);                
         this.id = timeEntryIdMaker.next().value;
         this.startTime = Date.now();
         db.create(DBCOLLECTION, this);
         return this;
+    },
+    stop: function() {
+        this.endTime = Date.now();
+        db.update(DBCOLLECTION, this);
     },
     load: function(props) {
         merge(this, props);        
@@ -29,7 +34,7 @@ const TimeEntry = {
         db.update(DBCOLLECTION, this);
     },
     delete: function() {
-        db.delete(DBCOLLECTION, this);
+        db.delete(DBCOLLECTION, this.id);
     },
     getTotalTime: function() {
         return this.endTime - this.startTime
@@ -41,7 +46,7 @@ const createTimeEntry = () => {
 }
 
 const loadTimeEntry = (props) => {
-    return Object.create(TimeEntry).load(props);
+    return Object.assign(Object.create(TimeEntry), defaultProps).load(props);
 }
 
 export {

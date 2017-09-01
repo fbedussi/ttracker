@@ -1,15 +1,16 @@
-import idMaker from '../helpers/idMaker';
+import initIdMaker from '../helpers/idMaker';
 import merge from '../helpers/merge';
 import db from '../db/dbFacade';
 import {convertMsToH} from '../helpers/helpers';
 
 import {createActivity, loadActivity} from './activity';
 
-const clientIdMaker = idMaker('client');
+var clientIdMaker = null;
+initIdMaker('client').then((idMaker) => clientIdMaker = idMaker);
 
 const DBCOLLECTION = 'client';
 
-var Client = {
+const defaultProps = {
     id: 0,
     name: 'new client',
     creationTime: 0,
@@ -21,8 +22,12 @@ var Client = {
         phone: '',
         email: '',
         vatNumber: ''
-    },
+    }
+};
+
+var Client = {
     create: function(props) {
+        Object.assign(this, defaultProps);
         this.id = clientIdMaker.next().value;
         this.creationTime = Date.now();
         merge(this, props);
@@ -40,7 +45,7 @@ var Client = {
         db.update(DBCOLLECTION, this);
     },
     delete: function() {
-        db.delete(DBCOLLECTION, this);
+        db.delete(DBCOLLECTION, this.id);
     },
     getTotalTime: function() {
         return this.activities.reduce((totalTime, activity) => totalTime + activity.getTotalTime(), 0);
@@ -49,11 +54,7 @@ var Client = {
         return convertMsToH(this.getTotalTime()) * this.defaultHourlyRate;
     },
     addActivity: function(props) {
-        var newActivity = createActivity(props);
-        if (!newActivity.hourlyRate) {
-            newActivity.hourlyRate = this.defaultHourlyRate;
-        }
-
+        var newActivity = createActivity(Object.assign({hourlyRate: this.defaultHourlyRate}, props));
         this.activities.push(newActivity);
         db.update(DBCOLLECTION, this);
         return newActivity;
@@ -72,7 +73,7 @@ const createClient = (props) => {
 }
 
 const loadClient = (props) => {
-    return Object.create(Client).load(props);
+    return Object.assign(Object.create(Client), defaultProps).load(props);
 }
 
 export {

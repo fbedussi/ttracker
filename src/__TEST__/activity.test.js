@@ -138,15 +138,24 @@ test('activity.removeSubactivity()', () => {
     expect(db.update).toBeCalled();    
 });
 
-test('activity.addTimeEntry()', () => {
+test('activity.start()', () => {
     const activity = createActivity({
         timeEntries: [{id: 1}]
     });
 
-    const result = activity.addTimeEntry();
+    const result = activity.start();
     expect(activity.timeEntries.length).toBe(2);
     expect(isNaN(result.id)).toBe(false);
     expect(db.update).toBeCalled();    
+});
+
+test('activity.stop()', () => {
+    const activity = createActivity({
+        timeEntries: [{id: 1, stop: jest.fn}]
+    });
+
+    const result = activity.stop();
+    expect(activity.timeEntries[0].stop).toBeCalled();    
 });
 
 test('activity.removeTimeEntry()', () => {

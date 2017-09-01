@@ -17,7 +17,10 @@ const openDb = (dbName) => new Promise((resolve, reject) => {
         db.createObjectStore('client', { keyPath: "id" });
     };
 
-    request.onsuccess = (event) => resolve(db = event.target.result);
+    request.onsuccess = (event) => {
+        db = event.target.result;
+        resolve(dbInterface)
+    };
 });
 
 const deleteDb = (dbName) => new Promise((resolve, reject) => {
@@ -37,7 +40,7 @@ const createInStore = (storeName, content) => new Promise((resolve, reject) => {
 
     transaction.oncomplete = (event) => resolve(transaction.error);
 
-    transaction.onerror = reject(`Error writing ID ${content.id} to ${storeName}: ${transaction.error}`); // error handling????
+    transaction.onerror = () => reject(`Error writing ID ${content.id} to ${storeName}: ${transaction.error}`); // error handling????
 
     request.onerror = (event) => reject(`Error writing ID ${content.id} to ${storeName}: ${request.error}`); // error handling????
 
@@ -63,7 +66,7 @@ const readAllInStore = (storeName) => new Promise((resolve, reject) => {
         .getAll()
         ;
 
-    request.onerror = (event) => reject(`Error reading ${contentId} from ${storeName}: ${request.error}`);
+    request.onerror = (event) => reject(`Error reading from ${storeName}: ${request.error}`);
 
     request.onsuccess = (event) => resolve(request.result);
 });
@@ -107,8 +110,7 @@ const deleteInStore = (storeName, contentId) => new Promise((resolve, reject) =>
     request.onerror = (event) => reject(`Error deleting ID ${contentId} in ${storeName}: ${request.error}`);
 });
 
-
-export default {
+const dbInterface = {
     openDb,
     deleteDb,
 
@@ -118,3 +120,5 @@ export default {
     update: updateInStore,
     delete: deleteInStore,
 };
+
+export default dbInterface;

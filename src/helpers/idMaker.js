@@ -1,12 +1,21 @@
-import db from '../db/dbFacade';
+import dbService from '../db/dbFacade';
 
-function* idMaker(collection) {
-    const data = db.readAll(collection);
-    var maxId = data.reduce((max, curr) => Math.max(max, getNumericPart(curr.id)), 0);
-
+function* idMaker(maxId) {
     while (true) {
         yield ++maxId;
     }
 }
 
-export default idMaker;
+function initIdMaker(collection) {
+    return dbService
+        .openDb('ttracker')
+        .then((db) => db.readAll(collection))
+        .then((collection) => {
+            var maxId = collection.reduce((max, curr) => Math.max(max, curr.id), 0);
+            return idMaker(maxId);
+        })
+        .catch(() => idMaker(0))
+    ;
+}
+
+export default initIdMaker;

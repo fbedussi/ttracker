@@ -1,5 +1,5 @@
-import {createClient} from '../backend/client';
-import {createActivity} from './activity';
+import {createClient, loadClient} from '../backend/client';
+import {createActivity, loadActivity} from './activity';
 import db from '../db/dbFacade';
 
 const App = {
@@ -7,16 +7,23 @@ const App = {
     activities: [],
     defaultHourlyRate: 0,
     load: function() {
-        return Promise
-            .all([
-                db
-                    .readAll('client')
-                    .then(clients => this.clients = clients)
-                ,
-                db
-                    .readAll('activity')
-                    .then(activities => this.activities = activities)
-            ])
+        return db
+            .openDb('ttracker')
+            .then((db) => Promise
+                .all([
+                    db
+                        .readAll('client')
+                        .then((clientsData) => this.clients = clientsData
+                            .map((clientData) => loadClient(clientData))
+                        )
+                    ,
+                    db
+                        .readAll('activity')
+                        .then((activitiesData) => this.activities = activitiesData
+                            .map((activityData) => loadActivity(activityData))
+                    )
+                ])
+            )
             .then(() => this)
         ;
     },
@@ -35,24 +42,14 @@ const App = {
     getTotalToBill: function() {
         return this.clients.reduce((total, client) => total + client.getTotalToBill(), 0);
     },
-    createNewClient: function(props) {
-        var newClient = createClient(props);
-        if (!newClient.hourlyRate) {
-            newClient.hourlyRate = this.defaultHourlyRate;
-        }
-
+    createNewClient: function(props = {}) {
+        var newClient = createClient(Object.assign({defaultHourlyRate: this.defaultHourlyRate}, props));
         this.clients.push(newClient);
-        db.update('clients', this);
         return newClient;
     },
     createNewActivity: function(props) {
-        var newActivity = createActivity(props);
-        if (!newActivity.hourlyRate) {
-            newActivity.hourlyRate = this.defaultHourlyRate;
-        }
-
+        var newActivity = createActivity(Object.assign({hourlyRate: this.defaultHourlyRate}, props));
         this.activities.push(newActivity);
-        db.update('activities', this);
         return newActivity;
     }
 }
