@@ -5,7 +5,7 @@ import db from '../db/dbFacade';
 var timeEntryIdMaker = null;
 initIdMaker('timeEntry').then((idMaker) => timeEntryIdMaker = idMaker);
 
-const DBCOLLECTION = 'activity';
+const DBCOLLECTION = 'timeEntry';
 
 const defaultProps = {
     id: 0,

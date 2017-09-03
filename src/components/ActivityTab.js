@@ -47,7 +47,7 @@ const mapDispatchToProps = (dispatch) => ({
 
 class ActivityTab extends Component {
     render() {
-        const { activeTab, clients, activities, createNewActivity, deleteActivity, startActivity, stopActivity } = this.props;
+        const { history, activeTab, clients, activities, createNewActivity, deleteActivity, startActivity, stopActivity } = this.props;
         styles.fab.display = activeTab === 'activities' ? 'block' : 'none';
 
         return (
@@ -69,7 +69,11 @@ class ActivityTab extends Component {
                             showExpandableButton={true}
                         />
                         <CardActions>
-                            <FlatButton label="Edit" icon={<EditIcon />} />
+                            <FlatButton 
+                                label="Details" 
+                                icon={<DetailsIcon/>} 
+                                onClick={() => history.push(`/activity/${activity.id}`)}
+                            />
                             <FlatButton
                                 label="Delete"
                                 icon={<DeleteIcon />}

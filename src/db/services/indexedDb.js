@@ -80,8 +80,6 @@ const updateInStore = (storeName, content) => new Promise((resolve, reject) => {
 
     request.onerror = (event) => reject(`Error updating ID ${content.id} from ${storeName}: ${request.error}`);
 
-    request.onsuccess = (event) => resolve(request.result);
-
     request.onsuccess = (event) => {
         // Get the old value that we want to update
         const oldContent = event.target.result;

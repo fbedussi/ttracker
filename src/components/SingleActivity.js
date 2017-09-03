@@ -90,7 +90,7 @@ class SingleActivity extends Component {
                     <TableBody>
                         {activity.timeEntries.map((timeEntry) => {
                             const hours = convertMsToH(timeEntry.getTotalTime());
-                            return <TableRow>
+                            return <TableRow key={timeEntry.id}>
                                 <TableRowColumn>{new Date(timeEntry.startTime).toLocaleString()}</TableRowColumn>
                                 <TableRowColumn>{new Date(timeEntry.endTime).toLocaleString()}</TableRowColumn>
                                 <TableRowColumn>{hours + 'hrs'}</TableRowColumn>

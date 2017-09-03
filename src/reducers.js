@@ -42,12 +42,12 @@ export default function reducer(state = {
         
         case 'START_ACTIVITY':
             return Object.assign({}, state, {
-                activities: state.activities.map((activity) => activity.id === action.id ? Object.assign({}, activity, {active: true}) : activity)
+                activities: state.activities.map((activity) => activity.id === action.id ? Object.assign(activity, {active: true}) : activity)
             });
 
         case 'STOP_ACTIVITY':
             return Object.assign({}, state, {
-                activities: state.activities.map((activity) => activity.id === action.id ? Object.assign({}, activity, {active: false}) : activity)
+                activities: state.activities.map((activity) => activity.id === action.id ? Object.assign(activity, {active: false}) : activity)
             });
 
 		default:
