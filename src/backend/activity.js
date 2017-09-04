@@ -39,6 +39,8 @@ var Activity = {
         db.update(DBCOLLECTION, this);
     },
     delete: function() {
+        this.subactivities.forEach((subactivity) => subactivity.delete());
+        this.timeEntries.forEach((timeEntry) => timeEntry.delete());
         db.delete(DBCOLLECTION, this.id);
     },
     getTotalTime: function(sinceTime = 0) {

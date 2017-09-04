@@ -1,3 +1,9 @@
+function removeTimeEntryFromActivity(activity, timeEntryId) {
+    activity.timeEntries = activity.timeEntries.filter((timeEntry) => timeEntry.id !== timeEntryId);
+
+    return activity;
+}
+
 export default function reducer(state = {
     clients: [],
     activities: [],
@@ -28,6 +34,11 @@ export default function reducer(state = {
         case 'REMOVE_ACTIVITY':
             return Object.assign({}, state, {
                 activities: state.activities.filter((activity) => activity.id !== action.id)
+            });
+
+        case 'REMOVE_TIMEENTRY':
+            return Object.assign({}, state, {
+                activities: state.activities.map((activity) => activity.id === removeTimeEntryFromActivity(activity, action.timeEntryId) ? activity: activity)
             });
         
         case 'SET_ACTIVE_TAB':

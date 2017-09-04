@@ -89,3 +89,13 @@ export function stopActivity(activity) {
         id: activity.id
     }
 }
+
+export function deleteTimeEntry(timeEntry, activity) {
+    timeEntry.delete();
+
+    return {
+        type: 'REMOVE_TIMEENTRY',
+        timeEntryId: timeEntry.id,
+        activityId: activity.id
+    }
+}

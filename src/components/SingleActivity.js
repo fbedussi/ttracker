@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { createNewActivity, deleteActivity } from '../actions';
+import { createNewActivity, deleteActivity, deleteTimeEntry } from '../actions';
 import { Link } from 'react-router-dom'
 
 import { convertMsToH } from '../helpers/helpers';
@@ -47,12 +47,13 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
+    deleteTimeEntry: (timeEntry) => dispatch(deleteTimeEntry(timeEntry))
 });
 
 
 class SingleActivity extends Component {
     render() {
-        const { clients, activities } = this.props;
+        const { clients, activities, deleteTimeEntry } = this.props;
         const activityId = Number(this.props.match.params.activityId);
         const activity = activities
             .filter((activity) => activity.id === activityId)
@@ -64,11 +65,11 @@ class SingleActivity extends Component {
 
         return (
             <div>
-                <div style={{display: 'flex', justifyContent: 'flex-end'}}>
+                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                     <Link to="/">
                         <IconButton>
-                            <CloseIcon/>
-                        </IconButton>                            
+                            <CloseIcon />
+                        </IconButton>
                     </Link>
                 </div>
                 Id: {activity.id}
@@ -96,7 +97,13 @@ class SingleActivity extends Component {
                                 <TableRowColumn>{hours + 'hrs'}</TableRowColumn>
                                 <TableRowColumn>{'€ ' + hours * activity.hourlyRate}</TableRowColumn>
                                 <TableRowColumn><EditIcon /></TableRowColumn>
-                                <TableRowColumn><DeleteIcon /></TableRowColumn>
+                                <TableRowColumn>
+                                    <IconButton
+                                        onclick={() => deleteTimeEntry(timeEntry, activity)}
+                                    >
+                                        <DeleteIcon />
+                                    </IconButton>
+                                </TableRowColumn>
                             </TableRow>
                         }
                         )}

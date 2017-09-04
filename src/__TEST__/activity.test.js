@@ -34,11 +34,15 @@ test('Create activity with custom name and subacivities', () => {
 
 test('activity.delete()', () => {
     const activity = createActivity({
-        hourlyRate: 10
+        hourlyRate: 10,
+        subactivities: [{delete: jest.fn()}],
+        timeEntries: [{delete: jest.fn()}]
     });
 
     activity.delete();
     expect(db.delete).toBeCalled();
+    expect(activity.subactivities[0].delete).toBeCalled();
+    expect(activity.timeEntries[0].delete).toBeCalled();
 });
 
 test('activity.update()', () => {
@@ -151,7 +155,7 @@ test('activity.start()', () => {
 
 test('activity.stop()', () => {
     const activity = createActivity({
-        timeEntries: [{id: 1, stop: jest.fn}]
+        timeEntries: [{id: 1, stop: jest.fn()}]
     });
 
     const result = activity.stop();
