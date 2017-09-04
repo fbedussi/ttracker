@@ -37,7 +37,7 @@ const TimeEntry = {
         db.delete(DBCOLLECTION, this.id);
     },
     getTotalTime: function() {
-        return this.endTime - this.startTime
+        return this.endTime > 0 ? this.endTime - this.startTime : 0;
     }
 }
 

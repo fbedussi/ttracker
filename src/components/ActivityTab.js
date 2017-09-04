@@ -15,6 +15,8 @@ import ContentAdd from 'material-ui/svg-icons/content/add';
 import FlatButton from 'material-ui/FlatButton';
 import Chip from 'material-ui/Chip';
 
+import Timer from './Timer';
+
 const styles = {
     chip: {
         margin: 4,
@@ -90,6 +92,10 @@ class ActivityTab extends Component {
                                 icon={<StopIcon />}
                                 onClick={() => stopActivity(activity)}
                                 style={activity.active ? {display: 'block'} : {display: 'none'}}
+                            />
+                            <Timer 
+                                startTime={activity.timeEntries[activity.timeEntries.length - 1].startTime}
+                                tick={activity.active}
                             />
                         </CardActions>
                         <CardText expandable={true}>

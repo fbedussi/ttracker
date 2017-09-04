@@ -4,6 +4,9 @@ import { createNewActivity, deleteActivity, deleteTimeEntry } from '../actions';
 import { Link } from 'react-router-dom'
 
 import { convertMsToH } from '../helpers/helpers';
+
+import {formatTime} from '../helpers/helpers';
+
 import Subheader from 'material-ui/Subheader';
 import IconButton from 'material-ui/IconButton';
 import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
@@ -47,7 +50,7 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-    deleteTimeEntry: (timeEntry) => dispatch(deleteTimeEntry(timeEntry))
+    deleteTimeEntry: (timeEntry, activity) => dispatch(deleteTimeEntry(timeEntry, activity))
 });
 
 
@@ -75,9 +78,12 @@ class SingleActivity extends Component {
                 Id: {activity.id}
                 Name: {activity.name}
                 <Subheader>Time entries</Subheader>
-                <Table>
+                <Table
+                    selectable={false}
+                >
                     <TableHeader
                         adjustForCheckbox={false}
+                        displaySelectAll={false}
                     >
                         <TableRow>
                             <TableHeaderColumn>Start time</TableHeaderColumn>
@@ -88,18 +94,23 @@ class SingleActivity extends Component {
                             <TableHeaderColumn>Delete</TableHeaderColumn>
                         </TableRow>
                     </TableHeader>
-                    <TableBody>
+                    <TableBody
+                        displayRowCheckbox={false}
+                    >
                         {activity.timeEntries.map((timeEntry) => {
-                            const hours = convertMsToH(timeEntry.getTotalTime());
-                            return <TableRow key={timeEntry.id}>
+                            var totalTime = timeEntry.getTotalTime();
+                            return <TableRow 
+                                key={timeEntry.id}
+                                selectable={false}
+                            >
                                 <TableRowColumn>{new Date(timeEntry.startTime).toLocaleString()}</TableRowColumn>
-                                <TableRowColumn>{new Date(timeEntry.endTime).toLocaleString()}</TableRowColumn>
-                                <TableRowColumn>{hours + 'hrs'}</TableRowColumn>
-                                <TableRowColumn>{'€ ' + hours * activity.hourlyRate}</TableRowColumn>
+                                <TableRowColumn>{timeEntry.endTime > 0 ? new Date(timeEntry.endTime).toLocaleString() : ''}</TableRowColumn>
+                                <TableRowColumn>{totalTime > 0 ? formatTime(totalTime) : ''}</TableRowColumn>
+                                <TableRowColumn>{'€ ' + convertMsToH(totalTime) * activity.hourlyRate}</TableRowColumn>
                                 <TableRowColumn><EditIcon /></TableRowColumn>
                                 <TableRowColumn>
                                     <IconButton
-                                        onclick={() => deleteTimeEntry(timeEntry, activity)}
+                                        onClick={() => deleteTimeEntry(timeEntry, activity)}
                                     >
                                         <DeleteIcon />
                                     </IconButton>
