@@ -28,7 +28,7 @@ export function createNewClient() {
 }
 
 export function deleteClient(client) {
-    client.delete();
+    backend.getClient(client.id).delete();
 
     return {
         type: 'REMOVE_CLIENT',
@@ -50,7 +50,7 @@ export function createNewActivity() {
 }
 
 export function deleteActivity(activity) {
-    activity.delete();
+    backend.getActivity(activity.id).delete();
 
     return {
         type: 'REMOVE_ACTIVITY',
@@ -73,7 +73,7 @@ export function updateClient(client) {
 }
 
 export function startActivity(activity) {
-    activity.start();
+    backend.getActivity(activity.id).start();
 
     return {
         type: 'START_ACTIVITY',
@@ -82,7 +82,7 @@ export function startActivity(activity) {
 }
 
 export function stopActivity(activity) {
-    activity.stop();
+    backend.getActivity(activity.id).stop();
 
     return {
         type: 'STOP_ACTIVITY',
@@ -91,11 +91,22 @@ export function stopActivity(activity) {
 }
 
 export function deleteTimeEntry(timeEntry, activity) {
-    timeEntry.delete();
+    backend.getActivity(activity.id).removeTimeEntry(timeEntry.id);
 
     return {
         type: 'REMOVE_TIMEENTRY',
         timeEntryId: timeEntry.id,
         activityId: activity.id
+    }
+}
+
+export function changeActivityName(activity, newName) {
+    backend.getActivity(activity.id).update({name: newName});
+    
+    const updatedActivity = Object.assign({}, activity, {name: newName});
+
+    return {
+        type: 'UPDATE_ACTIVITY',
+        activity: updatedActivity
     }
 }

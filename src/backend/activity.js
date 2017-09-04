@@ -80,7 +80,9 @@ var Activity = {
         return this.timeEntries[this.timeEntries.length - 1].stop();
     },
     removeTimeEntry: function(id) {
-        this.timeEntries = this.timeEntries.filter(timeEntry => timeEntry.id !== id);
+        this.timeEntries = this.timeEntries
+            .map((timeEntry) => timeEntry.id === id ? timeEntry.delete() : timeEntry)  //timeEntry.delete() returns undefined
+            .filter(timeEntry => timeEntry); //removes undefined
         db.update(DBCOLLECTION, this);
     }
 }
