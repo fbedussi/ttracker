@@ -9,7 +9,7 @@ import ClientTab from './ClientTab';
 import ActivityTab from './ActivityTab';
 
 const mapStateToProps = (state) => ({
-
+  activeTab: state.activeTab
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -18,18 +18,18 @@ const mapDispatchToProps = (dispatch) => ({
 
 class App extends Component {
   render() {
-    const { selectedTab, setActiveTab } = this.props;
+    const { history, activeTab, setActiveTab } = this.props;
 
     return (
       <Tabs
-        value={selectedTab}
+        value={activeTab}
         onChange={(selectedTab) => setActiveTab(selectedTab)}
       >
         <Tab label="Clients" value="clients">
-          <ClientTab />
+          <ClientTab history={history}/>
         </Tab>
         <Tab label="Projects" value="activities">
-          <ActivityTab />
+          <ActivityTab history={history}/>
         </Tab>
       </Tabs>
     );

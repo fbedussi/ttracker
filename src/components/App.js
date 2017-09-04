@@ -19,8 +19,6 @@ const mapDispatchToProps = (dispatch) => ({
 
 class App extends Component {
   render() {
-    const { selectedTab, setActiveTab } = this.props;
-
     return (
       <BrowserRouter>
         <MuiThemeProvider>
