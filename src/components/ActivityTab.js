@@ -76,8 +76,9 @@ class ActivityTab extends Component {
                         >
                             <h1 style={activity.edit ? {display: 'none'} : {display: 'block'}}>{activity.name}</h1>
                             <input 
-                                autoFocus
                                 type="text"
+                                autoFocus
+                                onFocus={(e) => e.target.select()}
                                 style={activity.edit ? {display: 'block'} : {display: 'none'}}
                                 value={activity.name}
                                 onChange={(e) => changeActivityName(activity, e.target.value)}
