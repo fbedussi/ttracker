@@ -28,12 +28,17 @@ export default function reducer(state = {
 
         case 'ADD_ACTIVITY':
             return Object.assign({}, state, {
-                activities: state.activities.concat(action.activity)
+                activities: state.activities.concat(Object.assign({}, action.activity, {edit: true}))
             });
 
         case 'REMOVE_ACTIVITY':
             return Object.assign({}, state, {
                 activities: state.activities.filter((activity) => activity.id !== action.id)
+            });
+
+        case 'UPDATE_ACTIVITY':
+            return Object.assign({}, state, {
+                activities: state.activities.map((activity) => activity.id === action.activity.id ? action.activity : activity)
             });
 
         case 'REMOVE_TIMEENTRY':
@@ -53,12 +58,12 @@ export default function reducer(state = {
         
         case 'START_ACTIVITY':
             return Object.assign({}, state, {
-                activities: state.activities.map((activity) => activity.id === action.id ? Object.assign(activity, {active: true}) : activity)
+                activities: state.activities.map((activity) => activity.id === action.id ? Object.assign({}, activity, {active: true}) : activity)
             });
 
         case 'STOP_ACTIVITY':
             return Object.assign({}, state, {
-                activities: state.activities.map((activity) => activity.id === action.id ? Object.assign(activity, {active: false}) : activity)
+                activities: state.activities.map((activity) => activity.id === action.id ? Object.assign({}, activity, {active: false}) : activity)
             });
 
 		default:

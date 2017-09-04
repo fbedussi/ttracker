@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { createNewActivity, deleteActivity, startActivity, stopActivity } from '../actions';
+import { createNewActivity, deleteActivity, startActivity, stopActivity, changeActivityName } from '../actions';
 import {convertMsToH} from '../helpers/helpers';
 import Subheader from 'material-ui/Subheader';
 import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
@@ -43,13 +43,14 @@ const mapDispatchToProps = (dispatch) => ({
     createNewActivity: () => dispatch(createNewActivity()),
     deleteActivity: (activity) => dispatch(deleteActivity(activity)),
     startActivity: (activity) => dispatch(startActivity(activity)),
-    stopActivity: (activity) => dispatch(stopActivity(activity))
+    stopActivity: (activity) => dispatch(stopActivity(activity)),
+    changeActivityName: (activity, newName) => dispatch(changeActivityName(activity, newName))
 });
 
 
 class ActivityTab extends Component {
     render() {
-        const { history, activeTab, clients, activities, createNewActivity, deleteActivity, startActivity, stopActivity } = this.props;
+        const { history, activeTab, clients, activities, createNewActivity, deleteActivity, startActivity, stopActivity, changeActivityName } = this.props;
         styles.fab.display = activeTab === 'activities' ? 'block' : 'none';
 
         return (
@@ -63,13 +64,26 @@ class ActivityTab extends Component {
                         .reduce((acc, item) => item, null)
                         ;
 
-                    return <Card key={activity.id} style={{position: 'relative'}}>
+                    return <Card 
+                            key={activity.id} 
+                            style={{position: 'relative'}}
+                            expandable={false}
+                            expanded={true}
+                        >
                         <CardHeader
-                            title={activity.name}
-                            subtitle={client ? client.name : ''}
-                            actAsExpander={true}
-                            showExpandableButton={true}
-                        />
+                            actAsExpander={false}
+                            showExpandableButton={false}
+                        >
+                            <h1 style={activity.edit ? {display: 'none'} : {display: 'block'}}>{activity.name}</h1>
+                            <input 
+                                autoFocus
+                                type="text"
+                                style={activity.edit ? {display: 'block'} : {display: 'none'}}
+                                value={activity.name}
+                                onChange={(e) => changeActivityName(activity, e.target.value)}
+                            />
+                            <div>{client ? client.name : ''}</div>
+                            </CardHeader>
                         <CardActions>
                             <FlatButton 
                                 label="Details" 
@@ -94,15 +108,15 @@ class ActivityTab extends Component {
                                 style={activity.active ? {display: 'block'} : {display: 'none'}}
                             />
                             <Timer 
-                                startTime={activity.timeEntries[activity.timeEntries.length - 1].startTime}
+                                startTime={activity.timeEntries.length? activity.timeEntries[activity.timeEntries.length - 1].startTime : 0}
                                 tick={activity.active}
                             />
                         </CardActions>
                         <CardText expandable={true}>
                             <Subheader>Total time</Subheader>
-                            <p>{new Date(activity.getTotalTime()).toLocaleString()}</p>
+                            {/* <p>{new Date(activity.getTotalTime()).toLocaleString()}</p> */}
                             <Subheader>Total cost</Subheader>
-                            <p>{`€ ${activity.getTotalCost()}`}</p>
+                            {/* <p>{`€ ${activity.getTotalCost()}`}</p> */}
                             {/* <Subheader>Last billed date</Subheader>
                             <p>{new Date(client.lastBilledDate()).toLocaleString()}</p>
                             <Subheader>Next invoice subtotal</Subheader>

@@ -28,10 +28,10 @@ const App = {
         ;
     },
     getAllActivities: function() {
-        return this.activities;
+        return this.activities.map((activity) => Object.assign({}, activity)); //returns only own properties, e.g. only data, no methods
     },
     getAllClients: function() {
-        return this.clients;
+        return this.clients.map((client) => Object.assign({}, client)); //returns only own properties, e.g. only data, no methods
     },
     getActivity: function(id) {
         return this.activities.filter((activity) => activity.id === id)[0];
