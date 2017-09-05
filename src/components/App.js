@@ -20,7 +20,7 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
 });
 
-class App extends Component {
+export class App extends Component {
   render() {
     return (
       <BrowserRouter>
