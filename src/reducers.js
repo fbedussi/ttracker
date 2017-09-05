@@ -33,7 +33,7 @@ export default function reducer(state = {
         
         case 'ADD_NEW_ACTIVITY_TO_CLIENT':
             return Object.assign({}, state, {
-                activities: state.activities.concat(action.activity),
+                activities: state.activities.concat(Object.assign({}, action.activity, {editableName: true})),
                 clients: state.clients.map((client) => client.id === action.clientId ? 
                     Object.assign({}, client, {
                         activities: client.activities.concat(action.activity.id)
@@ -41,9 +41,9 @@ export default function reducer(state = {
                     : client)
             })
 
-        case 'DISABLE_EDIT_ACTIVITY':
+        case 'DISABLE_EDIT_CLIENT':
             return Object.assign({}, state, {
-                clients: state.clients.map((client) => client.id === action.clientId ? Object.assign({}, client, {editableName: false}) : client)
+                clients: state.clients.map((client) => (!action.clientId || client.id === action.clientId) ? Object.assign({}, client, {editableName: false}) : client)
             });
 
         case 'ADD_ACTIVITY':
@@ -53,7 +53,7 @@ export default function reducer(state = {
 
         case 'DISABLE_EDIT_ACTIVITY':
             return Object.assign({}, state, {
-                activities: state.activities.map((activity) => activity.id === action.activityId ? Object.assign({}, activity, {editableName: false}) : activity)
+                activities: state.activities.map((activity) => (!action.activityId || activity.id === action.activityId) ? Object.assign({}, activity, {editableName: false}) : activity)
             });
 
 

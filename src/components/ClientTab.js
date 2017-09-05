@@ -1,7 +1,14 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { createNewClient, deleteClient, addNewActivityToClient, 
-        updateClient, changeClientName, changeActivityName, disableEditClient } from '../actions';
+import { createNewClient, 
+    deleteClient,
+    addNewActivityToClient, 
+    updateClient,
+    changeClientName,
+    changeActivityName,
+    disableEditClient,
+    disableEditActivity
+} from '../actions';
 import { Link } from 'react-router-dom'
 
 import Subheader from 'material-ui/Subheader';
@@ -16,11 +23,9 @@ import FlatButton from 'material-ui/FlatButton';
 import Chip from 'material-ui/Chip';
 
 import EditableText from './EditableText';
+import ActivityChip from './ActivityChip';
 
 const styles = {
-    chip: {
-        margin: 4,
-    },
     wrapper: {
         display: 'flex',
         flexWrap: 'wrap',
@@ -46,7 +51,8 @@ const mapDispatchToProps = (dispatch) => ({
     updateClient: (client) => dispatch(updateClient(client)),
     changeClientName: (client, newName) => dispatch(changeClientName(client, newName)),
     disableEdit: (id) => dispatch(disableEditClient(id)),
-    changeActivityName: (activity, newName, client) => dispatch(changeActivityName(activity, newName, client))    
+    changeActivityName: (activity, newName, client) => dispatch(changeActivityName(activity, newName, client)),
+    disableEditActivity: (id) => dispatch(disableEditActivity(id))
 });
 
 class ClientTab extends Component {
@@ -61,7 +67,8 @@ class ClientTab extends Component {
             updateClient,
             changeClientName,
             disableEdit,
-            changeActivityName
+            changeActivityName,
+            disableEditActivity
         } = this.props;
         styles.fab.display = activeTab === 'clients' ? 'block' : 'none';
 
@@ -71,7 +78,10 @@ class ClientTab extends Component {
                         key={client.id}
                         expandable={false}
                         expanded={true}
-                        onClick={() => disableEdit(client.id)}
+                        onClick={() => {
+                            disableEdit(client.id);
+                            //disableEditActivity();
+                        }}
                     >
                     <CardHeader
                         actAsExpander={false}
@@ -107,19 +117,12 @@ class ClientTab extends Component {
                         />
                         </Subheader>
                         <div style={styles.wrapper}>
-                            {[].concat(client.activities).filter((i) => i).map((activityId) => <Link to={`/activity/${activityId}`} key={activityId}>
-                            <Chip
-                                style={styles.chip}
-                                onRequestDelete={() => { }}
-                            >
-                                <EditableText
-                                    className="chipText"
-                                    editable={true}
-                                    text={activities.find((activity) => activity.id === activityId).name}
-                                    handleChange={(text) => changeActivityName(activities.find((activity) => activity.id === activityId), text)}
-                                />
-                            </Chip>
-                            </Link>)}
+                            {[].concat(client.activities).filter((i) => i).map((activityId) => <ActivityChip
+                                key={activityId}
+                                activities={activities}
+                                activityId={activityId}
+                                changeActivityName={changeActivityName}
+                            />)}
                         </div>
 
                     </CardText>

@@ -11,10 +11,11 @@ class EditableText extends Component {
     }
 
     render() {
+        const editableClass = this.props.editable ? 'editable' : '';
         return (
             <input
                 ref={(input) => { this.input = input; }}
-                className={this.props.className}
+                className={this.props.className + ' ' + editableClass}
                 value={this.props.text}
                 onChange={(e) => this.props.handleChange(e.target.value)}
             />

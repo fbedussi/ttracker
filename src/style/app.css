@@ -12,7 +12,8 @@ input {
     background: none;
 }
 
-input:focus {
+input:focus,
+input.editable {
     outline: none;
     border-bottom: solid 2px black;
 }
