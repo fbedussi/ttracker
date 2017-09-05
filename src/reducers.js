@@ -18,12 +18,22 @@ export default function reducer(state = {
            
         case 'ADD_CLIENT':
             return Object.assign({}, state, {
-                clients: state.clients.concat(action.client)
+                clients: state.clients.concat(Object.assign({}, action.client, {editableName: true}))
             });
 
         case 'REMOVE_CLIENT':
             return Object.assign({}, state, {
                 clients: state.clients.filter((client) => client.id !== action.id)
+            });
+        
+        case 'UPDATE_CLIENT':
+            return Object.assign({}, state, {
+                clients: state.clients.map((client) => client.id === action.client.id ? action.client : client)
+            });
+
+        case 'DISABLE_EDIT_ACTIVITY':
+            return Object.assign({}, state, {
+                clients: state.clients.map((client) => client.id === action.clientId ? Object.assign({}, client, {editableName: false}) : client)
             });
 
         case 'ADD_ACTIVITY':
@@ -35,6 +45,7 @@ export default function reducer(state = {
             return Object.assign({}, state, {
                 activities: state.activities.map((activity) => activity.id === action.activityId ? Object.assign({}, activity, {editableName: false}) : activity)
             });
+
 
         case 'REMOVE_ACTIVITY':
             return Object.assign({}, state, {

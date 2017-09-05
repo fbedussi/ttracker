@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { createNewClient, deleteClient, addNewActivity, updateClient } from '../actions';
+import { createNewClient, deleteClient, addNewActivity, updateClient, changeClientName, disableEditClient } from '../actions';
 import { Link } from 'react-router-dom'
 
 import Subheader from 'material-ui/Subheader';
@@ -13,6 +13,8 @@ import FloatingActionButton from 'material-ui/FloatingActionButton';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import FlatButton from 'material-ui/FlatButton';
 import Chip from 'material-ui/Chip';
+
+import EditableText from './EditableText';
 
 const styles = {
     chip: {
@@ -39,22 +41,38 @@ const mapDispatchToProps = (dispatch) => ({
     createNewClient: () => dispatch(createNewClient()),
     deleteClient: (client) => dispatch(deleteClient(client)),
     addNewActivity: (activity) => dispatch(addNewActivity(activity)),
-    updateClient: (client) => dispatch(updateClient(client))
+    updateClient: (client) => dispatch(updateClient(client)),
+    changeClientName: (client, newName) => dispatch(changeClientName(client, newName)),
+    disableEdit: (id) => dispatch(disableEditClient(id))
 });
 
 class ClientTab extends Component {
     render() {
-        const { activeTab, clients, createNewClient, deleteClient, addNewActivity, updateClient } = this.props;
+        const { activeTab, clients, createNewClient, 
+                deleteClient, addNewActivity, updateClient, 
+                changeClientName, disableEdit } = this.props;
         styles.fab.display = activeTab === 'clients' ? 'block' : 'none';
 
         return (
             <div>
-                {clients.map((client) => <Card key={client.id}>
+                {clients.map((client) => <Card 
+                        key={client.id}
+                        expandable={false}
+                        expanded={true}
+                        onClick={() => disableEdit(client.id)}
+                    >
                     <CardHeader
-                        title={client.name}
-                        actAsExpander={true}
-                        showExpandableButton={true}
-                    />
+                        actAsExpander={false}
+                        showExpandableButton={false}
+                        textStyle={{paddingRight: '0'}}
+                    >
+                    <EditableText
+                                className="cardTitle"
+                                editable={client.editableName}
+                                text={client.name}
+                                handleChange={(text) => changeClientName(client, text)}
+                            />
+                    </CardHeader>
                     <CardActions>
                         <FlatButton label="Edit" icon={<EditIcon />} />
                         <FlatButton

@@ -117,3 +117,21 @@ export function disableEditActivity(id) {
         activityId: id
     }
 }
+
+export function changeClientName(client, newName) {
+    backend.getClient(client.id).update({name: newName});
+    
+    const updatedClient = Object.assign({}, client, {name: newName});
+
+    return {
+        type: 'UPDATE_CLIENT',
+        client: updatedClient
+    }
+}
+
+export function disableEditClient(id) {
+    return {
+        type: 'DISABLE_EDIT_CLIENT',
+        clientId: id
+    }
+}

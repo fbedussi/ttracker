@@ -34,10 +34,16 @@ const App = {
         return this.clients.map((client) => Object.assign({}, client)); //returns only own properties, e.g. only data, no methods
     },
     getActivity: function(id) {
-        return this.activities.filter((activity) => activity.id === id)[0];
+        return this.activities
+            .filter((activity) => activity.id === id)
+            .reduce((acc, item) => item, null)
+        ;
     },
     getClient: function(id) {   
-        return this.clients.filter((client) => client.id === id)[0];        
+        return this.clients
+            .filter((client) => client.id === id)
+            .reduce((acc, item) => item, null)
+        ;
     },
     getTotalToBill: function() {
         return this.clients.reduce((total, client) => total + client.getTotalToBill(), 0);
