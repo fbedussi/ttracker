@@ -9,3 +9,13 @@ export const formatTime = (millisecond) => {
 
     return `${hours} : ${minutes < 10 ? '0' + minutes : minutes} : ${seconds < 10 ? '0' + seconds : seconds}`;
 }
+
+export const getOnlyOwnProperies = (obj) => {
+    var newObj = {};
+    Object.keys(obj).forEach((key) => {
+        newObj[key] = Array.isArray(obj[key]) ? obj[key].map((i) => i) : obj[key]
+    });
+
+    return newObj;
+}
+

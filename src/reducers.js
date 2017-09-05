@@ -12,8 +12,8 @@ export default function reducer(state = {
 	switch (action.type) {
 		case 'LOAD_APP':
 			return Object.assign({}, state, {
-                clients: action.clients.map((i) => i),
-                activities: action.activities.map((i) => i)
+                clients: action.clients,
+                activities: action.activities
             });
            
         case 'ADD_CLIENT':
@@ -30,6 +30,16 @@ export default function reducer(state = {
             return Object.assign({}, state, {
                 clients: state.clients.map((client) => client.id === action.client.id ? action.client : client)
             });
+        
+        case 'ADD_NEW_ACTIVITY_TO_CLIENT':
+            return Object.assign({}, state, {
+                activities: state.activities.concat(action.activity),
+                clients: state.clients.map((client) => client.id === action.clientId ? 
+                    Object.assign({}, client, {
+                        activities: client.activities.concat(action.activity)
+                    })
+                    : client)
+            })
 
         case 'DISABLE_EDIT_ACTIVITY':
             return Object.assign({}, state, {

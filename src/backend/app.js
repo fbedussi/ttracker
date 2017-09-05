@@ -28,10 +28,10 @@ const App = {
         ;
     },
     getAllActivities: function() {
-        return this.activities.map((activity) => Object.assign({}, activity)); //returns only own properties, e.g. only data, no methods
+        return this.activities;
     },
     getAllClients: function() {
-        return this.clients.map((client) => Object.assign({}, client)); //returns only own properties, e.g. only data, no methods
+        return this.clients;
     },
     getActivity: function(id) {
         return this.activities
@@ -57,6 +57,19 @@ const App = {
         var newActivity = createActivity(Object.assign({hourlyRate: this.defaultHourlyRate}, props));
         this.activities.push(newActivity);
         return newActivity;
+    },
+    addNewActivityToClient: function(clientId) {
+        var client = this.getClient(clientId);
+        var activity;
+
+        if (!client) {
+            return false;
+        }
+
+        activity = this.createNewActivity({hourlyRate: client.defaultHourlyRate});
+        client.addActivity(activity);
+
+        return activity;
     }
 }
 

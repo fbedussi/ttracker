@@ -1,4 +1,5 @@
-import loadBackend from './backend/app'
+import loadBackend from './backend/app';
+import {getOnlyOwnProperies} from './helpers/helpers';
 
 var backend;
 
@@ -10,8 +11,8 @@ export function load() {
                 
                 dispatch({
                     type: 'LOAD_APP', 
-                    clients: backend.clients,
-                    activities: backend.activities
+                    clients: backend.clients.map((client) => getOnlyOwnProperies(client)),
+                    activities: backend.activities.map((activity) => getOnlyOwnProperies(activity))
                 });
             })
         ;
@@ -23,7 +24,7 @@ export function createNewClient() {
 
     return {
         type: 'ADD_CLIENT',
-        client
+        client: getOnlyOwnProperies(client)
     }
 }
 
@@ -46,7 +47,17 @@ export function addNewActivity(activity) {
 export function createNewActivity() {
     const activity = backend.createNewActivity();
 
-    return addNewActivity(activity);
+    return addNewActivity(getOnlyOwnProperies(activity));
+}
+
+export function addNewActivityToClient(clientId) {
+    const activity = backend.addNewActivityToClient(clientId);
+
+    return {
+        type: 'ADD_NEW_ACTIVITY_TO_CLIENT',
+        clientId: clientId,
+        activity: getOnlyOwnProperies(activity)
+    }
 }
 
 export function deleteActivity(activity) {

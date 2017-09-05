@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { createNewClient, deleteClient, addNewActivity, updateClient, changeClientName, disableEditClient } from '../actions';
+import { createNewClient, deleteClient, addNewActivityToClient, 
+        updateClient, changeClientName, disableEditClient } from '../actions';
 import { Link } from 'react-router-dom'
 
 import Subheader from 'material-ui/Subheader';
@@ -40,7 +41,7 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
     createNewClient: () => dispatch(createNewClient()),
     deleteClient: (client) => dispatch(deleteClient(client)),
-    addNewActivity: (activity) => dispatch(addNewActivity(activity)),
+    addNewActivityToClient: (clientId) => dispatch(addNewActivityToClient(clientId)),
     updateClient: (client) => dispatch(updateClient(client)),
     changeClientName: (client, newName) => dispatch(changeClientName(client, newName)),
     disableEdit: (id) => dispatch(disableEditClient(id))
@@ -49,7 +50,7 @@ const mapDispatchToProps = (dispatch) => ({
 class ClientTab extends Component {
     render() {
         const { activeTab, clients, createNewClient, 
-                deleteClient, addNewActivity, updateClient, 
+                deleteClient, addNewActivityToClient, updateClient, 
                 changeClientName, disableEdit } = this.props;
         styles.fab.display = activeTab === 'clients' ? 'block' : 'none';
 
@@ -90,10 +91,7 @@ class ClientTab extends Component {
                         <FlatButton
                             icon={<ContentAdd />}
                             onClick={() => {
-                                const activity = client.addActivity();
-                                //client.activities = client.activities.concat(activity);
-                                addNewActivity(activity);
-                                updateClient(client);
+                                addNewActivityToClient(client.id);
                             }}
                         />
                         </Subheader>

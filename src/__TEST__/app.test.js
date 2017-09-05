@@ -76,3 +76,19 @@ test('Create new activity', () => {
         expect(db.create).toBeCalled();
     });
 });
+
+test('addNewActivityToClient', () => {
+    return loadApp().then((app) => {
+        const clientId = 1;
+        const activity = app.addNewActivityToClient(clientId)
+        const client = app.getClient(clientId)
+
+        expect(activity.id > 0).toBe(true);
+        expect(activity.startTime > 0).toBe(true);
+        expect(activity.name).toBe('new activity');
+        expect(activity.hourlyRate).toBe(0);
+        expect(activity.subactivities).toEqual([]);
+        expect(client.addActivity).toBeCalled();
+        expect(db.create).toBeCalled();
+    });
+});

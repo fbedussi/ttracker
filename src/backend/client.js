@@ -53,11 +53,10 @@ var Client = {
     getTotalCost: function() {
         return convertMsToH(this.getTotalTime()) * this.defaultHourlyRate;
     },
-    addActivity: function(props) {
-        var newActivity = createActivity(Object.assign({hourlyRate: this.defaultHourlyRate}, props));
-        this.activities.push(newActivity);
+    addActivity: function(activity) {
+        this.activities.push(activity);
         db.update(DBCOLLECTION, this);
-        return newActivity;
+        return activity;
     },
     removeActivity: function(id) {
         this.activities = this.activities.filter(activity => activity.id !== id);
