@@ -36,7 +36,7 @@ export default function reducer(state = {
                 activities: state.activities.concat(action.activity),
                 clients: state.clients.map((client) => client.id === action.clientId ? 
                     Object.assign({}, client, {
-                        activities: client.activities.concat(action.activity)
+                        activities: client.activities.concat(action.activity.id)
                     })
                     : client)
             })
@@ -65,6 +65,16 @@ export default function reducer(state = {
         case 'UPDATE_ACTIVITY':
             return Object.assign({}, state, {
                 activities: state.activities.map((activity) => activity.id === action.activity.id ? action.activity : activity)
+            });
+
+        case 'UPDATE_ACTIVITY_IN_CLIENT':
+            return Object.assign({}, state, {
+                activities: state.activities.map((activity) => activity.id === action.activity.id ? action.activity : activity),
+                clients: state.clients.map((client) => client.id === action.clientId ? Object.assign({}, client, 
+                    {
+                        activities: client.activities.map((activity) => activity.id === action.activity.id ? action.activity : activity)
+                    }
+                ) : client)                
             });
 
         case 'REMOVE_TIMEENTRY':

@@ -11,7 +11,12 @@ export function load() {
                 
                 dispatch({
                     type: 'LOAD_APP', 
-                    clients: backend.clients.map((client) => getOnlyOwnProperies(client)),
+                    clients: backend.clients
+                        .map((client) => {
+                            var clientData = getOnlyOwnProperies(client)
+                            clientData.activities = clientData.activities.map((activity) => activity.id)
+                            return clientData;
+                    }),
                     activities: backend.activities.map((activity) => getOnlyOwnProperies(activity))
                 });
             })
@@ -56,7 +61,7 @@ export function addNewActivityToClient(clientId) {
     return {
         type: 'ADD_NEW_ACTIVITY_TO_CLIENT',
         clientId: clientId,
-        activity: getOnlyOwnProperies(activity)
+        activity: activity
     }
 }
 
@@ -119,6 +124,18 @@ export function changeActivityName(activity, newName) {
     return {
         type: 'UPDATE_ACTIVITY',
         activity: updatedActivity
+    }
+}
+
+export function changeActivityNameInClient(activity, newName, client) {
+    backend.getActivity(activity.id).update({name: newName});
+    
+    const updatedActivity = Object.assign({}, activity, {name: newName});
+
+    return {
+        type: 'UPDATE_ACTIVITY_IN_CLIENT',
+        activity: updatedActivity,
+        clientId: client.id
     }
 }
 

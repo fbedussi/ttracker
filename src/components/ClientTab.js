@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { createNewClient, deleteClient, addNewActivityToClient, 
-        updateClient, changeClientName, disableEditClient } from '../actions';
+        updateClient, changeClientName, changeActivityName, disableEditClient } from '../actions';
 import { Link } from 'react-router-dom'
 
 import Subheader from 'material-ui/Subheader';
@@ -35,6 +35,7 @@ const styles = {
 
 const mapStateToProps = (state) => ({
     clients: state.clients,
+    activities: state.activities,
     activeTab: state.activeTab
 });
 
@@ -44,14 +45,24 @@ const mapDispatchToProps = (dispatch) => ({
     addNewActivityToClient: (clientId) => dispatch(addNewActivityToClient(clientId)),
     updateClient: (client) => dispatch(updateClient(client)),
     changeClientName: (client, newName) => dispatch(changeClientName(client, newName)),
-    disableEdit: (id) => dispatch(disableEditClient(id))
+    disableEdit: (id) => dispatch(disableEditClient(id)),
+    changeActivityName: (activity, newName, client) => dispatch(changeActivityName(activity, newName, client))    
 });
 
 class ClientTab extends Component {
     render() {
-        const { activeTab, clients, createNewClient, 
-                deleteClient, addNewActivityToClient, updateClient, 
-                changeClientName, disableEdit } = this.props;
+        const { 
+            activeTab,
+            clients,
+            activities,
+            createNewClient,
+            deleteClient,
+            addNewActivityToClient,
+            updateClient,
+            changeClientName,
+            disableEdit,
+            changeActivityName
+        } = this.props;
         styles.fab.display = activeTab === 'clients' ? 'block' : 'none';
 
         return (
@@ -96,13 +107,17 @@ class ClientTab extends Component {
                         />
                         </Subheader>
                         <div style={styles.wrapper}>
-                            {[].concat(client.activities).filter((i) => i).map((activity) => <Link to={`/activity/${activity.id}`} key={activity.id}>
+                            {[].concat(client.activities).filter((i) => i).map((activityId) => <Link to={`/activity/${activityId}`} key={activityId}>
                             <Chip
                                 style={styles.chip}
                                 onRequestDelete={() => { }}
-
                             >
-                                {activity.name}
+                                <EditableText
+                                    className="chipText"
+                                    editable={true}
+                                    text={activities.find((activity) => activity.id === activityId).name}
+                                    handleChange={(text) => changeActivityName(activities.find((activity) => activity.id === activityId), text)}
+                                />
                             </Chip>
                             </Link>)}
                         </div>
