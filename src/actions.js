@@ -110,3 +110,10 @@ export function changeActivityName(activity, newName) {
         activity: updatedActivity
     }
 }
+
+export function disableEditActivity(id) {
+    return {
+        type: 'DISABLE_EDIT_ACTIVITY',
+        activityId: id
+    }
+}

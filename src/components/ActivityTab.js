@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { createNewActivity, deleteActivity, startActivity, stopActivity, changeActivityName } from '../actions';
+import { createNewActivity, deleteActivity, startActivity, stopActivity, changeActivityName, disableEditActivity } from '../actions';
 import {convertMsToH} from '../helpers/helpers';
 import Subheader from 'material-ui/Subheader';
 import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
@@ -16,6 +16,7 @@ import FlatButton from 'material-ui/FlatButton';
 import Chip from 'material-ui/Chip';
 
 import Timer from './Timer';
+import EditableText from './EditableText';
 
 const styles = {
     chip: {
@@ -29,7 +30,8 @@ const styles = {
         display: 'none',
         position: 'fixed',
         right: '2em',
-        bottom: '2em'
+        bottom: '2em',
+        zIndex: '1'
     }
 };
 
@@ -44,13 +46,16 @@ const mapDispatchToProps = (dispatch) => ({
     deleteActivity: (activity) => dispatch(deleteActivity(activity)),
     startActivity: (activity) => dispatch(startActivity(activity)),
     stopActivity: (activity) => dispatch(stopActivity(activity)),
-    changeActivityName: (activity, newName) => dispatch(changeActivityName(activity, newName))
+    changeActivityName: (activity, newName) => dispatch(changeActivityName(activity, newName)),
+    disableEdit: (id) => dispatch(disableEditActivity(id))
 });
 
 
 class ActivityTab extends Component {
     render() {
-        const { history, activeTab, clients, activities, createNewActivity, deleteActivity, startActivity, stopActivity, changeActivityName } = this.props;
+        const { history, activeTab, clients, activities, 
+                createNewActivity, deleteActivity, startActivity, 
+                stopActivity, changeActivityName, disableEdit } = this.props;
         styles.fab.display = activeTab === 'activities' ? 'block' : 'none';
 
         return (
@@ -69,19 +74,19 @@ class ActivityTab extends Component {
                             style={{position: 'relative'}}
                             expandable={false}
                             expanded={true}
+                            onClick={() => disableEdit(activity.id)}
                         >
                         <CardHeader
                             actAsExpander={false}
                             showExpandableButton={false}
+                            textStyle={{paddingRight: '0'}}
                         >
-                            <h1 style={activity.edit ? {display: 'none'} : {display: 'block'}}>{activity.name}</h1>
-                            <input 
-                                type="text"
-                                autoFocus
-                                onFocus={(e) => e.target.select()}
-                                style={activity.edit ? {display: 'block'} : {display: 'none'}}
-                                value={activity.name}
-                                onChange={(e) => changeActivityName(activity, e.target.value)}
+                            <EditableText
+                                className="cardTitle"
+                                editable={activity.editableName}
+                                text={activity.name}
+                                handleChange={(text) => changeActivityName(activity, text)}
+
                             />
                             <div>{client ? client.name : ''}</div>
                             </CardHeader>

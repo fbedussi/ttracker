@@ -28,7 +28,12 @@ export default function reducer(state = {
 
         case 'ADD_ACTIVITY':
             return Object.assign({}, state, {
-                activities: state.activities.concat(Object.assign({}, action.activity, {edit: true}))
+                activities: state.activities.concat(Object.assign({}, action.activity, {editableName: true}))
+            });
+
+        case 'DISABLE_EDIT_ACTIVITY':
+            return Object.assign({}, state, {
+                activities: state.activities.map((activity) => activity.id === action.activityId ? Object.assign({}, activity, {editableName: false}) : activity)
             });
 
         case 'REMOVE_ACTIVITY':

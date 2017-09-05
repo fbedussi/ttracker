@@ -9,6 +9,9 @@ import AppBar from 'material-ui/AppBar';
 import Home from './Home';
 import SingleActivity from './SingleActivity';
 
+import '../style/app.css';
+import Style from '../style/Style.js';
+
 const mapStateToProps = (state) => ({
   clients: state.clients,
   activities: state.activities
@@ -23,6 +26,7 @@ class App extends Component {
       <BrowserRouter>
         <MuiThemeProvider>
           <div className="App">
+            <Style></Style>
             <AppBar
               title="tTracker"
             />
