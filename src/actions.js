@@ -66,7 +66,7 @@ export function addNewActivityToClient(clientId) {
 }
 
 export function deleteActivity(activity) {
-    backend.getActivity(activity.id).delete();
+    backend.deleteActivity(activity.id);
 
     return {
         type: 'REMOVE_ACTIVITY',

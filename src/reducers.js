@@ -5,7 +5,7 @@ function removeTimeEntryFromActivity(activity, timeEntryId) {
 }
 
 function removeActivityFromClient(client, activityId) {
-    client.activities = client.activities.filter((id) => activityId);
+    client.activities = client.activities.filter((id) => id !== activityId);
 
     return client;
 }

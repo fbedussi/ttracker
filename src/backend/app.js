@@ -64,6 +64,18 @@ const App = {
         client.addActivity(activity);
 
         return activity;
+    },
+    deleteActivity: function(activityId) {
+        var activity = this.getActivity(activityId);
+
+        if (!activity) {
+            return false;
+        }
+
+        activity.delete();
+        var clientsAssociaterdWithActivity = this.clients.filter((client) => client.activities.some((id) => id === activityId));
+
+        clientsAssociaterdWithActivity.forEach((client) => client.removeActivity(activityId));
     }
 }
 
