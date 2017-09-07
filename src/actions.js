@@ -1,4 +1,5 @@
-import loadBackend from './backend/app'
+import loadBackend from './backend/app';
+import {getOnlyOwnProperies} from './helpers/helpers';
 
 var backend;
 
@@ -10,8 +11,13 @@ export function load() {
                 
                 dispatch({
                     type: 'LOAD_APP', 
-                    clients: backend.clients,
-                    activities: backend.activities
+                    clients: backend.clients
+                        .map((client) => {
+                            var clientData = getOnlyOwnProperies(client)
+                            clientData.activities = clientData.activities.map((activity) => activity.id)
+                            return clientData;
+                    }),
+                    activities: backend.activities.map((activity) => getOnlyOwnProperies(activity))
                 });
             })
         ;
@@ -23,12 +29,12 @@ export function createNewClient() {
 
     return {
         type: 'ADD_CLIENT',
-        client
+        client: getOnlyOwnProperies(client)
     }
 }
 
 export function deleteClient(client) {
-    client.delete();
+    backend.getClient(client.id).delete();
 
     return {
         type: 'REMOVE_CLIENT',
@@ -46,11 +52,21 @@ export function addNewActivity(activity) {
 export function createNewActivity() {
     const activity = backend.createNewActivity();
 
-    return addNewActivity(activity);
+    return addNewActivity(getOnlyOwnProperies(activity));
+}
+
+export function addNewActivityToClient(clientId) {
+    const activity = backend.addNewActivityToClient(clientId);
+
+    return {
+        type: 'ADD_NEW_ACTIVITY_TO_CLIENT',
+        clientId: clientId,
+        activity: activity
+    }
 }
 
 export function deleteActivity(activity) {
-    activity.delete();
+    backend.getActivity(activity.id).delete();
 
     return {
         type: 'REMOVE_ACTIVITY',
@@ -73,7 +89,7 @@ export function updateClient(client) {
 }
 
 export function startActivity(activity) {
-    activity.start();
+    backend.getActivity(activity.id).start();
 
     return {
         type: 'START_ACTIVITY',
@@ -82,7 +98,7 @@ export function startActivity(activity) {
 }
 
 export function stopActivity(activity) {
-    activity.stop();
+    backend.getActivity(activity.id).stop();
 
     return {
         type: 'STOP_ACTIVITY',
@@ -91,11 +107,59 @@ export function stopActivity(activity) {
 }
 
 export function deleteTimeEntry(timeEntry, activity) {
-    timeEntry.delete();
+    backend.getActivity(activity.id).removeTimeEntry(timeEntry.id);
 
     return {
         type: 'REMOVE_TIMEENTRY',
         timeEntryId: timeEntry.id,
         activityId: activity.id
+    }
+}
+
+export function changeActivityName(activity, newName) {
+    backend.getActivity(activity.id).update({name: newName});
+    
+    const updatedActivity = Object.assign({}, activity, {name: newName});
+
+    return {
+        type: 'UPDATE_ACTIVITY',
+        activity: updatedActivity
+    }
+}
+
+export function changeActivityNameInClient(activity, newName, client) {
+    backend.getActivity(activity.id).update({name: newName});
+    
+    const updatedActivity = Object.assign({}, activity, {name: newName});
+
+    return {
+        type: 'UPDATE_ACTIVITY_IN_CLIENT',
+        activity: updatedActivity,
+        clientId: client.id
+    }
+}
+
+export function disableEditActivity(id) {
+    return {
+        type: 'DISABLE_EDIT_ACTIVITY',
+        activityId: id
+    }
+}
+
+export function changeClientName(client, newName) {
+    backend.getClient(client.id).update({name: newName});
+    
+    const updatedClient = Object.assign({}, client, {name: newName});
+
+    return {
+        type: 'UPDATE_CLIENT',
+        client: updatedClient
+    }
+}
+
+export function disableEditClient(id) {
+    return {
+        type: 'DISABLE_EDIT_CLIENT',
+        clientId: id
     }
 }
