@@ -3,9 +3,9 @@ export function convertMsToH(ms) {
 }
 
 export const formatTime = (millisecond) => {
-    var seconds = parseInt((millisecond / 1000) % 60);
-    var minutes = parseInt((millisecond / (1000 * 60)) % 60);
-    var hours = parseInt((millisecond / (1000 * 60 * 60)) % 24);
+    var seconds = parseInt((millisecond / 1000) % 60, 10);
+    var minutes = parseInt((millisecond / (1000 * 60)) % 60, 10);
+    var hours = parseInt((millisecond / (1000 * 60 * 60)) % 24, 10);
 
     return `${hours} : ${minutes < 10 ? '0' + minutes : minutes} : ${seconds < 10 ? '0' + seconds : seconds}`;
 }

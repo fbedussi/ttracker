@@ -3,7 +3,7 @@ import merge from '../helpers/merge';
 import db from '../db/dbFacade';
 import {convertMsToH} from '../helpers/helpers';
 
-import {createActivity, loadActivity} from './activity';
+import {loadActivity} from './activity';
 
 var clientIdMaker = null;
 initIdMaker('client').then((idMaker) => clientIdMaker = idMaker);

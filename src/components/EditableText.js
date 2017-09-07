@@ -5,19 +5,34 @@ class EditableText extends Component {
         if (this.props.editable) {
             this.input.focus();
             this.input.select();
-        } else {
+        }
+        // else {
+        //     this.input.blur();
+        // }
+    }
+
+    componentDidUpdate(prevProps) {
+        if (!this.props.editable) {
             this.input.blur();
         }
     }
 
+    handleKeyUp(keyCode) {
+        if (keyCode !== 13) {
+            return;
+        }
+
+        this.props.disableEdit();
+    }
+
     render() {
-        const editableClass = this.props.editable ? 'editable' : '';
         return (
             <input
                 ref={(input) => { this.input = input; }}
-                className={this.props.className + ' ' + editableClass}
+                className={this.props.className}
                 value={this.props.text}
                 onChange={(e) => this.props.handleChange(e.target.value)}
+                onKeyUp={(e) => {this.handleKeyUp(e.keyCode)}}
             />
         );
     }

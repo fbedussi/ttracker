@@ -1,15 +1,19 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { createNewActivity, deleteActivity, startActivity, stopActivity, changeActivityName, disableEditActivity } from '../actions';
-import {convertMsToH} from '../helpers/helpers';
+import {
+    createNewActivity,
+    deleteActivity,
+    startActivity,
+    stopActivity,
+    changeActivityName,
+    disableEditActivity
+} from '../actions';
 import Subheader from 'material-ui/Subheader';
 import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
-import EditIcon from 'material-ui/svg-icons/editor/mode-edit';
 import DeleteIcon from 'material-ui/svg-icons/action/delete';
 import DetailsIcon from 'material-ui/svg-icons/action/pageview';
 import RecordIcon from 'material-ui/svg-icons/av/fiber-manual-record';
 import StopIcon from 'material-ui/svg-icons/av/stop';
-import MenuItem from 'material-ui/MenuItem';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import FlatButton from 'material-ui/FlatButton';
@@ -53,9 +57,18 @@ const mapDispatchToProps = (dispatch) => ({
 
 class ActivityTab extends Component {
     render() {
-        const { history, activeTab, clients, activities, 
-                createNewActivity, deleteActivity, startActivity, 
-                stopActivity, changeActivityName, disableEdit } = this.props;
+        const {
+            history,
+            activeTab,
+            clients,
+            activities,
+            createNewActivity,
+            deleteActivity,
+            startActivity,
+            stopActivity,
+            changeActivityName,
+            disableEdit
+        } = this.props;
         styles.fab.display = activeTab === 'activities' ? 'block' : 'none';
 
         return (
@@ -86,7 +99,7 @@ class ActivityTab extends Component {
                                 editable={activity.editableName}
                                 text={activity.name}
                                 handleChange={(text) => changeActivityName(activity, text)}
-
+                                disableEdit={() => disableEdit(activity.id)}
                             />
                             <div>{client ? client.name : ''}</div>
                             </CardHeader>

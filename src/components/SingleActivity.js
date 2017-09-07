@@ -1,6 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { createNewActivity, deleteActivity, deleteTimeEntry } from '../actions';
+import {
+    deleteActivity,
+    changeActivityName,    
+    deleteTimeEntry,
+    disableEditActivity    
+} from '../actions';
 import { Link } from 'react-router-dom'
 
 import { convertMsToH } from '../helpers/helpers';
@@ -9,16 +14,11 @@ import {formatTime} from '../helpers/helpers';
 
 import Subheader from 'material-ui/Subheader';
 import IconButton from 'material-ui/IconButton';
-import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
 import EditIcon from 'material-ui/svg-icons/editor/mode-edit';
 import DeleteIcon from 'material-ui/svg-icons/action/delete';
-import DetailsIcon from 'material-ui/svg-icons/action/pageview';
 import CloseIcon from 'material-ui/svg-icons/content/clear';
-import MenuItem from 'material-ui/MenuItem';
-import FloatingActionButton from 'material-ui/FloatingActionButton';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import FlatButton from 'material-ui/FlatButton';
-import Chip from 'material-ui/Chip';
 import {
     Table,
     TableBody,
@@ -28,21 +28,7 @@ import {
     TableRowColumn,
 } from 'material-ui/Table';
 
-const styles = {
-    chip: {
-        margin: 4,
-    },
-    wrapper: {
-        display: 'flex',
-        flexWrap: 'wrap',
-    },
-    fab: {
-        display: 'none',
-        position: 'fixed',
-        right: '2em',
-        bottom: '2em'
-    }
-};
+import EditableText from './EditableText';
 
 const mapStateToProps = (state) => ({
     clients: state.clients,
@@ -50,13 +36,21 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-    deleteTimeEntry: (timeEntry, activity) => dispatch(deleteTimeEntry(timeEntry, activity))
+    deleteTimeEntry: (timeEntry, activity) => dispatch(deleteTimeEntry(timeEntry, activity)),
+    changeActivityName: (activity, newName) => dispatch(changeActivityName(activity, newName)),    
+    disableEdit: (id) => dispatch(disableEditActivity(id))    
 });
 
 
 class SingleActivity extends Component {
     render() {
-        const { clients, activities, deleteTimeEntry } = this.props;
+        const {
+            clients,
+            activities,
+            deleteTimeEntry,
+            changeActivityName,
+            disableEdit            
+        } = this.props;
         const activityId = Number(this.props.match.params.activityId);
         const activity = activities
             .filter((activity) => activity.id === activityId)
@@ -75,8 +69,18 @@ class SingleActivity extends Component {
                         </IconButton>
                     </Link>
                 </div>
-                Id: {activity.id}
-                Name: {activity.name}
+                <div>
+                    Activity Id: {activity.id}
+                </div>
+                <h1>
+                    <EditableText
+                        className="cardTitle"
+                        editable={activity.editableName}
+                        text={activity.name}
+                        handleChange={(text) => changeActivityName(activity, text)}
+                        disableEdit={() => disableEdit(activity.id)}
+                    />
+                </h1>
                 <Subheader>Time entries</Subheader>
                 <Table
                     selectable={false}

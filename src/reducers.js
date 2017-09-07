@@ -87,11 +87,6 @@ export default function reducer(state = {
                 activeTab: action.activeTab
             });
         
-        case 'UPDATE_CLIENT':
-            return Object.assign({}, state, {
-                clients: state.clients.map((client) => client.id === action.client.id ? action.client : client)
-            });
-        
         case 'START_ACTIVITY':
             return Object.assign({}, state, {
                 activities: state.activities.map((activity) => activity.id === action.id ? Object.assign({}, activity, {active: true}) : activity)
