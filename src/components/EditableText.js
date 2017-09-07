@@ -29,7 +29,8 @@ class EditableText extends Component {
                 className={this.props.className}
                 value={this.props.text}
                 onChange={(e) => this.props.handleChange(e.target.value)}
-                onKeyUp={(e) => {this.handleKeyUp(e.keyCode)}}
+                onKeyUp={(e) => this.handleKeyUp(e.keyCode)}
+                onClick={() => this.props.enableEdit()}
             />
         );
     }

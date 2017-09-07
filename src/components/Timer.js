@@ -26,9 +26,10 @@ class Timer extends Component {
   }
 
   render() {
-
     return (
-      <div>{formatTime(this.state.timer)}</div>
+      <div className="timer">
+        {formatTime(this.state.timer)}
+      </div>
     );
   }
 }

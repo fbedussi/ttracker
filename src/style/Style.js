@@ -3,9 +3,15 @@ import muiThemeable from 'material-ui/styles/muiThemeable';
 
 const style = (props) => (
   <style>
-      {`input:focus {
+      {`
+        input:focus {
           border-color: ${props.muiTheme.palette.accent1Color};
-      }`}
+        }
+
+        .timer {
+            border-color: ${props.muiTheme.palette.accent2Color};
+        }
+    `}
   </style>
 );
 

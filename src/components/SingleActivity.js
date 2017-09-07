@@ -4,7 +4,10 @@ import {
     deleteActivity,
     changeActivityName,    
     deleteTimeEntry,
-    disableEditActivity    
+    startActivity,
+    stopActivity,
+    disableEditActivity,
+    enabelEditActivityName
 } from '../actions';
 import { Link } from 'react-router-dom'
 
@@ -29,6 +32,7 @@ import {
 } from 'material-ui/Table';
 
 import EditableText from './EditableText';
+import TimerBox from './TimerBox';
 
 const mapStateToProps = (state) => ({
     clients: state.clients,
@@ -38,7 +42,10 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
     deleteTimeEntry: (timeEntry, activity) => dispatch(deleteTimeEntry(timeEntry, activity)),
     changeActivityName: (activity, newName) => dispatch(changeActivityName(activity, newName)),    
-    disableEdit: (id) => dispatch(disableEditActivity(id))    
+    startActivity: (activity) => dispatch(startActivity(activity)),
+    stopActivity: (activity) => dispatch(stopActivity(activity)),
+    disableEdit: (id) => dispatch(disableEditActivity(id)),
+    enabelEditActivityName: (id) => dispatch(enabelEditActivityName(id))
 });
 
 
@@ -49,7 +56,10 @@ class SingleActivity extends Component {
             activities,
             deleteTimeEntry,
             changeActivityName,
-            disableEdit            
+            startActivity,
+            stopActivity,
+            disableEdit,
+            enabelEditActivityName
         } = this.props;
         const activityId = Number(this.props.match.params.activityId);
         const activity = activities
@@ -79,8 +89,14 @@ class SingleActivity extends Component {
                         text={activity.name}
                         handleChange={(text) => changeActivityName(activity, text)}
                         disableEdit={() => disableEdit(activity.id)}
+                        enableEdit={() => enabelEditActivityName(activity.id)}
                     />
                 </h1>
+                <TimerBox 
+                    activity={activity}
+                    startActivity={startActivity}
+                    stopActivity={stopActivity}
+                />
                 <Subheader>Time entries</Subheader>
                 <Table
                     selectable={false}

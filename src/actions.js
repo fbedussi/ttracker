@@ -89,11 +89,12 @@ export function updateClient(client) {
 }
 
 export function startActivity(activity) {
-    backend.getActivity(activity.id).start();
+    const newTimeEntry = getOnlyOwnProperies(backend.getActivity(activity.id).start());
 
     return {
         type: 'START_ACTIVITY',
-        id: activity.id
+        id: activity.id,
+        newTimeEntry
     }
 }
 
@@ -124,6 +125,13 @@ export function changeActivityName(activity, newName) {
     return {
         type: 'UPDATE_ACTIVITY',
         activity: updatedActivity
+    }
+}
+
+export function enabelEditActivityName(activityId) {
+    return {
+        type: 'ENABLE_EDIT_ACTIVITY_NAME',
+        activityId: activityId
     }
 }
 

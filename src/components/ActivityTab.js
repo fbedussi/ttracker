@@ -6,7 +6,8 @@ import {
     startActivity,
     stopActivity,
     changeActivityName,
-    disableEditActivity
+    disableEditActivity,
+    enabelEditActivityName    
 } from '../actions';
 import Subheader from 'material-ui/Subheader';
 import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
@@ -21,6 +22,7 @@ import Chip from 'material-ui/Chip';
 
 import Timer from './Timer';
 import EditableText from './EditableText';
+import TimerBox from './TimerBox';
 
 const styles = {
     chip: {
@@ -30,7 +32,7 @@ const styles = {
         display: 'flex',
         flexWrap: 'wrap',
     },
-    fab:  {
+    fab: {
         display: 'none',
         position: 'fixed',
         right: '2em',
@@ -51,7 +53,8 @@ const mapDispatchToProps = (dispatch) => ({
     startActivity: (activity) => dispatch(startActivity(activity)),
     stopActivity: (activity) => dispatch(stopActivity(activity)),
     changeActivityName: (activity, newName) => dispatch(changeActivityName(activity, newName)),
-    disableEdit: (id) => dispatch(disableEditActivity(id))
+    disableEdit: (id) => dispatch(disableEditActivity(id)),
+    enabelEditActivityName: (id) => dispatch(enabelEditActivityName(id))    
 });
 
 
@@ -67,6 +70,7 @@ class ActivityTab extends Component {
             startActivity,
             stopActivity,
             changeActivityName,
+            enabelEditActivityName,
             disableEdit
         } = this.props;
         styles.fab.display = activeTab === 'activities' ? 'block' : 'none';
@@ -82,17 +86,17 @@ class ActivityTab extends Component {
                         .reduce((acc, item) => item, null)
                         ;
 
-                    return <Card 
-                            key={activity.id} 
-                            style={{position: 'relative'}}
-                            expandable={false}
-                            expanded={true}
-                            onClick={() => disableEdit(activity.id)}
-                        >
+                    return <Card
+                        key={activity.id}
+                        style={{ position: 'relative' }}
+                        expandable={false}
+                        expanded={true}
+                        
+                    >
                         <CardHeader
                             actAsExpander={false}
                             showExpandableButton={false}
-                            textStyle={{paddingRight: '0'}}
+                            textStyle={{ paddingRight: '0' }}
                         >
                             <EditableText
                                 className="cardTitle"
@@ -100,13 +104,14 @@ class ActivityTab extends Component {
                                 text={activity.name}
                                 handleChange={(text) => changeActivityName(activity, text)}
                                 disableEdit={() => disableEdit(activity.id)}
+                                enableEdit={() => enabelEditActivityName(activity.id)}
                             />
                             <div>{client ? client.name : ''}</div>
-                            </CardHeader>
+                        </CardHeader>
                         <CardActions>
-                            <FlatButton 
-                                label="Details" 
-                                icon={<DetailsIcon/>} 
+                            <FlatButton
+                                label="Details"
+                                icon={<DetailsIcon />}
                                 onClick={() => history.push(`/activity/${activity.id}`)}
                             />
                             <FlatButton
@@ -114,22 +119,12 @@ class ActivityTab extends Component {
                                 icon={<DeleteIcon />}
                                 onClick={() => deleteActivity(activity)}
                             />
-                            <FlatButton
-                                label="Start"
-                                icon={<RecordIcon />}
-                                onClick={() => startActivity(activity)}
-                                style={activity.active ? {display: 'none'} : {display: 'block'}}
+                            <TimerBox
+                                activity={activity}
+                                startActivity={startActivity}
+                                stopActivity={stopActivity}
                             />
-                            <FlatButton
-                                label="Stop"
-                                icon={<StopIcon />}
-                                onClick={() => stopActivity(activity)}
-                                style={activity.active ? {display: 'block'} : {display: 'none'}}
-                            />
-                            <Timer 
-                                startTime={activity.timeEntries.length? activity.timeEntries[activity.timeEntries.length - 1].startTime : 0}
-                                tick={activity.active}
-                            />
+
                         </CardActions>
                         <CardText expandable={true}>
                             <Subheader>Total time</Subheader>
@@ -149,7 +144,7 @@ class ActivityTab extends Component {
                                     {subactivity.name}
                                 </Chip>)}
                             </div>
-                            
+
                         </CardText>
                     </Card>
                 }

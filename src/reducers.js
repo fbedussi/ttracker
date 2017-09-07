@@ -57,11 +57,21 @@ export default function reducer(state = {
                 activities: state.activities.concat(Object.assign({}, action.activity, {editableName: true}))
             });
 
-        case 'DISABLE_EDIT_ACTIVITY':
+        case 'ENABLE_EDIT_ACTIVITY_NAME':
             return Object.assign({}, state, {
-                activities: state.activities.map((activity) => (!action.activityId || activity.id === action.activityId) ? Object.assign({}, activity, {editableName: false}) : activity)
+                activities: state.activities.map((activity) => activity.id === action.activityId ? 
+                    Object.assign({}, activity, {editableName: true})
+                    : activity
+                )
             });
 
+        case 'DISABLE_EDIT_ACTIVITY':
+            return Object.assign({}, state, {
+                activities: state.activities.map((activity) => (!action.activityId || activity.id === action.activityId) ? 
+                    Object.assign({}, activity, {editableName: false}) 
+                    : activity
+                )
+            });
 
         case 'REMOVE_ACTIVITY':
             return Object.assign({}, state, {
@@ -96,7 +106,10 @@ export default function reducer(state = {
         
         case 'START_ACTIVITY':
             return Object.assign({}, state, {
-                activities: state.activities.map((activity) => activity.id === action.id ? Object.assign({}, activity, {active: true}) : activity)
+                activities: state.activities.map((activity) => activity.id === action.id ? Object.assign({}, activity, {
+                    active: true,
+                    timeEntries: activity.timeEntries.concat(action.newTimeEntry)
+                }) : activity)
             });
 
         case 'STOP_ACTIVITY':
