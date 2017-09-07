@@ -98,12 +98,13 @@ export function startActivity(activity) {
     }
 }
 
-export function stopActivity(activity) {
-    backend.getActivity(activity.id).stop();
+export function stopActivity(activityId) {
+    const {activities, clients} = backend.stopActivity(activityId);
 
     return {
-        type: 'STOP_ACTIVITY',
-        id: activity.id
+        type: 'UPDATE_DATA',
+        activities: activities.map((activity) => getOnlyOwnProperies(activity)),
+        clients: clients.map((client) => getOnlyOwnProperies(client))
     }
 }
 
@@ -117,11 +118,9 @@ export function deleteTimeEntry(timeEntry, activity) {
     }
 }
 
-export function changeActivityName(activity, newName) {
-    backend.getActivity(activity.id).update({name: newName});
+export function updateActivity(activity, newProps) {
+    const updatedActivity = getOnlyOwnProperies(backend.getActivity(activity.id).update(newProps));
     
-    const updatedActivity = Object.assign({}, activity, {name: newName});
-
     return {
         type: 'UPDATE_ACTIVITY',
         activity: updatedActivity

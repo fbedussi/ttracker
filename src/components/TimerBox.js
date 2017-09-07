@@ -21,7 +21,7 @@ const TimerBox = ({
             <FlatButton
                 label="Stop"
                 icon={<StopIcon />}
-                onClick={() => stopActivity(activity)}
+                onClick={() => stopActivity(activity.id)}
                 style={activity.active ? { display: 'block' } : { display: 'none' }}
             />
             <Timer

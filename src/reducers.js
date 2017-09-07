@@ -112,9 +112,10 @@ export default function reducer(state = {
                 }) : activity)
             });
 
-        case 'STOP_ACTIVITY':
+        case 'UPDATE_DATA':
             return Object.assign({}, state, {
-                activities: state.activities.map((activity) => activity.id === action.id ? Object.assign({}, activity, {active: false}) : activity)
+                activities: action.activities,
+                clients: action.clients
             });
 
 		default:

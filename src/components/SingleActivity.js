@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
     deleteActivity,
-    changeActivityName,    
+    updateActivity,    
     deleteTimeEntry,
     startActivity,
     stopActivity,
@@ -41,11 +41,12 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
     deleteTimeEntry: (timeEntry, activity) => dispatch(deleteTimeEntry(timeEntry, activity)),
-    changeActivityName: (activity, newName) => dispatch(changeActivityName(activity, newName)),    
+    changeActivityName: (activity, newName) => dispatch(updateActivity(activity, {name: newName})),    
     startActivity: (activity) => dispatch(startActivity(activity)),
-    stopActivity: (activity) => dispatch(stopActivity(activity)),
+    stopActivity: (activityId) => dispatch(stopActivity(activityId)),
     disableEdit: (id) => dispatch(disableEditActivity(id)),
-    enabelEditActivityName: (id) => dispatch(enabelEditActivityName(id))
+    enabelEditActivityName: (id) => dispatch(enabelEditActivityName(id)),
+    changeActivityHourlyRate: (activity, hourlyRate) => dispatch(updateActivity(activity, {hourlyRate: Number(hourlyRate)}))
 });
 
 
@@ -59,6 +60,7 @@ class SingleActivity extends Component {
             startActivity,
             stopActivity,
             disableEdit,
+            changeActivityHourlyRate,
             enabelEditActivityName
         } = this.props;
         const activityId = Number(this.props.match.params.activityId);
@@ -92,6 +94,21 @@ class SingleActivity extends Component {
                         enableEdit={() => enabelEditActivityName(activity.id)}
                     />
                 </h1>
+                <div className="hourlyRateWrapper">
+                    <span className="hourlyRateLabel">Hourly rate: </span>
+                    <EditableText
+                        className="hourlyRate"
+                        editable={true}
+                        text={activity.hourlyRate}
+                        handleChange={(hourlyRate) => changeActivityHourlyRate(activity, hourlyRate)}
+                        disableEdit={() => {}}
+                        enableEdit={() => {}}
+                    />
+                </div>
+                <div className="totalCostWrapper">
+                    <span className="totalCostLabel">Total cost: </span>
+                    <span className="totalCost">{activity.totalCost}</span>
+                </div>
                 <TimerBox 
                     activity={activity}
                     startActivity={startActivity}
@@ -118,7 +135,7 @@ class SingleActivity extends Component {
                         displayRowCheckbox={false}
                     >
                         {activity.timeEntries.map((timeEntry) => {
-                            var totalTime = timeEntry.getTotalTime();
+                            var totalTime = timeEntry.endTime > 0 ? timeEntry.endTime - timeEntry.startTime : 0;
                             return <TableRow 
                                 key={timeEntry.id}
                                 selectable={false}

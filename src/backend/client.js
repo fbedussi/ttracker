@@ -15,6 +15,7 @@ const defaultProps = {
     name: 'new client',
     creationTime: 0,
     lastBilledTime: 0,
+    totalCost: 0,
     activities: [],
     defaultHourlyRate: 0,
     contacts: {

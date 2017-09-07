@@ -5,7 +5,7 @@ import {
     deleteActivity,
     startActivity,
     stopActivity,
-    changeActivityName,
+    updateActivity,
     disableEditActivity,
     enabelEditActivityName    
 } from '../actions';
@@ -51,8 +51,8 @@ const mapDispatchToProps = (dispatch) => ({
     createNewActivity: () => dispatch(createNewActivity()),
     deleteActivity: (activity) => dispatch(deleteActivity(activity)),
     startActivity: (activity) => dispatch(startActivity(activity)),
-    stopActivity: (activity) => dispatch(stopActivity(activity)),
-    changeActivityName: (activity, newName) => dispatch(changeActivityName(activity, newName)),
+    stopActivity: (activityId) => dispatch(stopActivity(activityId)),
+    changeActivityName: (activity, newName) => dispatch(updateActivity(activity, {name: newName})),
     disableEdit: (id) => dispatch(disableEditActivity(id)),
     enabelEditActivityName: (id) => dispatch(enabelEditActivityName(id))    
 });
