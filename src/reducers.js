@@ -4,6 +4,12 @@ function removeTimeEntryFromActivity(activity, timeEntryId) {
     return activity;
 }
 
+function removeActivityFromClient(client, activityId) {
+    client.activities = client.activities.filter((id) => activityId);
+
+    return client;
+}
+
 export default function reducer(state = {
     clients: [],
     activities: [],
@@ -59,7 +65,8 @@ export default function reducer(state = {
 
         case 'REMOVE_ACTIVITY':
             return Object.assign({}, state, {
-                activities: state.activities.filter((activity) => activity.id !== action.id)
+                activities: state.activities.filter((activity) => activity.id !== action.id),
+                clients: state.clients.map((client) => removeActivityFromClient(client, action.id))
             });
 
         case 'UPDATE_ACTIVITY':
