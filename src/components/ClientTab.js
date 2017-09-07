@@ -105,7 +105,7 @@ class ClientTab extends Component {
                         />
                         </Subheader>
                         <div style={styles.wrapper}>
-                            {[].concat(client.activities).filter((i) => i).map((activityId) => <ActivityChip
+                            {client.activities.map((activityId) => <ActivityChip
                                 key={activityId}
                                 activities={activities}
                                 activityId={activityId}

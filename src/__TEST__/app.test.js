@@ -92,3 +92,25 @@ test('addNewActivityToClient', () => {
         expect(db.create).toBeCalled();
     });
 });
+
+test('deleteActivity', () => {
+    return loadApp().then((app) => {
+        const clientId = 1;
+        const activity = app.addNewActivityToClient(clientId)
+        const client = app.getClient(clientId)
+        const initialActivitiesLength = app.activities.length;
+        const initialClientActivitiesLenght = client.activities.length;
+        expect(activity.id > 0).toBe(true);
+        expect(activity.startTime > 0).toBe(true);
+        expect(activity.name).toBe('new activity');
+        expect(activity.hourlyRate).toBe(0);
+        expect(activity.subactivities).toEqual([]);
+        expect(client.addActivity).toBeCalled();
+        expect(db.create).toBeCalled();
+
+        app.deleteActivity(activity.id);
+        expect(app.activities.length).toBe(initialActivitiesLength);
+        expect(client.activities.length).toBe(initialClientActivitiesLenght);
+
+    });
+});
