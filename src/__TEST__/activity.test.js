@@ -163,11 +163,13 @@ test('activity.stop()', () => {
 });
 
 test('activity.removeTimeEntry()', () => {
+    const del = jest.fn();
     const activity = createActivity({
-        timeEntries: [{id: 1}]
+        timeEntries: [{id: 1, delete: del}]
     });
 
     activity.removeTimeEntry(1);
+    expect(del).toBeCalled();
     expect(activity.timeEntries.length).toBe(0);
     expect(db.update).toBeCalled();    
 });

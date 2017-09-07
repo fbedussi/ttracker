@@ -37,7 +37,7 @@ const App = {
         return this.activities.filter((activity) => activity.id === id)[0];
     },
     getClient: function(id) {   
-        return this.clients.filter((client) => client.id === id)[0];        
+        return this.clients.filter((client) => client.id === id)[0];  
     },
     getTotalToBill: function() {
         return this.clients.reduce((total, client) => total + client.getTotalToBill(), 0);
@@ -51,6 +51,19 @@ const App = {
         var newActivity = createActivity(Object.assign({hourlyRate: this.defaultHourlyRate}, props));
         this.activities.push(newActivity);
         return newActivity;
+    },
+    addNewActivityToClient: function(clientId) {
+        var client = this.getClient(clientId);
+        var activity;
+
+        if (!client) {
+            return false;
+        }
+
+        activity = this.createNewActivity({hourlyRate: client.defaultHourlyRate});
+        client.addActivity(activity);
+
+        return activity;
     }
 }
 

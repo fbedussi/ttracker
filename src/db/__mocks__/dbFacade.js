@@ -8,7 +8,8 @@ const mockDb = {
             {
                 id: 1,
                 name: collection + ' bar',
-                getTotalToBill: function() {return 10}
+                getTotalToBill: function() {return 10},
+                addActivity: jest.fn()
             },
             {
                 id: 2,
