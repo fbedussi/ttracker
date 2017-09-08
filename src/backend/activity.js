@@ -81,6 +81,8 @@ var Activity = {
     stop: function() {
         this.timeEntries[this.timeEntries.length - 1].stop();
         this.totalCost = this.getTotalCost();
+        db.update(DBCOLLECTION, this);
+        
         return this;
     },
     removeTimeEntry: function(id) {

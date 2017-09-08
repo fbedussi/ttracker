@@ -19,7 +19,6 @@ import Subheader from 'material-ui/Subheader';
 import IconButton from 'material-ui/IconButton';
 import EditIcon from 'material-ui/svg-icons/editor/mode-edit';
 import DeleteIcon from 'material-ui/svg-icons/action/delete';
-import CloseIcon from 'material-ui/svg-icons/content/clear';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import FlatButton from 'material-ui/FlatButton';
 import {
@@ -33,6 +32,7 @@ import {
 
 import EditableText from './EditableText';
 import TimerBox from './TimerBox';
+import BackTo from './BackTo';
 
 const mapStateToProps = (state) => ({
     clients: state.clients,
@@ -69,18 +69,17 @@ class SingleActivity extends Component {
             .reduce((acc, i) => i, null)
 
         if (!activity) {
-            return (<div>{`ERROR: no activity with id ${activityId}`}</div>)
+            return (
+                <div>
+                    <BackTo />
+                    <div>{`ERROR: no activity with id ${activityId}`}</div>
+                </div>
+            );
         }
 
         return (
             <div>
-                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                    <Link to="/">
-                        <IconButton>
-                            <CloseIcon />
-                        </IconButton>
-                    </Link>
-                </div>
+                <BackTo />
                 <div>
                     Activity Id: {activity.id}
                 </div>
