@@ -13,14 +13,11 @@ import Subheader from 'material-ui/Subheader';
 import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
 import DeleteIcon from 'material-ui/svg-icons/action/delete';
 import DetailsIcon from 'material-ui/svg-icons/action/pageview';
-import RecordIcon from 'material-ui/svg-icons/av/fiber-manual-record';
-import StopIcon from 'material-ui/svg-icons/av/stop';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import FlatButton from 'material-ui/FlatButton';
 import Chip from 'material-ui/Chip';
 
-import Timer from './Timer';
 import EditableText from './EditableText';
 import TimerBox from './TimerBox';
 
@@ -44,7 +41,8 @@ const styles = {
 const mapStateToProps = (state) => ({
     clients: state.clients,
     activities: state.activities,
-    activeTab: state.activeTab
+    activeTab: state.activeTab,
+    currency: state.currency
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -61,6 +59,7 @@ const mapDispatchToProps = (dispatch) => ({
 class ActivityTab extends Component {
     render() {
         const {
+            currency,
             history,
             activeTab,
             clients,
@@ -129,12 +128,18 @@ class ActivityTab extends Component {
                         <CardText expandable={true}>
                             <Subheader>Total time</Subheader>
                             {/* <p>{new Date(activity.getTotalTime()).toLocaleString()}</p> */}
-                            <Subheader>Total cost</Subheader>
+                            <div className="totalCostWrapper row">
+                            <span className="totalCostLabel">{`Total cost: ${currency}`} </span>
+                            <span className="totalCost">{Math.round(activity.totalCost)}</span>
+
                             {/* <p>{`€ ${activity.getTotalCost()}`}</p> */}
                             {/* <Subheader>Last billed date</Subheader>
                             <p>{new Date(client.lastBilledDate()).toLocaleString()}</p>
                             <Subheader>Next invoice subtotal</Subheader>
                             <p>€ 1,000</p> */}
+
+                            
+                </div>
                             <Subheader>Tasks</Subheader>
                             <div style={styles.wrapper}>
                                 {activity.subactivities.map((subactivity) => <Chip

@@ -26,6 +26,10 @@ input.editable {
     border-bottom: solid 2px black;
 }
 
+.sectionTitle {
+    margin: 2em 0 1em;
+}
+
 .cardTitle {
     font-size: 150%;
 }
@@ -36,9 +40,7 @@ input.editable {
 }
 
 .timer {
-    border: solid 2px;
     padding: 1em;
-    border-radius: 3px;
 }
 
 .row {
@@ -48,4 +50,17 @@ input.editable {
 .activityTitleBar {
     display: flex;
     justify-content: space-between;
+}
+
+.timeEntriesCards {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.timeEntry {
+    margin: 0 1em 1em 0;
+}
+
+.timeEntry-details {
+    padding: 1em;
 }

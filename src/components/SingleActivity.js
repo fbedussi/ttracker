@@ -4,38 +4,25 @@ import {
     deleteActivity,
     updateActivity,    
     deleteTimeEntry,
+    updateTimeEntry,
     startActivity,
     stopActivity,
     disableEditActivity,
     enabelEditActivityName
 } from '../actions';
-import { Link } from 'react-router-dom'
 
-import { convertMsToH } from '../helpers/helpers';
-
-import {formatTime} from '../helpers/helpers';
-
-import Subheader from 'material-ui/Subheader';
-import IconButton from 'material-ui/IconButton';
 import DeleteIcon from 'material-ui/svg-icons/action/delete';
-import ContentAdd from 'material-ui/svg-icons/content/add';
 import FlatButton from 'material-ui/FlatButton';
-import {
-    Table,
-    TableBody,
-    TableHeader,
-    TableHeaderColumn,
-    TableRow,
-    TableRowColumn,
-} from 'material-ui/Table';
 
 import EditableText from './EditableText';
 import TimerBox from './TimerBox';
 import BackToHome from './BackToHome';
+import TimeEntriesRegistry from './TimeEntriesRegistry';
 
 const mapStateToProps = (state) => ({
     clients: state.clients,
-    activities: state.activities
+    activities: state.activities,
+    currency: state.currency
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -46,15 +33,17 @@ const mapDispatchToProps = (dispatch) => ({
     stopActivity: (activityId) => dispatch(stopActivity(activityId)),
     disableEdit: (id) => dispatch(disableEditActivity(id)),
     enabelEditActivityName: (id) => dispatch(enabelEditActivityName(id)),
-    changeActivityHourlyRate: (activity, hourlyRate) => dispatch(updateActivity(activity, {hourlyRate: Number(hourlyRate)}))
+    changeActivityHourlyRate: (activity, hourlyRate) => dispatch(updateActivity(activity, {hourlyRate: Number(hourlyRate)})),
+    updateTimeEntry: (props) => dispatch(updateTimeEntry(props))
 });
 
 
 class SingleActivity extends Component {
     render() {
         const {
-            clients,
+            history,
             activities,
+            currency,
             deleteActivity,
             deleteTimeEntry,
             changeActivityName,
@@ -62,6 +51,7 @@ class SingleActivity extends Component {
             stopActivity,
             disableEdit,
             changeActivityHourlyRate,
+            updateTimeEntry,
             enabelEditActivityName
         } = this.props;
         const activityId = Number(this.props.match.params.activityId);
@@ -96,11 +86,14 @@ class SingleActivity extends Component {
                     <FlatButton
                         label="Delete"
                         icon={<DeleteIcon />}
-                        onClick={() => deleteActivity(activity)}
+                        onClick={() => {
+                            deleteActivity(activity);
+                            history.push('/');
+                        }}
                     />
                 </h1>
                 <div className="hourlyRateWrapper row">
-                    <span className="hourlyRateLabel">Hourly rate: €</span>
+                    <span className="hourlyRateLabel">{`Hourly rate: ${currency}`} </span>
                     <EditableText
                         className="hourlyRate"
                         editable={false}
@@ -111,55 +104,20 @@ class SingleActivity extends Component {
                     />
                 </div>
                 <div className="totalCostWrapper row">
-                    <span className="totalCostLabel">Total cost: </span>
-                    <span className="totalCost">{activity.totalCost}</span>
+                    <span className="totalCostLabel">{`Total cost: ${currency}`} </span>
+                    <span className="totalCost">{Math.round(activity.totalCost)}</span>
                 </div>
                 <TimerBox 
                     activity={activity}
                     startActivity={startActivity}
                     stopActivity={stopActivity}
                 />
-                <Subheader>Time entries</Subheader>
-                <Table
-                    selectable={false}
-                >
-                    <TableHeader
-                        adjustForCheckbox={false}
-                        displaySelectAll={false}
-                    >
-                        <TableRow>
-                            <TableHeaderColumn>Start time</TableHeaderColumn>
-                            <TableHeaderColumn>End time</TableHeaderColumn>
-                            <TableHeaderColumn>Duration</TableHeaderColumn>
-                            <TableHeaderColumn>Cost</TableHeaderColumn>
-                            <TableHeaderColumn>Delete</TableHeaderColumn>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody
-                        displayRowCheckbox={false}
-                    >
-                        {activity.timeEntries.map((timeEntry) => {
-                            var totalTime = timeEntry.endTime > 0 ? timeEntry.endTime - timeEntry.startTime : 0;
-                            return <TableRow 
-                                key={timeEntry.id}
-                                selectable={false}
-                            >
-                                <TableRowColumn>{new Date(timeEntry.startTime).toLocaleString()}</TableRowColumn>
-                                <TableRowColumn>{timeEntry.endTime > 0 ? new Date(timeEntry.endTime).toLocaleString() : ''}</TableRowColumn>
-                                <TableRowColumn>{totalTime > 0 ? formatTime(totalTime) : ''}</TableRowColumn>
-                                <TableRowColumn>{'€ ' + convertMsToH(totalTime) * activity.hourlyRate}</TableRowColumn>
-                                <TableRowColumn>
-                                    <IconButton
-                                        onClick={() => deleteTimeEntry(timeEntry, activity)}
-                                    >
-                                        <DeleteIcon />
-                                    </IconButton>
-                                </TableRowColumn>
-                            </TableRow>
-                        }
-                        )}
-                    </TableBody>
-                </Table>
+                <TimeEntriesRegistry 
+                    activityId={activity.id}
+                    currency={currency}
+                    updateTimeEntry={updateTimeEntry}
+                    deleteTimeEntry={deleteTimeEntry}
+                />
             </div>
         )
     }

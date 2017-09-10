@@ -13,7 +13,10 @@ function removeActivityFromClient(client, activityId) {
 export default function reducer(state = {
     clients: [],
     activities: [],
-    activeTab: 'clients'
+    activeTab: 'clients',
+    currency: '€',
+    selectNewEndTimeForTimeEntry: null,
+    timeEntriesRegistryAsTable: false
 }, action) {
 	switch (action.type) {
 		case 'LOAD_APP':
@@ -98,6 +101,9 @@ export default function reducer(state = {
             return Object.assign({}, state, {
                 activities: state.activities.map((activity) => activity.id === removeTimeEntryFromActivity(activity, action.timeEntryId) ? activity: activity)
             });
+
+        case 'UPDATE_TIMEENTRY':
+            return Object.assign({}, state);
         
         case 'SET_ACTIVE_TAB':
             return Object.assign({}, state, {
@@ -117,6 +123,12 @@ export default function reducer(state = {
                 activities: action.activities,
                 clients: action.clients
             });
+
+        case 'TOGGLE_TIMEENTRIES_REGISTRY_AS_TABLE':
+            return Object.assign({}, state, {
+                timeEntriesRegistryAsTable: !state.timeEntriesRegistryAsTable
+            });
+
 
 		default:
 			return state;

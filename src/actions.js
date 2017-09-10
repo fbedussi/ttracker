@@ -171,3 +171,18 @@ export function disableEditClient(id) {
         clientId: id
     }
 }
+
+export function updateTimeEntry(props) {
+    //backend.get
+    
+    return {
+        type: 'UPDATE_TIME_ENTRY',
+        props
+    };
+}
+
+export function toggleTimeEntriesRegistryAsTable() {
+    return {
+        type: 'TOGGLE_TIMEENTRIES_REGISTRY_AS_TABLE',
+    };
+}
