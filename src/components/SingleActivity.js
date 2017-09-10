@@ -17,7 +17,6 @@ import {formatTime} from '../helpers/helpers';
 
 import Subheader from 'material-ui/Subheader';
 import IconButton from 'material-ui/IconButton';
-import EditIcon from 'material-ui/svg-icons/editor/mode-edit';
 import DeleteIcon from 'material-ui/svg-icons/action/delete';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import FlatButton from 'material-ui/FlatButton';
@@ -32,7 +31,7 @@ import {
 
 import EditableText from './EditableText';
 import TimerBox from './TimerBox';
-import BackTo from './BackTo';
+import BackToHome from './BackToHome';
 
 const mapStateToProps = (state) => ({
     clients: state.clients,
@@ -42,6 +41,7 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
     deleteTimeEntry: (timeEntry, activity) => dispatch(deleteTimeEntry(timeEntry, activity)),
     changeActivityName: (activity, newName) => dispatch(updateActivity(activity, {name: newName})),    
+    deleteActivity: (activity) => dispatch(deleteActivity(activity)),    
     startActivity: (activity) => dispatch(startActivity(activity)),
     stopActivity: (activityId) => dispatch(stopActivity(activityId)),
     disableEdit: (id) => dispatch(disableEditActivity(id)),
@@ -55,6 +55,7 @@ class SingleActivity extends Component {
         const {
             clients,
             activities,
+            deleteActivity,
             deleteTimeEntry,
             changeActivityName,
             startActivity,
@@ -78,33 +79,38 @@ class SingleActivity extends Component {
         }
 
         return (
-            <div>
-                <BackTo />
-                <div>
+            <div className="mainWrapper">
+                <BackToHome />
+                <div className="activityId">
                     Activity Id: {activity.id}
                 </div>
-                <h1>
+                <h1 className="activityTitleBar">
                     <EditableText
-                        className="cardTitle"
+                        className="activityName row"
                         editable={activity.editableName}
                         text={activity.name}
                         handleChange={(text) => changeActivityName(activity, text)}
                         disableEdit={() => disableEdit(activity.id)}
                         enableEdit={() => enabelEditActivityName(activity.id)}
                     />
+                    <FlatButton
+                        label="Delete"
+                        icon={<DeleteIcon />}
+                        onClick={() => deleteActivity(activity)}
+                    />
                 </h1>
-                <div className="hourlyRateWrapper">
-                    <span className="hourlyRateLabel">Hourly rate: </span>
+                <div className="hourlyRateWrapper row">
+                    <span className="hourlyRateLabel">Hourly rate: €</span>
                     <EditableText
                         className="hourlyRate"
-                        editable={true}
+                        editable={false}
                         text={activity.hourlyRate}
                         handleChange={(hourlyRate) => changeActivityHourlyRate(activity, hourlyRate)}
                         disableEdit={() => {}}
                         enableEdit={() => {}}
                     />
                 </div>
-                <div className="totalCostWrapper">
+                <div className="totalCostWrapper row">
                     <span className="totalCostLabel">Total cost: </span>
                     <span className="totalCost">{activity.totalCost}</span>
                 </div>
@@ -126,7 +132,6 @@ class SingleActivity extends Component {
                             <TableHeaderColumn>End time</TableHeaderColumn>
                             <TableHeaderColumn>Duration</TableHeaderColumn>
                             <TableHeaderColumn>Cost</TableHeaderColumn>
-                            <TableHeaderColumn>Edit</TableHeaderColumn>
                             <TableHeaderColumn>Delete</TableHeaderColumn>
                         </TableRow>
                     </TableHeader>
@@ -143,7 +148,6 @@ class SingleActivity extends Component {
                                 <TableRowColumn>{timeEntry.endTime > 0 ? new Date(timeEntry.endTime).toLocaleString() : ''}</TableRowColumn>
                                 <TableRowColumn>{totalTime > 0 ? formatTime(totalTime) : ''}</TableRowColumn>
                                 <TableRowColumn>{'€ ' + convertMsToH(totalTime) * activity.hourlyRate}</TableRowColumn>
-                                <TableRowColumn><EditIcon /></TableRowColumn>
                                 <TableRowColumn>
                                     <IconButton
                                         onClick={() => deleteTimeEntry(timeEntry, activity)}

@@ -101,6 +101,7 @@ export function startActivity(activity) {
 export function stopActivity(activityId) {
     const {activities, clients} = backend.stopActivity(activityId);
 
+    //We need to update all data, since both activity and client total costs change
     return {
         type: 'UPDATE_DATA',
         activities: activities.map((activity) => getOnlyOwnProperies(activity)),

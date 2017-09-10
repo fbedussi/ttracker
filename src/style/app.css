@@ -8,6 +8,10 @@ body {
     font-family: 'Roboto', sans-serif;
 }
 
+.mainWrapper {
+    padding: 1em;
+}
+
 input {
     border: none;
     font-family: inherit;
@@ -35,4 +39,13 @@ input.editable {
     border: solid 2px;
     padding: 1em;
     border-radius: 3px;
+}
+
+.row {
+    margin-bottom: 1em;
+}
+
+.activityTitleBar {
+    display: flex;
+    justify-content: space-between;
 }
