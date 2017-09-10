@@ -8,18 +8,19 @@ class EditableText extends Component {
         }
     }
 
-    componentDidUpdate(prevProps) {
-        if (!this.props.editable) {
-            this.input.blur();
-        }
-    }
+    // componentDidUpdate(prevProps) {
+    //     if (!this.props.editable) {
+    //         this.input.blur();
+    //     }
+    // }
 
     handleKeyUp(keyCode) {
         if (keyCode !== 13) {
             return;
         }
-
-        this.props.disableEdit();
+        this.input.blur();
+        
+        //this.props.disableEdit();
     }
 
     render() {
@@ -30,7 +31,7 @@ class EditableText extends Component {
                 value={this.props.text}
                 onChange={(e) => this.props.handleChange(e.target.value)}
                 onKeyUp={(e) => this.handleKeyUp(e.keyCode)}
-                onClick={() => this.props.enableEdit()}
+                
             />
         );
     }
