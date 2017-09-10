@@ -72,7 +72,7 @@ class SingleActivity extends Component {
         if (!activity) {
             return (
                 <div>
-                    <BackTo />
+                    <BackToHome />
                     <div>{`ERROR: no activity with id ${activityId}`}</div>
                 </div>
             );
