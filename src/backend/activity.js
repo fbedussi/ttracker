@@ -14,6 +14,7 @@ const defaultProps = {
     name: 'new activity',
     startTime: 0,
     hourlyRate: 0,
+    totalCost: 0,
     subactivities: [],
     timeEntries: []
 };
@@ -37,6 +38,7 @@ var Activity = {
     update: function(newProps) {
         merge(this, newProps);
         db.update(DBCOLLECTION, this);
+        return this;
     },
     delete: function() {
         this.subactivities.forEach((subactivity) => subactivity.delete());
@@ -77,7 +79,11 @@ var Activity = {
         return newTimeEntry;
     },
     stop: function() {
-        return this.timeEntries[this.timeEntries.length - 1].stop();
+        this.timeEntries[this.timeEntries.length - 1].stop();
+        this.totalCost = this.getTotalCost();
+        db.update(DBCOLLECTION, this);
+        
+        return this;
     },
     removeTimeEntry: function(id) {
         this.timeEntries = this.timeEntries

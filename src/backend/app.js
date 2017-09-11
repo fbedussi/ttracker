@@ -2,6 +2,14 @@ import {createClient, loadClient} from '../backend/client';
 import {createActivity, loadActivity} from './activity';
 import db from '../db/dbFacade';
 
+function updateClientTotalCost(client, activityId) {
+    if (client.activities.some((activity) => activity.id === activityId).length) {
+        client.totalCost = client.getTotalCost();
+    }
+
+    return client;
+}
+
 const App = {
     clients: [],
     activities: [],
@@ -76,6 +84,15 @@ const App = {
         var clientsAssociaterdWithActivity = this.clients.filter((client) => client.activities.some((id) => id === activityId));
 
         clientsAssociaterdWithActivity.forEach((client) => client.removeActivity(activityId));
+    },
+    stopActivity: function(activityId) {
+        this.activities = this.activities.map((activity) => activity.id === activityId ? activity.stop() : activity);
+        this.clients = this.clients.map((client) => updateClientTotalCost(client, activityId))
+
+        return {
+            activities: this.activities,
+            clients: this.clients
+        } 
     }
 }
 

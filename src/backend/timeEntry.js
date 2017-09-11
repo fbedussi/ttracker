@@ -24,6 +24,7 @@ const TimeEntry = {
     stop: function() {
         this.endTime = Date.now();
         db.update(DBCOLLECTION, this);
+        return this;
     },
     load: function(props) {
         merge(this, props);        

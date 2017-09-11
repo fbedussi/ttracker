@@ -8,6 +8,10 @@ body {
     font-family: 'Roboto', sans-serif;
 }
 
+.mainWrapper {
+    padding: 1em;
+}
+
 input {
     border: none;
     font-family: inherit;
@@ -22,6 +26,41 @@ input.editable {
     border-bottom: solid 2px black;
 }
 
+.sectionTitle {
+    margin: 2em 0 1em;
+}
+
 .cardTitle {
     font-size: 150%;
+}
+
+.timerBox {
+    display: flex;
+    align-items: center;
+}
+
+.timer {
+    padding: 1em;
+}
+
+.row {
+    margin-bottom: 1em;
+}
+
+.activityTitleBar {
+    display: flex;
+    justify-content: space-between;
+}
+
+.timeEntriesCards {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.timeEntry {
+    margin: 0 1em 1em 0;
+}
+
+.timeEntry-details {
+    padding: 1em;
 }

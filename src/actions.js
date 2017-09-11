@@ -89,20 +89,23 @@ export function updateClient(client) {
 }
 
 export function startActivity(activity) {
-    backend.getActivity(activity.id).start();
+    const newTimeEntry = getOnlyOwnProperies(backend.getActivity(activity.id).start());
 
     return {
         type: 'START_ACTIVITY',
-        id: activity.id
+        id: activity.id,
+        newTimeEntry
     }
 }
 
-export function stopActivity(activity) {
-    backend.getActivity(activity.id).stop();
+export function stopActivity(activityId) {
+    const {activities, clients} = backend.stopActivity(activityId);
 
+    //We need to update all data, since both activity and client total costs change
     return {
-        type: 'STOP_ACTIVITY',
-        id: activity.id
+        type: 'UPDATE_DATA',
+        activities: activities.map((activity) => getOnlyOwnProperies(activity)),
+        clients: clients.map((client) => getOnlyOwnProperies(client))
     }
 }
 
@@ -116,14 +119,19 @@ export function deleteTimeEntry(timeEntry, activity) {
     }
 }
 
-export function changeActivityName(activity, newName) {
-    backend.getActivity(activity.id).update({name: newName});
+export function updateActivity(activity, newProps) {
+    const updatedActivity = getOnlyOwnProperies(backend.getActivity(activity.id).update(newProps));
     
-    const updatedActivity = Object.assign({}, activity, {name: newName});
-
     return {
         type: 'UPDATE_ACTIVITY',
         activity: updatedActivity
+    }
+}
+
+export function enabelEditActivityName(activityId) {
+    return {
+        type: 'ENABLE_EDIT_ACTIVITY_NAME',
+        activityId: activityId
     }
 }
 
@@ -162,4 +170,19 @@ export function disableEditClient(id) {
         type: 'DISABLE_EDIT_CLIENT',
         clientId: id
     }
+}
+
+export function updateTimeEntry(props) {
+    //backend.get
+    
+    return {
+        type: 'UPDATE_TIME_ENTRY',
+        props
+    };
+}
+
+export function toggleTimeEntriesRegistryAsTable() {
+    return {
+        type: 'TOGGLE_TIMEENTRIES_REGISTRY_AS_TABLE',
+    };
 }

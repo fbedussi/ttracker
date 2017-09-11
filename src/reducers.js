@@ -13,7 +13,10 @@ function removeActivityFromClient(client, activityId) {
 export default function reducer(state = {
     clients: [],
     activities: [],
-    activeTab: 'clients'
+    activeTab: 'clients',
+    currency: '€',
+    selectNewEndTimeForTimeEntry: null,
+    timeEntriesRegistryAsTable: false
 }, action) {
 	switch (action.type) {
 		case 'LOAD_APP':
@@ -57,11 +60,21 @@ export default function reducer(state = {
                 activities: state.activities.concat(Object.assign({}, action.activity, {editableName: true}))
             });
 
-        case 'DISABLE_EDIT_ACTIVITY':
+        case 'ENABLE_EDIT_ACTIVITY_NAME':
             return Object.assign({}, state, {
-                activities: state.activities.map((activity) => (!action.activityId || activity.id === action.activityId) ? Object.assign({}, activity, {editableName: false}) : activity)
+                activities: state.activities.map((activity) => activity.id === action.activityId ? 
+                    Object.assign({}, activity, {editableName: true})
+                    : activity
+                )
             });
 
+        case 'DISABLE_EDIT_ACTIVITY':
+            return Object.assign({}, state, {
+                activities: state.activities.map((activity) => (!action.activityId || activity.id === action.activityId) ? 
+                    Object.assign({}, activity, {editableName: false}) 
+                    : activity
+                )
+            });
 
         case 'REMOVE_ACTIVITY':
             return Object.assign({}, state, {
@@ -88,6 +101,9 @@ export default function reducer(state = {
             return Object.assign({}, state, {
                 activities: state.activities.map((activity) => activity.id === removeTimeEntryFromActivity(activity, action.timeEntryId) ? activity: activity)
             });
+
+        case 'UPDATE_TIMEENTRY':
+            return Object.assign({}, state);
         
         case 'SET_ACTIVE_TAB':
             return Object.assign({}, state, {
@@ -96,13 +112,23 @@ export default function reducer(state = {
         
         case 'START_ACTIVITY':
             return Object.assign({}, state, {
-                activities: state.activities.map((activity) => activity.id === action.id ? Object.assign({}, activity, {active: true}) : activity)
+                activities: state.activities.map((activity) => activity.id === action.id ? Object.assign({}, activity, {
+                    active: true,
+                    timeEntries: activity.timeEntries.concat(action.newTimeEntry)
+                }) : activity)
             });
 
-        case 'STOP_ACTIVITY':
+        case 'UPDATE_DATA':
             return Object.assign({}, state, {
-                activities: state.activities.map((activity) => activity.id === action.id ? Object.assign({}, activity, {active: false}) : activity)
+                activities: action.activities,
+                clients: action.clients
             });
+
+        case 'TOGGLE_TIMEENTRIES_REGISTRY_AS_TABLE':
+            return Object.assign({}, state, {
+                timeEntriesRegistryAsTable: !state.timeEntriesRegistryAsTable
+            });
+
 
 		default:
 			return state;
