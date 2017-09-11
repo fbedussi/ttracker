@@ -69,8 +69,6 @@ class ActivityTab extends Component {
             startActivity,
             stopActivity,
             changeActivityName,
-            enabelEditActivityName,
-            disableEdit
         } = this.props;
         styles.fab.display = activeTab === 'activities' ? 'block' : 'none';
 
@@ -102,8 +100,6 @@ class ActivityTab extends Component {
                                 editable={activity.editableName}
                                 text={activity.name}
                                 handleChange={(text) => changeActivityName(activity, text)}
-                                disableEdit={() => disableEdit(activity.id)}
-                                enableEdit={() => enabelEditActivityName(activity.id)}
                             />
                             <div>{client ? client.name : ''}</div>
                         </CardHeader>

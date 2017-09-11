@@ -80,8 +80,6 @@ class SingleActivity extends Component {
                         editable={activity.editableName}
                         text={activity.name}
                         handleChange={(text) => changeActivityName(activity, text)}
-                        disableEdit={() => disableEdit(activity.id)}
-                        enableEdit={() => enabelEditActivityName(activity.id)}
                     />
                     <FlatButton
                         label="Delete"
@@ -99,8 +97,6 @@ class SingleActivity extends Component {
                         editable={false}
                         text={activity.hourlyRate}
                         handleChange={(hourlyRate) => changeActivityHourlyRate(activity, hourlyRate)}
-                        disableEdit={() => {}}
-                        enableEdit={() => {}}
                     />
                 </div>
                 <div className="totalCostWrapper row">

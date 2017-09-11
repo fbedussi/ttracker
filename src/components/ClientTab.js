@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { createNewClient, 
+import {
+    createNewClient,
     deleteClient,
-    addNewActivityToClient, 
-    updateClient,
+    addNewActivityToClient,
     changeClientName,
     disableEditClient
 } from '../actions';
@@ -11,7 +11,7 @@ import { createNewClient,
 import Subheader from 'material-ui/Subheader';
 import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
 import DeleteIcon from 'material-ui/svg-icons/action/delete';
-import DetailsIcon from 'material-ui/svg-icons/action/pageview';
+//import DetailsIcon from 'material-ui/svg-icons/action/pageview';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import FlatButton from 'material-ui/FlatButton';
@@ -24,7 +24,7 @@ const styles = {
         display: 'flex',
         flexWrap: 'wrap',
     },
-    fab:  {
+    fab: {
         display: 'none',
         position: 'fixed',
         right: '2em',
@@ -48,41 +48,35 @@ const mapDispatchToProps = (dispatch) => ({
 
 class ClientTab extends Component {
     render() {
-        const { 
+        const {
             activeTab,
             clients,
             activities,
             createNewClient,
             deleteClient,
             addNewActivityToClient,
-            updateClient,
             changeClientName,
-            disableEdit
         } = this.props;
         styles.fab.display = activeTab === 'clients' ? 'block' : 'none';
 
         return (
             <div>
-                {clients.map((client) => <Card 
-                        key={client.id}
-                        expandable={false}
-                        expanded={true}
-                        onClick={() => {
-                            disableEdit(client.id);
-                        }}
-                    >
+                {clients.map((client) => <Card
+                    key={client.id}
+                    expandable={false}
+                    expanded={true}
+                >
                     <CardHeader
                         actAsExpander={false}
                         showExpandableButton={false}
-                        textStyle={{paddingRight: '0'}}
+                        textStyle={{ paddingRight: '0' }}
                     >
-                    <EditableText
-                                className="cardTitle"
-                                editable={client.editableName}
-                                text={client.name}
-                                handleChange={(text) => changeClientName(client, text)}
-                                disableEdit={() => disableEdit(client.id)}
-                            />
+                        <EditableText
+                            className="cardTitle"
+                            editable={client.editableName}
+                            text={client.name}
+                            handleChange={(text) => changeClientName(client, text)}
+                        />
                     </CardHeader>
                     <CardActions>
                         <FlatButton
@@ -98,11 +92,11 @@ class ClientTab extends Component {
                         <p>€ 1,000</p>
                         <Subheader>Projects
                         <FlatButton
-                            icon={<ContentAdd />}
-                            onClick={() => {
-                                addNewActivityToClient(client.id);
-                            }}
-                        />
+                                icon={<ContentAdd />}
+                                onClick={() => {
+                                    addNewActivityToClient(client.id);
+                                }}
+                            />
                         </Subheader>
                         <div style={styles.wrapper}>
                             {client.activities.map((activityId) => <ActivityChip
