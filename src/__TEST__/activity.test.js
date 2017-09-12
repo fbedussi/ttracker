@@ -8,47 +8,56 @@ beforeEach(() => {
     Object.keys(db).forEach(method => db[method].mockClear());
 });
 
-test('Create activity with default name', () => {
-    const activity = createActivity({
-        hourlyRate: 10
-    });
+test('Create activity with default data', () => {
+    const activity = createActivity();
 
     expect(activity.id > 0).toBe(true);
-    expect(activity.startTime > 0).toBe(true);
+    // expect(activity.totalTime !== 'undefined').toBe(true);
+    // expect(activity.totalCost !== 'undefined').toBe(true);
+    // expect(activity.totalTimeToBill !== 'undefined').toBe(true);
+    // expect(activity.totalCostToBill !== 'undefined').toBe(true);
+    expect(activity.hourlyRate === 'undefined').toBe(true);
+    expect(activity.client !== 'undefined').toBe(true);
     expect(activity.name).toBe('new activity');
-    expect(activity.hourlyRate).toBe(10);
     expect(activity.subactivities).toEqual([]);
+    expect(activity.timeEntries).toEqual([]);
     expect(db.create).toBeCalled();
 });
 
-test('Create activity with custom name and subacivities', () => {
+test('Create activity with custom data', () => {
     const activity = createActivity({
         name: 'Custom name',
-        subactivities: [{id: 1}, {id: 2}],
         hourlyRate: 10
     });
 
     expect(activity.name).toBe('Custom name');
-    expect(activity.subactivities.length).toBe(2);
+    expect(activity.hourlyRate).toBe(10);
 });
 
 test('activity.delete()', () => {
     const activity = createActivity({
-        hourlyRate: 10,
-        subactivities: [{delete: jest.fn()}],
-        timeEntries: [{delete: jest.fn()}]
+        client: {deleteActivity: jest.fn()}
     });
 
     activity.delete();
     expect(db.delete).toBeCalled();
+    expect(activity.client.deleteActivity).toBeCalled();
+});
+
+test('activity.delete() delete subactivities', () => {
+    const activity = createActivity({
+        client: [{deleteActivity: jest.fn()}],
+        subactivities: [{delete: jest.fn()}, {delete: jest.fn()}]
+    });
+
+    activity.delete(true);
+    expect(db.delete).toBeCalled();
     expect(activity.subactivities[0].delete).toBeCalled();
-    expect(activity.timeEntries[0].delete).toBeCalled();
+    expect(activity.subactivities[1].delete).toBeCalled();
 });
 
 test('activity.update()', () => {
-    const activity = createActivity({
-        hourlyRate: 10
-    });
+    const activity = createActivity();
     
     activity.update({name: 'baz'});
     expect(activity.name).toBe('baz');
@@ -57,10 +66,6 @@ test('activity.update()', () => {
 
 test('activity.getTotaleTime()', () => {
     const activity = createActivity({
-        hourlyRate: 10
-    });
-
-    activity.update({
         subactivities: [{getTotalTime: function() {return 3600000}}, {getTotalTime: function() {return 3600000}}],
         timeEntries: [{
             endTime: 1,
