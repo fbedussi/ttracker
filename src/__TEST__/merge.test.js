@@ -8,9 +8,9 @@ test('merge', () => {
         a: 'b',
         b: 'b'
     }
-    merge(destObj, sourceObj)
-    expect(destObj.a).toBe('b');
-    expect(destObj.b).toBe(undefined);
+    const result = merge(destObj, sourceObj)
+    expect(result.a).toBe('b');
+    expect(result.b).toBe(undefined);
 });
 
 test('merge with no sourceObj', () => {

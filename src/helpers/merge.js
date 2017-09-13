@@ -12,6 +12,8 @@
             }
         }
     }
+
+    return destObj;
 }
 
 export default merge;

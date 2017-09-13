@@ -10,7 +10,7 @@ initIdMaker('client').then((idMaker) => clientIdMaker = idMaker);
 
 const DBCOLLECTION = 'client';
 
-const defaultProps = {
+export const defaultClientProps = {
     id: 0,
     name: 'new client',
     creationTime: 0,
@@ -28,7 +28,7 @@ const defaultProps = {
 
 var Client = {
     create: function(props) {
-        Object.assign(this, defaultProps);
+        Object.assign(this, defaultClientProps);
         this.id = clientIdMaker.next().value;
         this.creationTime = Date.now();
         merge(this, props);
