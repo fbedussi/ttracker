@@ -14,6 +14,7 @@ test('Create activity with default data', () => {
     expect(activity.id > 0).toBe(true);
     expect(activity.hourlyRate === 0).toBe(true);
     expect(activity.client).toEqual({});
+    expect(activity.parentActivity).toEqual({});
     expect(activity.name).toBe('new activity');
     expect(activity.subactivities).toEqual([]);
     expect(activity.timeEntries).toEqual([]);
@@ -139,6 +140,7 @@ test('activity.addSubactivity()', () => {
     const updatedActivity = activity.addSubactivity(subactivity);
     expect(updatedActivity.subactivities.length).toBe(1);
     expect(updatedActivity.subactivities[0].name).toBe('subactivity1');
+    expect(updatedActivity.subactivities[0].parentActivity).toEqual(activity);
     expect(db.update).toBeCalled();    
 });
 
@@ -209,6 +211,7 @@ test('activity.exportForDb()', () => {
         name: 'activity',
         hourlyRate: 10,
         client: {id: 1, name: 'client'},
+        parentActivity: {},
         timeEntries: [{id: 1, startTime: 10, endTime: 20}],
         subactivities: [{id: 1, name: 'baz'}, {id: 2, name: 'bar'}]
     });
@@ -218,9 +221,10 @@ test('activity.exportForDb()', () => {
         id: 1,
         name: 'activity',
         hourlyRate: 10,
-        client: 1,
+        client: {id: 1},
+        parentActivity: {},
         timeEntries: [{id: 1, startTime: 10, endTime: 20}],
-        subactivities: [1, 2]
+        subactivities: [{id: 1}, {id:2}]
     });
 });
 
@@ -230,22 +234,24 @@ test('activity.exportForClient()', () => {
         id: 1,
         name: 'activity',
         hourlyRate: 10,
-        client: {id: 1, name: 'client'},
-        timeEntries: [{id: 1, startTime: 10, endTime: 20}],
+        parentActivity: {},
+        client: {id: 1, name: 'client', lastBilledDate: 25},
+        timeEntries: [{id: 1, startTime: 10, endTime: 20, duration: 1 * 1000 * 60 * 60}, {id: 2, startTime: 30, endTime: 40, duration: 1 * 1000 * 60 * 60}],
         subactivities: [{id: 1, name: 'baz'}, {id: 2, name: 'bar'}]
     });
 
-    const activityReadyFOrDB = activity.exportForDb();    
-    expect(activityReadyFOrDB).toEqual({
+    const activityReadyForClient = activity.exportForClient();    
+    expect(activityReadyForClient).toEqual({
         id: 1,
         name: 'activity',
         hourlyRate: 10,
+        parentActivity: {},
         client: {id: 1, name: 'client', lastBilledDate: 25},
-        timeEntries: [{id: 1, startTime: 10, endTime: 20}, {id: 2, startTime: 30, endTime: 40}],
+        timeEntries: [{id: 1, startTime: 10, endTime: 20, duration: 1 * 1000 * 60 * 60}, {id: 2, startTime: 30, endTime: 40, duration: 1 * 1000 * 60 * 60}],
         subactivities: [{id: 1, name: 'baz'}, {id: 2, name: 'bar'}],
-        totalTime: 20,
-        totalCost: 200,
-        totalTimeToBill: 10,
-        totalCostToBill: 100
+        totalTime: 2 * 1000 * 60 * 60,
+        totalCost: 20,
+        totalTimeToBill: 1 * 1000 * 60 * 60,
+        totalCostToBill: 10
     });
 });

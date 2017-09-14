@@ -13,27 +13,29 @@ const DBCOLLECTION = 'client';
 export const defaultClientProps = {
     id: 0,
     name: 'new client',
-    creationTime: 0,
     lastBilledTime: 0,
-    totalCost: 0,
     activities: [],
     defaultHourlyRate: 0,
-    contacts: {
+    billingInfo: {
         address: '',
         phone: '',
         email: '',
         vatNumber: ''
-    }
+    },
+    bills: [],
 };
 
 var Client = {
     create: function(props) {
         Object.assign(this, defaultClientProps);
         this.id = clientIdMaker.next().value;
-        this.creationTime = Date.now();
         merge(this, props);
 
-        db.create(DBCOLLECTION, this);
+        if (props && props.activities) {
+            this.activities = props.activities;
+        }
+
+        db.create(DBCOLLECTION, this.exportForDb());
         return this;
     },
     load: function(props) {
@@ -43,28 +45,60 @@ var Client = {
     },
     update: function(newProps) {
         merge(this, newProps);
-        db.update(DBCOLLECTION, this);
+        db.update(DBCOLLECTION, this.exportForDb());
     },
-    delete: function() {
+    delete: function(deleteActivities = false) {
+        if (deleteActivities) {
+            this.activities.forEach((activity) => activity.delete(true));
+        }
+
         db.delete(DBCOLLECTION, this.id);
     },
-    getTotalTime: function() {
-        return this.activities.reduce((totalTime, activity) => totalTime + activity.getTotalTime(), 0);
+    getTotalTime: function(startTime) {
+        return this.activities.reduce((totalTime, activity) => totalTime + activity.getTotalTime(startTime), 0);
     },
-    getTotalCost: function() {
-        return convertMsToH(this.getTotalTime()) * this.defaultHourlyRate;
+    getTotalCost: function(startTime) {
+        return this.activities.reduce((totalCost, activity) => totalCost + activity.getTotalCost(startTime), 0);
     },
     addActivity: function(activity) {
         this.activities.push(activity);
-        db.update(DBCOLLECTION, this);
-        return activity;
+
+        db.update(DBCOLLECTION, this.exportForDb());
+        
+        return this;
     },
-    removeActivity: function(id) {
+    removeActivity: function(id, deleteActivity = false) {
+        if (deleteActivity) {
+            const activityToDelete = this.activities.filter(activity => activity.id === id)[0];
+            if (activityToDelete.delete) {
+                activityToDelete.delete(true);
+            }
+        }
+        
         this.activities = this.activities.filter(activity => activity.id !== id);
-        db.update(DBCOLLECTION, this);
+        
+        db.update(DBCOLLECTION, this.exportForDb());
+
+        return this;
     },
     getTotalToBill: function() {
         return this.activities.reduce((totalToBill, activity) => totalToBill + activity.getTotalCost(this.lastBilledTime), 0);
+    },
+    exportForDb: function() {
+        var objToSave = Object.assign({},this);
+        objToSave.activities = objToSave.activities.map((activity) => ({id: activity.id}));
+
+        return objToSave;
+    },
+    exportForClient: function() {
+        var objToExport = Object.assign({}, this, {
+            totalTime: this.getTotalTime(),
+            totalCost: this.getTotalCost(),
+            totalTimeToBill: this.getTotalTime(this.lastBilledDate),
+            totalCostToBill: this.getTotalCost(this.lastBilledDate),
+        });
+  
+        return objToExport;
     }
 }
 

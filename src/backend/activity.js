@@ -13,6 +13,7 @@ const defaultProps = {
     id: 0,
     name: 'new activity',
     client: {},
+    parentActivity: {},
     hourlyRate: 0,
     subactivities: [],
     timeEntries: []
@@ -23,41 +24,49 @@ var Activity = {
         Object.assign(this, defaultProps);        
         this.id = activityIdMaker.next().value;
         merge(this, props);
+
+        //client and parentActivity has no properties in defatulProps, so merge doesn't merge anything, we need to copy them separately
         if (props && props.client) {
             this.client = props.client;
         }
+        if (props && props.parentActivity) {
+            this.parentActivity = props.parentActivity;
+        }
         
-        db.create(DBCOLLECTION, this);
+        db.create(DBCOLLECTION, this.exportForDb());
         
         return this;
     },
     load: function(props) {
         merge(this, props);
-        this.subactivities = this.subactivities.map(activityProps => loadActivity(activityProps));
+        //this.subactivities = this.subactivities.map(activityProps => loadActivity(activityProps));
         
         return this;
     },
     update: function(newProps) {
         merge(this, newProps);
         
-        db.update(DBCOLLECTION, this);
+        db.update(DBCOLLECTION, this.exportForDb());
         
         return this;
     },
-    delete: function(deleteSubactivities) {
+    delete: function(deleteSubactivities = false) {
         if (deleteSubactivities) {
             this.subactivities.forEach((subactivity) => subactivity.delete(true));
         }
 
-        if (this.client.id) {
+        if (this.client.removeActivity) {
             const updatedClient = this.client.removeActivity(this.id);
-            db.update(CLIENT_DBCOLLECTION, this.client);
         }
 
         db.delete(DBCOLLECTION, this.id);
     },
     getTotalTime: function(sinceTime = 0) {
-        var subactivitiesTotalTime = this.subactivities.reduce((totalTime, subactivity) => totalTime + subactivity.getTotalTime(sinceTime), 0);
+        var subactivitiesTotalTime = this.subactivities
+            .reduce((totalTime, subactivity) => subactivity.getTotalTime ? 
+                totalTime + subactivity.getTotalTime(sinceTime)
+                : 0
+            , 0);
         var timeEntriesTotalTime = this.timeEntries
             .filter(timeEntry => timeEntry.endTime > sinceTime)
             .reduce((totalTime, timeEntry) => totalTime + timeEntry.duration, 0)
@@ -65,18 +74,21 @@ var Activity = {
         
         return subactivitiesTotalTime + timeEntriesTotalTime;
     },
-    getTotalCost: function(sinceTime) {
+    getTotalCost: function(sinceTime = 0) {
         return convertMsToH(this.getTotalTime(sinceTime)) * this.hourlyRate;
     },
     addSubactivity: function(props) {
-        var newActivity = createActivity(props);
-        if (!newActivity.hourlyRate) {
-            newActivity.hourlyRate = this.hourlyRate;
-        }
+        var newActivity;
 
+        if (!props.hourlyRate) {
+            props.hourlyRate = this.hourlyRate;
+        }
+        props.parentActivity = this;
+        
+        newActivity = createActivity(props);
         this.subactivities.push(newActivity);
         
-        db.update(DBCOLLECTION, this);
+        db.update(DBCOLLECTION, this.exportForDb());
         
         return this;
     },
@@ -93,7 +105,7 @@ var Activity = {
             removedSubactivity.delete(true);
         }
 
-        db.update(DBCOLLECTION, this);
+        db.update(DBCOLLECTION, this.exportForDb());
         
         return this;
     },
@@ -106,7 +118,7 @@ var Activity = {
         
         this.timeEntries.push(newTimeEntry);
         
-        db.update(DBCOLLECTION, this);
+        db.update(DBCOLLECTION, this.exportForDb());
         
         return this;
     },
@@ -115,7 +127,7 @@ var Activity = {
         lastTimeEntry.endTime = Date.now();
         lastTimeEntry.duration = lastTimeEntry.endTime - lastTimeEntry.startTime;
         
-        db.update(DBCOLLECTION, this);
+        db.update(DBCOLLECTION, this.exportForDb());
         
         return this;
     },
@@ -123,7 +135,7 @@ var Activity = {
         this.timeEntries = this.timeEntries
             .filter(timeEntry => timeEntry.id !== id);
 
-        db.update(DBCOLLECTION, this);
+        db.update(DBCOLLECTION, this.exportForDb());
 
         return this;
     },
@@ -135,9 +147,28 @@ var Activity = {
         this.timeEntries = this.timeEntries
             .map(timeEntry => timeEntry.id === props.id ? merge(timeEntry, props) : timeEntry);
 
-        db.update(DBCOLLECTION, this);
+        db.update(DBCOLLECTION, this.exportForDb());
 
         return this;
+    },
+    exportForDb: function() {
+        var objToSave = Object.assign({},this);
+        objToSave.parentActivity = objToSave.parentActivity.id? {id: objToSave.parentActivity.id} : {};
+        objToSave.client = objToSave.client.id ? {id: objToSave.client.id} : {};
+        objToSave.subactivities = objToSave.subactivities.map((subactivity) => ({id: subactivity.id}));
+
+        return objToSave;
+    },
+    exportForClient: function() {
+        var lastBilledDate = this.client.lastBilledDate || 0;
+        var objToExport = Object.assign({}, this, {
+            totalTime: this.getTotalTime(),
+            totalCost: this.getTotalCost(),
+            totalTimeToBill: this.getTotalTime(lastBilledDate),
+            totalCostToBill: this.getTotalCost(lastBilledDate),
+        });
+  
+        return objToExport;
     }
 }
 
