@@ -28,10 +28,10 @@ test('Create client with default data', () => {
 
 test('Create client with custom data', () => {
     const billingInfo = {
-        address: 'address',
-        phone: 'phone',
-        email: 'email',
-        vatNumber: 'vat'
+        address: 'address1',
+        phone: 'phone1',
+        email: 'email1',
+        vatNumber: 'vat1'
     };
     const client = createClient({
         name: 'Custom name',
@@ -114,16 +114,14 @@ test('client.removeActivity()', () => {
 });
 
 test('client.removeActivity(, true) delete activity', () => {
-    const deleteActivity1 = jest.fn();
-    const deleteActivity2 = jest.fn();
+    const deleteActivity = jest.fn();
     const client = createClient({
-        activities: [{id: 1, delete: deleteActivity1}, {id: 2, delete: deleteActivity2}],
+        activities: [{id: 1}, {id: 2, delete: deleteActivity}],
     });
 
     const updatedClient = client.removeActivity(2, true);
     expect(updatedClient.activities.length).toBe(1);
-    expect(deleteActivity1).toBeCalled()
-    expect(deleteActivity2).toBeCalled()
+    expect(deleteActivity).toBeCalled();
     expect(db.update).toBeCalled();    
 });
 
@@ -196,7 +194,12 @@ test('client.exportForDb()', () => {
         lastBilledTime: 0,
         activities: [{id: 1}, {id:2}],
         defaultHourlyRate: 0,
-        billingInfo: {}
+        billingInfo: {
+            address: '',
+            phone: '',
+            email: '',
+            vatNumber: ''
+        },
     });
 });
 

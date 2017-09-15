@@ -36,6 +36,7 @@ var Client = {
         }
 
         db.create(DBCOLLECTION, this.exportForDb());
+
         return this;
     },
     load: function(props) {
@@ -81,11 +82,27 @@ var Client = {
 
         return this;
     },
-    getTotalToBill: function() {
-        return this.activities.reduce((totalToBill, activity) => totalToBill + activity.getTotalCost(this.lastBilledTime), 0);
+    bill: function() {
+        const amount = this.getTotalCost(this.lastBilledTime);
+        var  billedActivities =  [];
+        
+        if (this.activities.length && this.activities[0].getTotalTime) {
+            billedActivities = this.activities.filter((activity) => activity.getTotalTime(this.lastBilledTime) > 0);
+        }
+
+        this.lastBilledTime = Date.now();
+        this.bills.push({
+            date: this.lastBilledTime,
+            amount,
+            billedActivities
+        })
+
+        db.update(DBCOLLECTION, this.exportForDb());
+
+        return this;
     },
     exportForDb: function() {
-        var objToSave = Object.assign({},this);
+        var objToSave = Object.assign({}, this);
         objToSave.activities = objToSave.activities.map((activity) => ({id: activity.id}));
 
         return objToSave;
@@ -94,8 +111,8 @@ var Client = {
         var objToExport = Object.assign({}, this, {
             totalTime: this.getTotalTime(),
             totalCost: this.getTotalCost(),
-            totalTimeToBill: this.getTotalTime(this.lastBilledDate),
-            totalCostToBill: this.getTotalCost(this.lastBilledDate),
+            totalTimeToBill: this.getTotalTime(this.lastBilledTime),
+            totalCostToBill: this.getTotalCost(this.lastBilledTime),
         });
   
         return objToExport;
