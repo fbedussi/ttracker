@@ -162,6 +162,8 @@ var Activity = {
     exportForClient: function() {
         var lastBilledDate = this.client.lastBilledDate || 0;
         var objToExport = Object.assign({}, this, {
+            subactivities: this.subactivities.map((activity) => activity.exportForClient ? activity.exportForClient() : Object.assign({}, activity)),            
+            client: this.client.exportForClient ? this.client.exportForClient() : Object.assign({}, this.client),            
             totalTime: this.getTotalTime(),
             totalCost: this.getTotalCost(),
             totalTimeToBill: this.getTotalTime(lastBilledDate),
