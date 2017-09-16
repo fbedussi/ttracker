@@ -1,7 +1,7 @@
 import initIdMaker from '../helpers/idMaker';
 import merge from '../helpers/merge';
 import db from '../db/dbFacade';
-import {convertMsToH} from '../helpers/helpers';
+import {convertMsToH, deepCloneDataObject} from '../helpers/helpers';
 
 var activityIdMaker = null;
 initIdMaker('activity').then((idMaker) => activityIdMaker = idMaker);
@@ -21,9 +21,9 @@ const defaultProps = {
 
 var Activity = {
     create: function(props) {
-        Object.assign(this, defaultProps);        
-        this.id = activityIdMaker.next().value;
+        Object.assign(this, deepCloneDataObject(defaultProps));        
         merge(this, props);
+        this.id = activityIdMaker.next().value;
 
         //client and parentActivity has no properties in defatulProps, so merge doesn't merge anything, we need to copy them separately
         if (props && props.client) {
@@ -172,13 +172,9 @@ var Activity = {
     }
 }
 
-const createActivity = (props) => {
-    return Object.create(Activity).create(props);
-}
+const createActivity = (props) => Object.create(Activity).create(props);
 
-const loadActivity = (props) => {
-    return Object.assign(Object.create(Activity), defaultProps).load(props);
-}
+const loadActivity = (props) => Object.assign(Object.create(Activity), defaultProps).load(props);
 
 export {
     createActivity,

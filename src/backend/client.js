@@ -1,7 +1,7 @@
 import initIdMaker from '../helpers/idMaker';
 import merge from '../helpers/merge';
 import db from '../db/dbFacade';
-import {convertMsToH} from '../helpers/helpers';
+import {deepCloneDataObject} from '../helpers/helpers';
 
 import {loadActivity} from './activity';
 
@@ -10,7 +10,7 @@ initIdMaker('client').then((idMaker) => clientIdMaker = idMaker);
 
 const DBCOLLECTION = 'client';
 
-export const defaultClientProps = {
+const defaultClientProps = {
     id: 0,
     name: 'new client',
     lastBilledTime: 0,
@@ -27,10 +27,10 @@ export const defaultClientProps = {
 
 var Client = {
     create: function(props) {
-        Object.assign(this, defaultClientProps);
-        this.id = clientIdMaker.next().value;
+        Object.assign(this, Object.assign({}, deepCloneDataObject(defaultClientProps)));
         merge(this, props);
-
+        this.id = clientIdMaker.next().value;
+        
         if (props && props.activities) {
             this.activities = props.activities;
         }
@@ -46,6 +46,7 @@ var Client = {
     },
     update: function(newProps) {
         merge(this, newProps);
+
         db.update(DBCOLLECTION, this.exportForDb());
     },
     delete: function(deleteActivities = false) {
@@ -109,6 +110,7 @@ var Client = {
     },
     exportForClient: function() {
         var objToExport = Object.assign({}, this, {
+            activities: this.activities.map((activity) => activity.exportForClient ? activity.exportForClient() : Object.assign({}, activity)),
             totalTime: this.getTotalTime(),
             totalCost: this.getTotalCost(),
             totalTimeToBill: this.getTotalTime(this.lastBilledTime),
@@ -119,13 +121,9 @@ var Client = {
     }
 }
 
-const createClient = (props) => {
-    return Object.create(Client).create(props);
-}
+const createClient = (props) => Object.create(Client).create(props);
 
-const loadClient = (props) => {
-    return Object.assign(Object.create(Client), defaultProps).load(props);
-}
+const loadClient = (props) => Object.assign(Object.create(Client), defaultClientProps).load(props);
 
 export {
     createClient,

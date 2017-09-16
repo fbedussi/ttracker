@@ -48,7 +48,6 @@ test('Create client with custom data', () => {
 
 test('client.delete()', () => {
     const client = createClient();
-
     client.delete();
     expect(db.delete).toBeCalled();
 });
@@ -175,7 +174,6 @@ test('client.bill()', () => {
             getTotalCost: () => 10
         }]
     });
-
     const updatedClient = client.bill();
 
     expect(updatedClient.lastBilledTime > 0).toBe(true);
@@ -184,16 +182,18 @@ test('client.bill()', () => {
 
 test('client.exportForDb()', () => {
     const client = createClient({
+        id: 1,
         activities: [{id: 1, name: 'baz'}, {id: 2, name: 'bar'}]
     });
 
     const clientReadyForDB = client.exportForDb();    
     expect(clientReadyForDB).toEqual({
-        id: 1,
+        id: clientReadyForDB.id,
         name: 'new client',
         lastBilledTime: 0,
         activities: [{id: 1}, {id:2}],
         defaultHourlyRate: 0,
+        bills: [],
         billingInfo: {
             address: '',
             phone: '',
@@ -206,14 +206,16 @@ test('client.exportForDb()', () => {
 
 test('client.exportForClient()', () => {
     const client = createClient({
+        lastBilledTime: 25,
         activities: [{
-            id: 1, 
             name: 'activity 1',
+            exportForClient: () => ({id: 1, name: 'activity 1'}),
             getTotalTime: (startTime) => startTime ? 100 : 200,
             getTotalCost: (startTime) => startTime ? 10 : 20
         }, {
             id: 2, 
             name: 'activity 2',            
+            exportForClient: () => ({id: 2, name: 'activity 2'}),            
             getTotalTime: (startTime) => startTime ? 100 : 200,
             getTotalCost: (startTime) => startTime ? 10 : 20
         }]
@@ -221,9 +223,9 @@ test('client.exportForClient()', () => {
 
     const clientReadyForClient = client.exportForClient();    
     expect(clientReadyForClient).toEqual({
-        id: 1,
+        id: clientReadyForClient.id,
         name: 'new client',
-        lastBilledTime: 0,
+        lastBilledTime: 25,
         activities: [{
             id: 1, 
             name: 'activity 1'

@@ -207,7 +207,6 @@ test('activity.updateTimeEntry()', () => {
 
 test('activity.exportForDb()', () => {
     const activity = createActivity({
-        id: 1,
         name: 'activity',
         hourlyRate: 10,
         client: {id: 1, name: 'client'},
@@ -216,9 +215,9 @@ test('activity.exportForDb()', () => {
         subactivities: [{id: 1, name: 'baz'}, {id: 2, name: 'bar'}]
     });
 
-    const activityReadyFOrDB = activity.exportForDb();    
-    expect(activityReadyFOrDB).toEqual({
-        id: 1,
+    const activityReadyForDB = activity.exportForDb();    
+    expect(activityReadyForDB).toEqual({
+        id: activityReadyForDB.id,
         name: 'activity',
         hourlyRate: 10,
         client: {id: 1},
@@ -231,7 +230,6 @@ test('activity.exportForDb()', () => {
 
 test('activity.exportForClient()', () => {
     const activity = createActivity({
-        id: 1,
         name: 'activity',
         hourlyRate: 10,
         parentActivity: {},
@@ -242,7 +240,7 @@ test('activity.exportForClient()', () => {
 
     const activityReadyForClient = activity.exportForClient();    
     expect(activityReadyForClient).toEqual({
-        id: 1,
+        id: activityReadyForClient.id,
         name: 'activity',
         hourlyRate: 10,
         parentActivity: {},
