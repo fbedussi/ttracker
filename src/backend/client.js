@@ -64,7 +64,6 @@ var Client = {
     },
     addActivity: function(activity) {
         this.activities.push(activity);
-
         db.update(DBCOLLECTION, this.exportForDb());
         
         return this;
@@ -108,9 +107,9 @@ var Client = {
 
         return objToSave;
     },
-    exportForClient: function() {
+    exportForClient: function(activityDependency = false) {
         var objToExport = Object.assign({}, this, {
-            activities: this.activities.map((activity) => activity.exportForClient ? activity.exportForClient() : Object.assign({}, activity)),
+            activities: this.activities.map((activity) => !activityDependency && activity.exportForClient ? activity.exportForClient() : Object.assign({}, activity)),
             totalTime: this.getTotalTime(),
             totalCost: this.getTotalCost(),
             totalTimeToBill: this.getTotalTime(this.lastBilledTime),

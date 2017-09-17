@@ -3,14 +3,15 @@ function getCollection(collection) {
     [
         {
             id: 1,
-            name: collection + ' bar',
+            name: 'client 1',
             activities: [],
             getTotalToBill: function() {return 10},
             addActivity: jest.fn()
         },
         {
             id: 2,
-            name: collection + ' baz',
+            name: 'client 2',
+            activities: [],            
             getTotalToBill: function() {return 10}            
         }
     ] 

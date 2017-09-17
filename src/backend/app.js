@@ -17,7 +17,7 @@ const App = {
     load: function() {
         return db
             .openDb('ttracker')
-            .then((db) => Promise
+            .then((db) => Promise //read data
                 .all([
                     db
                         .readAll('client')
@@ -32,46 +32,98 @@ const App = {
                     )
                 ])
             )
-            .then(() => this)
+            .then(() => { //resolve cross dependencies
+                this.activities = this.activities.map((activity) => {
+                    if (activity.client.id) {
+                        const client = this.client.filter((client) => client.id = activity.client.id)[0];
+                        if (client) {
+                            activity.client = client;
+                        }
+                    }
+
+                    activity.subactivities = activity.subactivities
+                        .map((activity) => this.activities
+                            .filter((storedActivity) => storedActivity.id === activity.id)[0]
+                        )
+
+                    return activity;
+                })
+
+                this.clients = this.clients.map((client) => {
+                    client.activities = client.activities
+                        .map((activity) => this.activities
+                            .filter((storedActivity) => storedActivity.id === activity.id)[0]
+                        );
+
+                    return client;
+                })
+            })
+            .then(() => this) //return app
         ;
     },
-    getAllActivities: function() {
-        return this.activities;
-    },
-    getAllClients: function() {
-        return this.clients;
-    },
-    getActivity: function(id) {
+    _getActivity: function(id) {
         return this.activities.filter((activity) => activity.id === id)[0];
     },
-    getClient: function(id) {   
+    _getClient: function(id) {   
         return this.clients.filter((client) => client.id === id)[0];  
     },
-    getTotalToBill: function() {
-        return this.clients.reduce((total, client) => total + client.getTotalToBill(), 0);
-    },
-    createNewClient: function(props = {}) {
+    createClient: function(props = {}) {
         var newClient = createClient(Object.assign({defaultHourlyRate: this.defaultHourlyRate}, props));
         this.clients.push(newClient);
-        return newClient;
+        
+        return this.exportForClient();
     },
-    createNewActivity: function(props) {
-        var newActivity = createActivity(Object.assign({hourlyRate: this.defaultHourlyRate}, props));
-        this.activities.push(newActivity);
-        return newActivity;
+    deleteClient: function(id, deleteActivities = false) {
+        const clientToDelete = this._getClient(id);
+        clientToDelete.delete(deleteActivities);
+        this.clients = this.clients.filter((client) => client.id !== id);
+
+        if (deleteActivities) {
+            this.activities = this.activities
+                .filter((activity) => clientToDelete.activities
+                    .every((clientActivity) => clientActivity.id !== activity.id)
+                )
+            ;
+        }
+        return this.exportForClient();
+    },
+    updateClient: function(props) {
+        if (!props.id) {
+            return this.exportForClient();
+        }
+
+        this.clients = this.clients.map((client) => client.id === props.id ? Object.assign(client, props) : client);
+
+        return this.exportForClient();
+    },
+    billClient: function(id) {
+        this._getClient(id).bill();
+
+        return this.exportForClient();
     },
     addNewActivityToClient: function(clientId) {
-        var client = this.getClient(clientId);
+        var client = this._getClient(clientId);
         var activity;
 
         if (!client) {
-            return false;
+            return this.exportForClient();
         }
 
-        activity = this.createNewActivity({hourlyRate: client.defaultHourlyRate});
-        client.addActivity(activity);
+        activity = createActivity({
+            hourlyRate: this.defaultHourlyRate,
+            client
+        });
+        this.activities.push(activity);
+        const updatedClient = client.addActivity(activity);
 
-        return activity;
+        return this.exportForClient();
+    },
+    
+    createActivity: function(props) {
+        var newActivity = createActivity(Object.assign({hourlyRate: this.defaultHourlyRate}, props));
+        this.activities.push(newActivity);
+
+        return this.exportForClient();
     },
     deleteActivity: function(activityId) {
         var activity = this.getActivity(activityId);
@@ -93,6 +145,12 @@ const App = {
             activities: this.activities,
             clients: this.clients
         } 
+    },
+    exportForClient: function() {
+        return {
+            activities: this.activities.map((activity) => activity.exportForClient()),
+            clients: this.clients.map((client) => client.exportForClient())
+        }
     }
 }
 
