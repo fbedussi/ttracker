@@ -21,44 +21,22 @@ const App = {
                 .all([
                     db
                         .readAll('client')
-                        .then((clientsData) => this.clients = clientsData
+                        .then((clientsData) => clientsData
                             .map((clientData) => loadClient(clientData))
                         )
                     ,
                     db
                         .readAll('activity')
-                        .then((activitiesData) => this.activities = activitiesData
+                        .then((activitiesData) => activitiesData
                             .map((activityData) => loadActivity(activityData))
                     )
                 ])
             )
-            .then(() => { //resolve cross dependencies
-                this.activities = this.activities.map((activity) => {
-                    if (activity.client.id) {
-                        const client = this.client.filter((client) => client.id = activity.client.id)[0];
-                        if (client) {
-                            activity.client = client;
-                        }
-                    }
-
-                    activity.subactivities = activity.subactivities
-                        .map((activity) => this.activities
-                            .filter((storedActivity) => storedActivity.id === activity.id)[0]
-                        )
-
-                    return activity;
-                })
-
-                this.clients = this.clients.map((client) => {
-                    client.activities = client.activities
-                        .map((activity) => this.activities
-                            .filter((storedActivity) => storedActivity.id === activity.id)[0]
-                        );
-
-                    return client;
-                })
+            .then(([clients, activities]) => { //resolve cross dependencies
+                this.activities = activities.map((activity) => activity.resolveDependencies(clients, activities));
+                this.clients = clients.map((client) => client.resolveDependencies(activities));
+                return this;
             })
-            .then(() => this) //return app
         ;
     },
     _getActivity: function(id) {
@@ -92,7 +70,7 @@ const App = {
             return this.exportForClient();
         }
 
-        this.clients = this.clients.map((client) => client.id === props.id ? Object.assign(client, props) : client);
+        this.clients = this.clients.map((client) => client.id === props.id ? client.update(props) : client);
 
         return this.exportForClient();
     },
@@ -118,33 +96,59 @@ const App = {
 
         return this.exportForClient();
     },
-    
+    removeActivityFromClient: function(options) {
+        Object.assign({deleteActivity: false}, options);
+
+        var client = this._getClient(options.clientId);
+
+        if (!client) {
+            return this.exportForClient();
+        }
+
+        client.removeActivity(options.activityId, options.deleteActivity);
+        
+        if (options.deleteActivity) {
+            this.activities = this.activities.filter((activity) => activity.id !== options.activityId);
+        }
+
+        return this.exportForClient();
+    },
     createActivity: function(props) {
         var newActivity = createActivity(Object.assign({hourlyRate: this.defaultHourlyRate}, props));
         this.activities.push(newActivity);
 
         return this.exportForClient();
     },
-    deleteActivity: function(activityId) {
-        var activity = this.getActivity(activityId);
-
+    deleteActivity: function(activityId, deleteSubActivities = false) {
+        var activity = this._getActivity(activityId);
+        
         if (!activity) {
-            return false;
+            return this.exportForClient();
         }
 
-        activity.delete();
-        var clientsAssociaterdWithActivity = this.clients.filter((client) => client.activities.some((id) => id === activityId));
+        var removedActivityIds = activity.delete();
+        this.activities = this.activities.filter((activity) => removedActivityIds.every((revovedActivityId) => activity.id !== revovedActivityId));
 
-        clientsAssociaterdWithActivity.forEach((client) => client.removeActivity(activityId));
+        return this.exportForClient();
+    },
+    updateActivity: function(props) {
+        if (!props.id) {
+            return this.exportForClient();
+        }
+
+        this._getActivity(props.id).update(props);
+
+        return this.exportForClient();
+    },
+    startActivity: function(activityId) {
+        this._getActivity(activityId).start();
+        
+        return this.exportForClient();
     },
     stopActivity: function(activityId) {
-        this.activities = this.activities.map((activity) => activity.id === activityId ? activity.stop() : activity);
-        this.clients = this.clients.map((client) => updateClientTotalCost(client, activityId))
-
-        return {
-            activities: this.activities,
-            clients: this.clients
-        } 
+        this._getActivity(activityId).stop();
+        
+        return this.exportForClient();
     },
     exportForClient: function() {
         return {

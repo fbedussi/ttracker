@@ -48,6 +48,8 @@ var Client = {
         merge(this, newProps);
 
         db.update(DBCOLLECTION, this.exportForDb());
+
+        return this;
     },
     delete: function(deleteActivities = false) {
         if (deleteActivities) {
@@ -55,6 +57,8 @@ var Client = {
         }
 
         db.delete(DBCOLLECTION, this.id);
+
+        return this.id;
     },
     getTotalTime: function(startTime) {
         return this.activities.reduce((totalTime, activity) => totalTime + activity.getTotalTime(startTime), 0);
@@ -117,12 +121,20 @@ var Client = {
         });
   
         return objToExport;
+    },
+    resolveDependencies: function(activities) {
+        this.activities = this.activities
+        .map((clientActivity) => activities
+            .filter((storedActivity) => storedActivity.id === clientActivity.id)[0]
+        );
+
+        return this;
     }
 }
 
 const createClient = (props) => Object.create(Client).create(props);
 
-const loadClient = (props) => Object.assign(Object.create(Client), defaultClientProps).load(props);
+const loadClient = (props) => Object.assign(Object.create(Client), deepCloneDataObject(defaultClientProps)).load(props);
 
 export {
     createClient,

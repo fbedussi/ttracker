@@ -50,16 +50,20 @@ var Activity = {
         
         return this;
     },
-    delete: function(deleteSubactivities = false) {
+    delete: function(deleteSubactivities = false, deletedIds = []) {
         if (deleteSubactivities) {
-            this.subactivities.forEach((subactivity) => subactivity.delete(true));
+            this.subactivities.forEach((subactivity) => subactivity.delete(true, deletedIds));
         }
 
         if (this.client.removeActivity) {
             const updatedClient = this.client.removeActivity(this.id);
         }
 
+        deletedIds.push(this.id);
+
         db.delete(DBCOLLECTION, this.id);
+
+        return deletedIds
     },
     getTotalTime: function(sinceTime = 0) {
         var subactivitiesTotalTime = this.subactivities
@@ -116,7 +120,7 @@ var Activity = {
             duration: 0
         };
         
-        this.timeEntries.push(newTimeEntry);
+        this.timeEntries.push(deepCloneDataObject(newTimeEntry));
         
         db.update(DBCOLLECTION, this.exportForDb());
         
@@ -171,12 +175,27 @@ var Activity = {
         });
   
         return objToExport;
+    },
+    resolveDependencies: function(clients, activities) {
+        if (this.client.id) {
+            const client = clients.filter((client) => client.id = this.client.id)[0];
+            if (client) {
+                this.client = client;
+            }
+        }
+
+        this.subactivities = this.subactivities
+            .map((subActivity) => activities
+                .filter((storedActivity) => storedActivity.id === subActivity.id)[0]
+            )
+
+        return this;
     }
 }
 
 const createActivity = (props) => Object.create(Activity).create(props);
 
-const loadActivity = (props) => Object.assign(Object.create(Activity), defaultProps).load(props);
+const loadActivity = (props) => Object.assign(Object.create(Activity), deepCloneDataObject(defaultProps)).load(props);
 
 export {
     createActivity,

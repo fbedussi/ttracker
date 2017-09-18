@@ -35,6 +35,7 @@ test('delete client', () => {
         app.deleteClient(2);
 
         expect(app.clients.length).toBe(1);
+
     });
 });
 
@@ -88,7 +89,37 @@ test('remove activity from client', () => {
             clientId: 2
         })
 
-         
+        expect(updatedApp2.clients.filter((client) => client.id === 2)[0].activities.length).toBe(0);
+    });
+});
+
+test('remove activity from client and delete it', () => {
+    return loadApp().then((app) => {
+        const prevApp = app.exportForClient();
+        const updatedApp = app.addNewActivityToClient(2);
+        const activityId = updatedApp.clients.filter((client) => client.id === 2)[0].activities[0].id;
+        const updatedApp2 = app.removeActivityFromClient({
+            activityId,
+            clientId: 2,
+            deleteActivity: true
+        })
+
+        expect(updatedApp2.activities.length).toBe(2);
+    });
+});
+
+test('remove activity from non existing client', () => {
+    return loadApp().then((app) => {
+        const prevApp = app.exportForClient();
+        const updatedApp = app.addNewActivityToClient(2);
+        const activityId = updatedApp.clients.filter((client) => client.id === 2)[0].activities[0].id;
+        const updatedApp2 = app.removeActivityFromClient({
+            activityId,
+            clientId: 3,
+            deleteActivity: true
+        })
+
+        expect(updatedApp2).toEqual(updatedApp);
     });
 });
 
@@ -107,44 +138,45 @@ test('Create activity', () => {
     });
 });
 
-
 test('deleteActivity', () => {
     return loadApp().then((app) => {
-        const clientId = 1;
-        const activity = app.addNewActivityToClient(clientId)
-        const client = app.getClient(clientId)
-        const initialActivitiesLength = app.activities.length;
-        const initialClientActivitiesLenght = client.activities.length;
-        expect(activity.id > 0).toBe(true);
-        expect(activity.startTime > 0).toBe(true);
-        expect(activity.name).toBe('new activity');
-        expect(activity.hourlyRate).toBe(0);
-        expect(activity.subactivities).toEqual([]);
-        expect(client.addActivity).toBeCalled();
-        expect(db.create).toBeCalled();
-
-        app.deleteActivity(activity.id);
-        expect(app.activities.length).toBe(initialActivitiesLength);
-        expect(client.activities.length).toBe(initialClientActivitiesLenght);
-
+        app.deleteActivity(2);
+        expect(app.activities.length).toBe(1);
     });
 });
 
 test('update activity', () => {
     return loadApp().then((app) => {
-        
+       app.updateActivity({
+           id: 1,
+           name: 'update activity name'
+       });
+       expect(app.activities[0].name).toBe('update activity name');
     });
 });
 
 test('start activity', () => {
     return loadApp().then((app) => {
-        
+        app.startActivity(1);
+        expect(app.activities[0].timeEntries[0].startTime > 0).toBe(true);
     });
 });
 
 test('stop activity', () => {
     return loadApp().then((app) => {
-        
+        //app.startActivity(1);
+        app.stopActivity(1);
+        expect(app.activities[0].timeEntries[0].endTime > 0).toBe(true);
+        expect(app.activities[0].timeEntries[0].duration > 0).toBe(true);
     });
 });
+
+test('delete timeEntry', () => {
+    return loadApp().then((app) => {
+        app.startActivity(1);
+        app.stopActivity(1);
+        app.deleteTimeEntry(1,1);
+        expect(app.activities[0].timeEntries.length).toBe(0);
+    });
+})
 

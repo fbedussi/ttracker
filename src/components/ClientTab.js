@@ -4,7 +4,7 @@ import {
     createNewClient,
     deleteClient,
     addNewActivityToClient,
-    changeClientName,
+    updateClient,
     disableEditClient
 } from '../actions';
 
@@ -42,7 +42,7 @@ const mapDispatchToProps = (dispatch) => ({
     createNewClient: () => dispatch(createNewClient()),
     deleteClient: (client) => dispatch(deleteClient(client)),
     addNewActivityToClient: (clientId) => dispatch(addNewActivityToClient(clientId)),
-    changeClientName: (client, newName) => dispatch(changeClientName(client, newName)),
+    updateClient: (client, newName) => dispatch(updateClient(client, newName)),
     disableEdit: (id) => dispatch(disableEditClient(id))
 });
 
@@ -55,7 +55,7 @@ class ClientTab extends Component {
             createNewClient,
             deleteClient,
             addNewActivityToClient,
-            changeClientName,
+            updateClient,
         } = this.props;
         styles.fab.display = activeTab === 'clients' ? 'block' : 'none';
 
@@ -75,7 +75,10 @@ class ClientTab extends Component {
                             className="cardTitle"
                             editable={client.editableName}
                             text={client.name}
-                            handleChange={(text) => changeClientName(client, text)}
+                            handleChange={(text) => updateClient({
+                                id: client.id,
+                                name: text
+                            })}
                         />
                     </CardHeader>
                     <CardActions>
@@ -99,10 +102,9 @@ class ClientTab extends Component {
                             />
                         </Subheader>
                         <div style={styles.wrapper}>
-                            {client.activities.map((activityId) => <ActivityChip
-                                key={activityId}
-                                activities={activities}
-                                activityId={activityId}
+                            {client.activities.map((activity) => <ActivityChip
+                                key={activity.id}
+                                activity={activity}
                             />)}
                         </div>
 
