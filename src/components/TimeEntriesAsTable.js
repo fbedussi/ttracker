@@ -33,16 +33,10 @@ const mapDispatchToProps = (dispatch) => ({
 class TimeEntriesAsTable extends Component {
     render() {
         const {
-            activities,
-            activityId,
+            activity,
             currency,
             deleteTimeEntry
         } = this.props;
-
-        const activity = activities
-            .filter((activity) => activity.id === activityId)
-            .reduce((acc, i) => i, null)
-        ;
 
         return (
             <Table
@@ -63,16 +57,16 @@ class TimeEntriesAsTable extends Component {
                 <TableBody
                     displayRowCheckbox={false}
                 >
-                    {activity.timeEntries.map((timeEntry) => {
-                        var totalTime = timeEntry.endTime > 0 ? timeEntry.endTime - timeEntry.startTime : 0;
+                    {activity.timeEntries.map((timeEntry, i) => {
+                        
                         return <TableRow
-                            key={timeEntry.id}
+                            key={i}
                             selectable={false}
                         >
                             <TableRowColumn>{new Date(timeEntry.startTime).toLocaleString()}</TableRowColumn>
                             <TableRowColumn>{timeEntry.endTime > 0 ? new Date(timeEntry.endTime).toLocaleString() : ''}</TableRowColumn>
-                            <TableRowColumn>{totalTime > 0 ? formatTime(totalTime) : ''}</TableRowColumn>
-                            <TableRowColumn>{currency + ' ' + Math.round(convertMsToH(totalTime) * activity.hourlyRate)}</TableRowColumn>
+                            <TableRowColumn>{timeEntry.duration > 0 ? formatTime(timeEntry.duration) : ''}</TableRowColumn>
+                            <TableRowColumn>{currency + ' ' + Math.round(convertMsToH(timeEntry.duration) * activity.hourlyRate)}</TableRowColumn>
                             <TableRowColumn>
                                 <IconButton
                                     onClick={() => deleteTimeEntry(timeEntry, activity)}

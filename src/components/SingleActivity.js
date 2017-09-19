@@ -7,8 +7,7 @@ import {
     updateTimeEntry,
     startActivity,
     stopActivity,
-    disableEditActivity,
-    enabelEditActivityName
+    
 } from '../actions';
 
 import DeleteIcon from 'material-ui/svg-icons/action/delete';
@@ -22,7 +21,8 @@ import TimeEntriesRegistry from './TimeEntriesRegistry';
 const mapStateToProps = (state) => ({
     clients: state.clients,
     activities: state.activities,
-    currency: state.currency
+    currency: state.currency,
+    ongoingActivities: state.ongoingActivities,
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -30,9 +30,7 @@ const mapDispatchToProps = (dispatch) => ({
     changeActivityName: (activity, newName) => dispatch(updateActivity(activity, {name: newName})),    
     deleteActivity: (activity) => dispatch(deleteActivity(activity)),    
     startActivity: (activity) => dispatch(startActivity(activity)),
-    stopActivity: (activityId) => dispatch(stopActivity(activityId)),
-    disableEdit: (id) => dispatch(disableEditActivity(id)),
-    enabelEditActivityName: (id) => dispatch(enabelEditActivityName(id)),
+    stopActivity: (activity) => dispatch(stopActivity(activity)),
     changeActivityHourlyRate: (activity, hourlyRate) => dispatch(updateActivity(activity, {hourlyRate: Number(hourlyRate)})),
     updateTimeEntry: (props) => dispatch(updateTimeEntry(props))
 });
@@ -52,7 +50,7 @@ class SingleActivity extends Component {
             disableEdit,
             changeActivityHourlyRate,
             updateTimeEntry,
-            enabelEditActivityName
+            ongoingActivities,
         } = this.props;
         const activityId = Number(this.props.match.params.activityId);
         const activity = activities
@@ -105,11 +103,12 @@ class SingleActivity extends Component {
                 </div>
                 <TimerBox 
                     activity={activity}
+                    isOngoing={ongoingActivities.includes(activity.id)}
                     startActivity={startActivity}
                     stopActivity={stopActivity}
                 />
                 <TimeEntriesRegistry 
-                    activityId={activity.id}
+                    activity={activity}
                     currency={currency}
                     updateTimeEntry={updateTimeEntry}
                     deleteTimeEntry={deleteTimeEntry}

@@ -22,16 +22,10 @@ const mapDispatchToProps = (dispatch) => ({
 class TimeEntriesRegistry extends Component {
     render() {
         const {
-            activities,
-            activityId,
+            activity,
             timeEntriesRegistryAsTable,
             toggleTimeEntriesRegistryAsTable
         } = this.props;
-
-        const activity = activities
-            .filter((activity) => activity.id === activityId)
-            .reduce((acc, i) => i, null)
-        ;
 
         return (
             <div className="timeEntriesRegistry">
@@ -47,10 +41,10 @@ class TimeEntriesRegistry extends Component {
                     : null}
                 {!timeEntriesRegistryAsTable ?
                     <TimeEntriesAsCards
-                        activityId={activityId}
+                        activity={activity}
                     />
                     : <TimeEntriesAsTable
-                        activityId={activityId}
+                        activity={activity}
                     />
                 }
             </div>

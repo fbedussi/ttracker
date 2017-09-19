@@ -6,8 +6,6 @@ import {
     startActivity,
     stopActivity,
     updateActivity,
-    disableEditActivity,
-    enabelEditActivityName    
 } from '../actions';
 import Subheader from 'material-ui/Subheader';
 import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
@@ -51,8 +49,6 @@ const mapDispatchToProps = (dispatch) => ({
     startActivity: (activity) => dispatch(startActivity(activity)),
     stopActivity: (activityId) => dispatch(stopActivity(activityId)),
     changeActivityName: (activity, newName) => dispatch(updateActivity(activity, {name: newName})),
-    disableEdit: (id) => dispatch(disableEditActivity(id)),
-    enabelEditActivityName: (id) => dispatch(enabelEditActivityName(id))    
 });
 
 

@@ -5,7 +5,6 @@ import {
     deleteClient,
     addNewActivityToClient,
     updateClient,
-    disableEditClient
 } from '../actions';
 
 import Subheader from 'material-ui/Subheader';
@@ -35,7 +34,8 @@ const styles = {
 const mapStateToProps = (state) => ({
     clients: state.clients,
     activities: state.activities,
-    activeTab: state.activeTab
+    activeTab: state.activeTab,
+    currency: state.currency,
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -43,7 +43,6 @@ const mapDispatchToProps = (dispatch) => ({
     deleteClient: (client) => dispatch(deleteClient(client)),
     addNewActivityToClient: (clientId) => dispatch(addNewActivityToClient(clientId)),
     updateClient: (client, newName) => dispatch(updateClient(client, newName)),
-    disableEdit: (id) => dispatch(disableEditClient(id))
 });
 
 class ClientTab extends Component {
@@ -56,6 +55,7 @@ class ClientTab extends Component {
             deleteClient,
             addNewActivityToClient,
             updateClient,
+            currency,
         } = this.props;
         styles.fab.display = activeTab === 'clients' ? 'block' : 'none';
 
@@ -92,7 +92,7 @@ class ClientTab extends Component {
                         <Subheader>Last billed date</Subheader>
                         <p>{new Date(client.lastBilledTime).toLocaleString()}</p>
                         <Subheader>Next invoice subtotal</Subheader>
-                        <p>€ 1,000</p>
+                        <p>{`${currency} ${client.totalCostToBill}`}</p>
                         <Subheader>Projects
                         <FlatButton
                                 icon={<ContentAdd />}

@@ -9,10 +9,11 @@ export function load() {
             .then((app) => {
                 backend = app;
 
+                const data = app.exportForClient();
+
                 dispatch({
-                    type: 'LOAD_APP',
-                    clients: backend.clients,
-                    activities: backend.activities
+                    type: 'UPDATE_DATA',
+                    data
                 });
             })
             ;
@@ -84,16 +85,18 @@ export function startActivity(activity) {
     const data = backend.startActivity(activity.id);
 
     return {
-        type: 'UPDATE_DATA',
+        type: 'START_ACTIVITY',
+        activityId: activity.id,
         data
     };
 }
 
-export function stopActivity(activityId) {
-    const data = backend.startActivity(activityId);
+export function stopActivity(activity) {
+    const data = backend.stopActivity(activity.id);
 
     return {
-        type: 'UPDATE_DATA',
+        type: 'STOP_ACTIVITY',
+        activityId: activity.id,
         data
     };
 }
@@ -114,27 +117,6 @@ export function updateActivity(activity, newProps) { //TODO: pass newprops only
         type: 'UPDATE_DATA',
         data
     };
-}
-
-export function enabelEditActivityName(activityId) {
-    return {
-        type: 'ENABLE_EDIT_ACTIVITY_NAME',
-        activityId: activityId
-    }
-}
-
-export function disableEditActivity(id) {
-    return {
-        type: 'DISABLE_EDIT_ACTIVITY',
-        activityId: id
-    }
-}
-
-export function disableEditClient(id) {
-    return {
-        type: 'DISABLE_EDIT_CLIENT',
-        clientId: id
-    }
 }
 
 export function updateTimeEntry(props) { //TODO

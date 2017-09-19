@@ -35,6 +35,7 @@ const App = {
             .then(([clients, activities]) => { //resolve cross dependencies
                 this.activities = activities.map((activity) => activity.resolveDependencies(clients, activities));
                 this.clients = clients.map((client) => client.resolveDependencies(activities));
+                
                 return this;
             })
         ;

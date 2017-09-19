@@ -8,6 +8,7 @@ import Timer from './Timer';
 
 const TimerBox = ({
         activity,
+        isOngoing,
         startActivity,
         stopActivity,
     }) => (
@@ -16,17 +17,17 @@ const TimerBox = ({
                 label="Start"
                 icon={<RecordIcon />}
                 onClick={() => startActivity(activity)}
-                style={activity.active ? { display: 'none' } : { display: 'block' }}
+                style={isOngoing ? { display: 'none' } : { display: 'block' }}
             />
             <FlatButton
                 label="Stop"
                 icon={<StopIcon />}
-                onClick={() => stopActivity(activity.id)}
-                style={activity.active ? { display: 'block' } : { display: 'none' }}
+                onClick={() => stopActivity(activity)}
+                style={isOngoing ? { display: 'block' } : { display: 'none' }}
             />
             <Timer
                 startTime={activity.timeEntries.length ? activity.timeEntries[activity.timeEntries.length - 1].startTime : 0}
-                tick={activity.active}
+                tick={isOngoing}
             />
         </div>
     )
