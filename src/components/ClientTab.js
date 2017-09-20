@@ -32,10 +32,11 @@ const styles = {
 };
 
 const mapStateToProps = (state) => ({
-    clients: state.clients,
-    activities: state.activities,
-    activeTab: state.activeTab,
-    currency: state.currency,
+    clients: state.data.clients,
+    activities: state.data.activities,
+    activeTab: state.ui.activeTab,
+    currency: state.options.currency,
+    lastCreatedClientId: state.ui.lastCreatedClientId,
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -56,6 +57,7 @@ class ClientTab extends Component {
             addNewActivityToClient,
             updateClient,
             currency,
+            lastCreatedClientId,
         } = this.props;
         styles.fab.display = activeTab === 'clients' ? 'block' : 'none';
 
@@ -73,7 +75,7 @@ class ClientTab extends Component {
                     >
                         <EditableText
                             className="cardTitle"
-                            editable={client.editableName}
+                            editable={lastCreatedClientId === client.id}
                             text={client.name}
                             handleChange={(text) => updateClient({
                                 id: client.id,

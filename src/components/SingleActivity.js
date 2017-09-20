@@ -19,10 +19,11 @@ import BackToHome from './BackToHome';
 import TimeEntriesRegistry from './TimeEntriesRegistry';
 
 const mapStateToProps = (state) => ({
-    clients: state.clients,
-    activities: state.activities,
-    currency: state.currency,
-    ongoingActivities: state.ongoingActivities,
+    clients: state.data.clients,
+    activities: state.data.activities,
+    currency: state.options.currency,
+    ongoingActivities: state.ui.ongoingActivities,
+    lastCreatedActivityId: state.ui.lastCreatedActivityId,        
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -51,6 +52,7 @@ class SingleActivity extends Component {
             changeActivityHourlyRate,
             updateTimeEntry,
             ongoingActivities,
+            lastCreatedActivityId,
         } = this.props;
         const activityId = Number(this.props.match.params.activityId);
         const activity = activities
@@ -75,7 +77,7 @@ class SingleActivity extends Component {
                 <h1 className="activityTitleBar">
                     <EditableText
                         className="activityName row"
-                        editable={activity.editableName}
+                        editable={lastCreatedActivityId === activity.id}
                         text={activity.name}
                         handleChange={(text) => changeActivityName(activity, text)}
                     />
@@ -88,6 +90,10 @@ class SingleActivity extends Component {
                         }}
                     />
                 </h1>
+                <div className="hourlyRateWrapper row">
+                    <span className="clientLabel">Client: </span>
+                    <span className="clientName">{activity.client.name}</span>
+                </div>
                 <div className="hourlyRateWrapper row">
                     <span className="hourlyRateLabel">{`Hourly rate: ${currency}`} </span>
                     <EditableText

@@ -11,8 +11,8 @@ import TimeEntriesAsTable from './TimeEntriesAsTable';
 import TimeEntriesAsCards from './TimeEntriesAsCards';
 
 const mapStateToProps = (state) => ({
-    timeEntriesRegistryAsTable: state.timeEntriesRegistryAsTable,
-    activities: state.activities
+    timeEntriesRegistryAsTable: state.ui.timeEntriesRegistryAsTable,
+    activities: state.data.activities
 });
 
 const mapDispatchToProps = (dispatch) => ({

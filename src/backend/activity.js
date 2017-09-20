@@ -178,7 +178,7 @@ var Activity = {
             totalTime: this.getTotalTime(),
             
             subactivities: this.subactivities.map((activity) => activity.exportForClient ? activity.exportForClient() : Object.assign({}, activity)),            
-            client: this.client.exportForClient ? this.client.exportForClient(true) : Object.assign({}, this.client),            
+            client: Object.assign({}, this.client),            
         });
   
         return objToExport;

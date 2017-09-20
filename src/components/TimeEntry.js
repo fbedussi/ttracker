@@ -17,7 +17,7 @@ import { Card, CardActions, CardText } from 'material-ui/Card';
 import DateTime from './DateTime';
 
 const mapStateToProps = (state) => ({
-    currency: state.currency
+    currency: state.options.currency
 });
 
 const mapDispatchToProps = (dispatch) => ({

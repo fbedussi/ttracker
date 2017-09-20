@@ -25,7 +25,8 @@ export function createNewClient() {
 
     return {
         type: 'UPDATE_DATA',
-        data
+        data,
+        lastCreatedClientId: data.clients[data.clients.length - 1].id                
     };
 }
 
@@ -34,7 +35,7 @@ export function deleteClient(client) {
 
     return {
         type: 'UPDATE_DATA',
-        data
+        data,
     };
 }
 
@@ -43,7 +44,8 @@ export function createNewActivity() {
 
     return {
         type: 'UPDATE_DATA',
-        data
+        data,
+        lastCreatedActivityId: data.activities[data.activities.length - 1].id
     };
 }
 
@@ -52,7 +54,8 @@ export function addNewActivityToClient(clientId) {
 
     return {
         type: 'UPDATE_DATA',
-        data
+        data,
+        lastCreatedActivityId: data.activities[data.activities.length - 1].id        
     };
 }
 

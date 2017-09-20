@@ -10,20 +10,46 @@ function removeActivityFromClient(client, activityId) {
     return client;
 }
 
-export default function reducer(state = {
+export function dataReducer(state = {
     clients: [],
     activities: [],
-    activeTab: 'clients',
-    currency: '€',
-    ongoingActivities: [],
-    selectNewEndTimeForTimeEntry: null,
-    timeEntriesRegistryAsTable: false
 }, action) {
 	switch (action.type) {
         case 'UPDATE_DATA':
             return Object.assign({}, state, {
                 clients: action.data.clients,
                 activities: action.data.activities
+            });
+        
+        case 'START_ACTIVITY':
+            return Object.assign({}, state, {
+                clients: action.data.clients,
+                activities: action.data.activities
+            });
+
+        case 'STOP_ACTIVITY':
+            return Object.assign({}, state, {
+                clients: action.data.clients,
+                activities: action.data.activities
+            });
+
+		default:
+			return state;
+	}
+}
+
+export function uiReducer(state = {
+    activeTab: 'clients',
+    ongoingActivities: [],
+    selectNewEndTimeForTimeEntry: null,
+    timeEntriesRegistryAsTable: false,
+    lastCreatedActivityId: undefined,
+}, action) {
+	switch (action.type) {
+        case 'UPDATE_DATA':
+            return Object.assign({}, state, {
+                lastCreatedActivityId: action.lastCreatedActivityId,
+                lastCreatedClientId: action.lastCreatedClientId
             });
 
         case 'SET_ACTIVE_TAB':
@@ -38,18 +64,23 @@ export default function reducer(state = {
         
         case 'START_ACTIVITY':
             return Object.assign({}, state, {
-                clients: action.data.clients,
-                activities: action.data.activities,
                 ongoingActivities: state.ongoingActivities.concat(action.activityId)
             });
 
         case 'STOP_ACTIVITY':
             return Object.assign({}, state, {
-                clients: action.data.clients,
-                activities: action.data.activities,
                 ongoingActivities: state.ongoingActivities.filter((ongoingActivityId) => ongoingActivityId !== action.activityId)
             });
 
+		default:
+			return state;
+	}
+}
+
+export function optionsReducer(state = {
+    currency: '€',
+}, action) {
+	switch (action.type) {
 		default:
 			return state;
 	}

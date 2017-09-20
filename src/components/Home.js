@@ -9,7 +9,7 @@ import ClientTab from './ClientTab';
 import ActivityTab from './ActivityTab';
 
 const mapStateToProps = (state) => ({
-  activeTab: state.activeTab
+  activeTab: state.ui.activeTab
 });
 
 const mapDispatchToProps = (dispatch) => ({

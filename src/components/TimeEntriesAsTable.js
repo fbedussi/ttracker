@@ -22,8 +22,8 @@ import IconButton from 'material-ui/IconButton';
 
 
 const mapStateToProps = (state) => ({
-    currency: state.currency,
-    activities: state.activities
+    currency: state.options.currency,
+    activities: state.data.activities
 });
 
 const mapDispatchToProps = (dispatch) => ({
