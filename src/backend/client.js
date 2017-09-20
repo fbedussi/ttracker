@@ -80,10 +80,13 @@ var Client = {
             }
         }
         
+        const initialActivitiesLenght = this.activities.length;
         this.activities = this.activities.filter(activity => activity.id !== id);
-        
-        db.update(DBCOLLECTION, this.exportForDb());
 
+        if (this.activities.length !== initialActivitiesLenght) {
+            db.update(DBCOLLECTION, this.exportForDb());
+        }
+        
         return this;
     },
     bill: function() {
@@ -113,11 +116,13 @@ var Client = {
     },
     exportForClient: function(activityDependency = false) {
         var objToExport = Object.assign({}, this, {
-            activities: this.activities.map((activity) => !activityDependency && activity.exportForClient ? activity.exportForClient() : Object.assign({}, activity)),
             totalTime: this.getTotalTime(),
             totalCost: this.getTotalCost(),
             totalTimeToBill: this.getTotalTime(this.lastBilledTime),
             totalCostToBill: this.getTotalCost(this.lastBilledTime),
+
+            //this must be set last otherwise when activityDependency is true this.getTotalTime calls activity.getTotalTime which is undefined
+            activities: this.activities.map((activity) => !activityDependency && activity.exportForClient ? activity.exportForClient() : Object.assign({}, activity)),
         });
   
         return objToExport;

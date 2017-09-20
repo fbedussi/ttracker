@@ -128,6 +128,11 @@ var Activity = {
     },
     stop: function() {
         const lastTimeEntry = this.timeEntries[this.timeEntries.length - 1];
+
+        if (!lastTimeEntry) {
+            return this;
+        }
+
         lastTimeEntry.endTime = Date.now();
         lastTimeEntry.duration = lastTimeEntry.endTime - lastTimeEntry.startTime;
         
@@ -135,10 +140,11 @@ var Activity = {
         
         return this;
     },
-    removeTimeEntry: function(id) {
+    deleteTimeEntry: function(timeEntryToDelete) {
         this.timeEntries = this.timeEntries
-            .filter(timeEntry => timeEntry.id !== id);
+            .filter(timeEntry => timeEntry.startTime !== timeEntryToDelete.startTime);
 
+        //TODO: update DB only if something changes
         db.update(DBCOLLECTION, this.exportForDb());
 
         return this;
@@ -166,12 +172,13 @@ var Activity = {
     exportForClient: function() {
         var lastBilledDate = this.client.lastBilledDate || 0;
         var objToExport = Object.assign({}, this, {
-            subactivities: this.subactivities.map((activity) => activity.exportForClient ? activity.exportForClient() : Object.assign({}, activity)),            
-            client: this.client.exportForClient ? this.client.exportForClient(true) : Object.assign({}, this.client),            
-            totalTime: this.getTotalTime(),
             totalCost: this.getTotalCost(),
             totalTimeToBill: this.getTotalTime(lastBilledDate),
             totalCostToBill: this.getTotalCost(lastBilledDate),
+            totalTime: this.getTotalTime(),
+            
+            subactivities: this.subactivities.map((activity) => activity.exportForClient ? activity.exportForClient() : Object.assign({}, activity)),            
+            client: this.client.exportForClient ? this.client.exportForClient(true) : Object.assign({}, this.client),            
         });
   
         return objToExport;

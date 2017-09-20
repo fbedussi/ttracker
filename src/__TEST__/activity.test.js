@@ -185,12 +185,12 @@ test('activity.stop()', () => {
     expect(updatedActivity.timeEntries[0].endTime > 0).toBe(true);    
 });
 
-test('activity.removeTimeEntry()', () => {
+test('activity.deleteTimeEntry()', () => {
     const activity = createActivity({
-        timeEntries: [{id: 1}, {id: 2}]
+        timeEntries: [{startTime: 1}, {startTime: 2}]
     });
 
-    const updatedActivity = activity.removeTimeEntry(2);    
+    const updatedActivity = activity.deleteTimeEntry({startTime: 2});    
     expect(updatedActivity.timeEntries.length).toBe(1);
     expect(db.update).toBeCalled();    
 });

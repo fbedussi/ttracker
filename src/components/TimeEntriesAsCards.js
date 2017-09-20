@@ -1,32 +1,19 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React from 'react';
 
 import TimeEntry from './TimeEntry';
 
-const mapStateToProps = (state) => ({
-});
-
-const mapDispatchToProps = (dispatch) => ({
-});
-
-class TimeEntriesAsCards extends Component {
-    render() {
-        const {
+const TimeEntriesAsCards = ({
             activity,
-        } = this.props;
+        }) => (
+        <div className="timeEntriesCards">
+            {activity.timeEntries.map((timeEntry, i) =>
+                <TimeEntry
+                    key={timeEntry.startTime}
+                    activity={activity}
+                    timeEntry={timeEntry}
+                />
+            )}
+        </div>
+    );
 
-        return (
-            <div className="timeEntriesCards">
-                {activity.timeEntries.map((timeEntry, i) =>
-                    <TimeEntry
-                        key={i}
-                        activity={activity}
-                        timeEntry={timeEntry}
-                    />
-                )}
-            </div>
-        );
-    }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(TimeEntriesAsCards);
+export default TimeEntriesAsCards;

@@ -40,7 +40,8 @@ const mapStateToProps = (state) => ({
     clients: state.clients,
     activities: state.activities,
     activeTab: state.activeTab,
-    currency: state.currency
+    currency: state.currency,
+    ongoingActivities: state.ongoingActivities,    
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -65,6 +66,7 @@ class ActivityTab extends Component {
             startActivity,
             stopActivity,
             changeActivityName,
+            ongoingActivities,            
         } = this.props;
         styles.fab.display = activeTab === 'activities' ? 'block' : 'none';
 
@@ -110,8 +112,9 @@ class ActivityTab extends Component {
                                 icon={<DeleteIcon />}
                                 onClick={() => deleteActivity(activity)}
                             />
-                            <TimerBox
+                            <TimerBox 
                                 activity={activity}
+                                isOngoing={ongoingActivities.includes(activity.id)}
                                 startActivity={startActivity}
                                 stopActivity={stopActivity}
                             />

@@ -164,7 +164,8 @@ test('start activity', () => {
 
 test('stop activity', () => {
     return loadApp().then((app) => {
-        //app.startActivity(1);
+        app.startActivity(1);
+        Date.now = () => 1000000000000000000000;
         app.stopActivity(1);
         expect(app.activities[0].timeEntries[0].endTime > 0).toBe(true);
         expect(app.activities[0].timeEntries[0].duration > 0).toBe(true);
@@ -174,8 +175,9 @@ test('stop activity', () => {
 test('delete timeEntry', () => {
     return loadApp().then((app) => {
         app.startActivity(1);
+        const timeEntryStartTime = app._getActivity(1).timeEntries[0].startTime;
         app.stopActivity(1);
-        app.deleteTimeEntry(1,1);
+        app.deleteTimeEntry(1,{startTime: timeEntryStartTime});
         expect(app.activities[0].timeEntries.length).toBe(0);
     });
 })

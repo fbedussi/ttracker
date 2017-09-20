@@ -93,7 +93,7 @@ const App = {
             client
         });
         this.activities.push(activity);
-        const updatedClient = client.addActivity(activity);
+        client.addActivity(activity);
 
         return this.exportForClient();
     },
@@ -127,8 +127,14 @@ const App = {
             return this.exportForClient();
         }
 
-        var removedActivityIds = activity.delete();
-        this.activities = this.activities.filter((activity) => removedActivityIds.every((revovedActivityId) => activity.id !== revovedActivityId));
+        var removedActivityIds = activity.delete(deleteSubActivities);
+        this.activities = this.activities.filter((activity) => removedActivityIds.every((removedActivityId) => activity.id !== removedActivityId));
+        this.clients = this.clients.map((client) => {
+            //TODO: check first if client has activity?
+            removedActivityIds.forEach((removedActivityId) => client.removeActivity(removedActivityId));
+
+            return client;
+        });
 
         return this.exportForClient();
     },
@@ -150,6 +156,11 @@ const App = {
         this._getActivity(activityId).stop();
         
         return this.exportForClient();
+    },
+    deleteTimeEntry: function(activityId, timeEntry) {
+        this._getActivity(activityId).deleteTimeEntry(timeEntry);
+
+        return this.exportForClient();        
     },
     exportForClient: function() {
         return {
