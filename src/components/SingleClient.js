@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
     deleteClient,
-    updateClient,    
+    updateClient,
+    addNewActivityToClient,
 } from '../actions';
 
 import {formatTime} from '../helpers/helpers';
@@ -10,6 +11,7 @@ import {formatTime} from '../helpers/helpers';
 import DeleteIcon from 'material-ui/svg-icons/action/delete';
 import FlatButton from 'material-ui/FlatButton';
 import ActivityChip from './ActivityChip';
+import ContentAdd from 'material-ui/svg-icons/content/add';
 
 import EditableText from './EditableText';
 import BackToHome from './BackToHome';
@@ -22,7 +24,8 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
     deleteClient: (client) => dispatch(deleteClient(client)),    
-    updateClient: (props) => dispatch(updateClient(props))
+    updateClient: (props) => dispatch(updateClient(props)),
+    addNewActivityToClient: (clientId) => dispatch(addNewActivityToClient(clientId)),    
 });
 
 
@@ -34,6 +37,7 @@ class SingleClient extends Component {
             currency,
             deleteClient,
             updateClient,
+            addNewActivityToClient,
         } = this.props;
         const clientId = Number(this.props.match.params.clientId);
         const client = clients
@@ -53,7 +57,7 @@ class SingleClient extends Component {
         return (
             <div className="mainWrapper">
                 <BackToHome />
-                <div className="clientId">
+                <div className="clientId row">
                     Client Id: {client.id}
                 </div>
                 <h1 className="clientTitleBar titleBar">
@@ -155,7 +159,14 @@ class SingleClient extends Component {
                     <span className="totalCostToBill">{Math.round(client.totalCostToBill)}</span>
                 </div>
                 
-                <h2 className="sectionSubtitle">Projects</h2>
+                <h2 className="sectionSubtitle">Projects 
+                <FlatButton
+                    icon={<ContentAdd />}
+                    onClick={() => {
+                        addNewActivityToClient(client.id);
+                    }}
+                />
+                </h2>
                 <div className="chipWrapper">
                     {client.activities.map((activity) => <ActivityChip
                         key={activity.id}

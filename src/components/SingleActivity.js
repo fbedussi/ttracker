@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom'
+
 import {
     deleteActivity,
     updateActivity,    
@@ -70,7 +72,7 @@ class SingleActivity extends Component {
         return (
             <div className="mainWrapper">
                 <BackToHome />
-                <div className="activityId">
+                <div className="activityId row">
                     Activity Id: {activity.id}
                 </div>
                 <h1 className="activityTitleBar titleBar">
@@ -91,7 +93,9 @@ class SingleActivity extends Component {
                 </h1>
                 <div className="clientWrapper row">
                     <span className="clientLabel">Client: </span>
-                    <span className="clientName">{activity.client.name}</span>
+                    <Link to={`/client/${activity.client.id}`}>
+                        <span className="clientName">{activity.client.name}</span>
+                    </Link>
                 </div>
                 <div className="hourlyRateWrapper row">
                     <span className="hourlyRateLabel">{`Hourly rate: ${currency}`} </span>

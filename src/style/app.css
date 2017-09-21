@@ -75,8 +75,8 @@ input.editable {
 }
 
 .chipWrapper {
-    display: 'flex';
-    flex-wrap: 'wrap';
+    display: flex;
+    flex-wrap: wrap;
 }
 
 .hourlyRate {

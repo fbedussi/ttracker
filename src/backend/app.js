@@ -89,7 +89,7 @@ const App = {
         }
 
         activity = createActivity({
-            hourlyRate: this.defaultHourlyRate,
+            hourlyRate: client.defaultHourlyRate,
             client
         });
         this.activities.push(activity);

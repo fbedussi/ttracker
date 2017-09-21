@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom'
+
 import {
     createNewActivity,
     deleteActivity,
@@ -96,7 +98,12 @@ class ActivityTab extends Component {
                                 text={activity.name}
                                 handleChange={(text) => changeActivityName(activity, text)}
                             />
-                            <div>{activity.client && activity.client.name ? 'Client: ' + activity.client.name : ''}</div>
+                            <div style={activity.client && activity.client.name ? {display: 'block'} : {display: 'none'}}>
+                                <span>Client: </span>
+                                <Link to={`/client/${activity.client.id}`}>
+                                   {activity.client.name}
+                                </Link>
+                            </div>
                         </CardHeader>
                         <CardActions>
                             <FlatButton
