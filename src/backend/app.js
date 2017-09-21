@@ -159,7 +159,14 @@ const App = {
     },
     deleteTimeEntry: function(activityId, timeEntry) {
         this._getActivity(activityId).deleteTimeEntry(timeEntry);
-
+        
+        return this.exportForClient();        
+    },
+    addSubactivity: function(activityId, props) {
+        const activity = this._getActivity(activityId).addSubactivity(props);
+        const subactivity = activity.subactivities[activity.subactivities.length - 1];
+        this.activities.push(subactivity);
+        
         return this.exportForClient();        
     },
     exportForClient: function() {

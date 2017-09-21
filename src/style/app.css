@@ -82,3 +82,7 @@ input.editable {
 .hourlyRate {
     max-width: 8rem;
 }
+
+.cardClientName {
+    margin-top: 1em;
+}

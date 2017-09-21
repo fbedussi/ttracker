@@ -182,3 +182,22 @@ test('delete timeEntry', () => {
     });
 })
 
+test('add subactivity', () => {
+    return loadApp().then((app) => {
+        app.activities[0].client = {
+            id: 1,
+            name: 'client 1'
+        };
+        app.addSubactivity(1, {name: 'new task'});
+        const activity = app.activities[0];
+        const subactivity = app.activities[2];
+
+        expect(app.activities.length).toBe(3);
+        expect(activity.subactivities.length).toBe(1);
+        expect(subactivity.name).toEqual('new task');
+        expect(activity.subactivities[0]).toEqual(subactivity);
+        expect(subactivity.parentActivity).toEqual(activity);
+        expect(subactivity.client).toEqual(activity.client);
+        expect(subactivity.hourlyRate).toEqual(activity.hourlyRate);
+    });
+})

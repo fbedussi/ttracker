@@ -49,8 +49,18 @@ export function createNewActivity() {
     };
 }
 
-export function addNewActivityToClient(clientId) {
-    const data = backend.addNewActivityToClient(clientId);
+export function addNewActivityToClient(client) {
+    const data = backend.addNewActivityToClient(client.id);
+
+    return {
+        type: 'UPDATE_DATA',
+        data,
+        lastCreatedActivityId: data.activities[data.activities.length - 1].id        
+    };
+}
+
+export function addSubactivity(activity) {
+    const data = backend.addSubactivity(activity.id, {name: 'new task'});
 
     return {
         type: 'UPDATE_DATA',

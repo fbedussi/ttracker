@@ -8,6 +8,7 @@ import {
     startActivity,
     stopActivity,
     updateActivity,
+    addSubactivity,
 } from '../actions';
 
 import {formatTime} from '../helpers/helpers';
@@ -23,15 +24,9 @@ import Chip from 'material-ui/Chip';
 
 import EditableText from './EditableText';
 import TimerBox from './TimerBox';
+import ActivityChip from './ActivityChip';
 
 const styles = {
-    chip: {
-        margin: 4,
-    },
-    wrapper: {
-        display: 'flex',
-        flexWrap: 'wrap',
-    },
     fab: {
         display: 'none',
         position: 'fixed',
@@ -56,6 +51,7 @@ const mapDispatchToProps = (dispatch) => ({
     startActivity: (activity) => dispatch(startActivity(activity)),
     stopActivity: (activityId) => dispatch(stopActivity(activityId)),
     changeActivityName: (activity, newName) => dispatch(updateActivity(activity, {name: newName})),
+    addSubactivity: (activity) => dispatch(addSubactivity(activity))
 });
 
 
@@ -73,13 +69,16 @@ class ActivityTab extends Component {
             stopActivity,
             changeActivityName,
             ongoingActivities,
-            lastCreatedActivityId       
+            lastCreatedActivityId,
+            addSubactivity,    
         } = this.props;
         styles.fab.display = activeTab === 'activities' ? 'block' : 'none';
 
         return (
             <div>
-                {activities.map((activity) => {
+                {activities
+                    .filter((activity) => !activity.parentActivity || !activity.parentActivity.id)
+                    .map((activity) => {
                     return <Card
                         key={activity.id}
                         style={{ position: 'relative' }}
@@ -98,7 +97,7 @@ class ActivityTab extends Component {
                                 text={activity.name}
                                 handleChange={(text) => changeActivityName(activity, text)}
                             />
-                            <div style={activity.client && activity.client.name ? {display: 'block'} : {display: 'none'}}>
+                            <div className="cardClientName" style={activity.client && activity.client.name ? {display: 'block'} : {display: 'none'}}>
                                 <span>Client: </span>
                                 <Link to={`/client/${activity.client.id}`}>
                                    {activity.client.name}
@@ -144,15 +143,21 @@ class ActivityTab extends Component {
                                 <span className="totalCostToBill">{Math.round(activity.totalCostToBill)}</span>
                             </div>
                             
-                            <h2 className="sectionSubtitle">Tasks</h2>
-                            <div style={styles.wrapper}>
-                                {activity.subactivities.map((subactivity) => <Chip
-                                    style={styles.chip}
-                                    onRequestDelete={() => { }}
-                                >
-                                    {subactivity.name}
-                                </Chip>)}
-                            </div>
+                            <h2 className="sectionSubtitle">Tasks 
+                                <FlatButton
+                                    icon={<ContentAdd />}
+                                    onClick={() => {
+                                        addSubactivity(activity);
+                                    }}
+                                />
+                            </h2>
+                            
+                            <div className="chipWrapper">
+                            {activity.subactivities.map((activity) => <ActivityChip
+                                key={activity.id}
+                                activity={activity}
+                            />)}
+                        </div>
 
                         </CardText>
                     </Card>

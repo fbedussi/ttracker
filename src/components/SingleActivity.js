@@ -9,16 +9,18 @@ import {
     updateTimeEntry,
     startActivity,
     stopActivity,
-    
+    addSubactivity,    
 } from '../actions';
 
 import DeleteIcon from 'material-ui/svg-icons/action/delete';
 import FlatButton from 'material-ui/FlatButton';
+import ContentAdd from 'material-ui/svg-icons/content/add';
 
 import EditableText from './EditableText';
 import TimerBox from './TimerBox';
 import BackToHome from './BackToHome';
 import TimeEntriesRegistry from './TimeEntriesRegistry';
+import ActivityChip from './ActivityChip';
 
 const mapStateToProps = (state) => ({
     clients: state.data.clients,
@@ -35,7 +37,8 @@ const mapDispatchToProps = (dispatch) => ({
     startActivity: (activity) => dispatch(startActivity(activity)),
     stopActivity: (activity) => dispatch(stopActivity(activity)),
     changeActivityHourlyRate: (activity, hourlyRate) => dispatch(updateActivity(activity, {hourlyRate: Number(hourlyRate)})),
-    updateTimeEntry: (props) => dispatch(updateTimeEntry(props))
+    updateTimeEntry: (props) => dispatch(updateTimeEntry(props)),
+    addSubactivity: (activity) => dispatch(addSubactivity(activity)),    
 });
 
 
@@ -54,6 +57,7 @@ class SingleActivity extends Component {
             updateTimeEntry,
             ongoingActivities,
             lastCreatedActivityId,
+            addSubactivity,            
         } = this.props;
         const activityId = Number(this.props.match.params.activityId);
         const activity = activities
@@ -75,6 +79,13 @@ class SingleActivity extends Component {
                 <div className="activityId row">
                     Activity Id: {activity.id}
                 </div>
+                {activity.parentActivity && activity.parentActivity.id ? <div>
+                    <span>Parent activity: </span>
+                    <Link to={`/activity/${activity.parentActivity.id}`}>
+                        {activity.parentActivity.name}
+                    </Link>
+                </div>
+                : null}
                 <h1 className="activityTitleBar titleBar">
                     <EditableText
                         className="activityName row"
@@ -116,6 +127,23 @@ class SingleActivity extends Component {
                     startActivity={startActivity}
                     stopActivity={stopActivity}
                 />
+
+                <h2 className="sectionSubtitle">Tasks 
+                    <FlatButton
+                        icon={<ContentAdd />}
+                        onClick={() => {
+                            addSubactivity(activity);
+                        }}
+                    />
+                </h2>
+                
+                <div className="chipWrapper">
+                    {activity.subactivities.map((activity) => <ActivityChip
+                        key={activity.id}
+                        activity={activity}
+                    />)}
+                </div>
+
                 <TimeEntriesRegistry 
                     activity={activity}
                     currency={currency}

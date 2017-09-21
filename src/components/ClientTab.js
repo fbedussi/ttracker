@@ -38,7 +38,7 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
     createNewClient: () => dispatch(createNewClient()),
     deleteClient: (client) => dispatch(deleteClient(client)),
-    addNewActivityToClient: (clientId) => dispatch(addNewActivityToClient(clientId)),
+    addNewActivityToClient: (client) => dispatch(addNewActivityToClient(client)),
     updateClient: (client, newName) => dispatch(updateClient(client, newName)),
 });
 
@@ -106,7 +106,7 @@ class ClientTab extends Component {
                             <FlatButton
                                 icon={<ContentAdd />}
                                 onClick={() => {
-                                    addNewActivityToClient(client.id);
+                                    addNewActivityToClient(client);
                                 }}
                             />
                         </h2>

@@ -87,13 +87,14 @@ var Activity = {
     getTotalCost: function(sinceTime = 0) {
         return convertMsToH(this.getTotalTime(sinceTime)) * this.hourlyRate;
     },
-    addSubactivity: function(props) {
+    addSubactivity: function(props = {}) {
         var newActivity;
 
         if (!props.hourlyRate) {
             props.hourlyRate = this.hourlyRate;
         }
         props.parentActivity = this;
+        props.client = this.client;
         
         newActivity = createActivity(props);
         this.subactivities.push(newActivity);
@@ -169,7 +170,7 @@ var Activity = {
     },
     exportForDb: function() {
         var objToSave = Object.assign({},this);
-        objToSave.parentActivity = objToSave.parentActivity.id? {id: objToSave.parentActivity.id} : {};
+        objToSave.parentActivity = objToSave.parentActivity && objToSave.parentActivity.id? {id: objToSave.parentActivity.id} : {};
         objToSave.client = objToSave.client.id ? {id: objToSave.client.id} : {};
         objToSave.subactivities = objToSave.subactivities.map((subactivity) => ({id: subactivity.id}));
 
@@ -184,7 +185,8 @@ var Activity = {
             totalTime: this.getTotalTime(),
             
             subactivities: this.subactivities.map((activity) => activity.exportForClient ? activity.exportForClient() : Object.assign({}, activity)),            
-            client: Object.assign({}, this.client),            
+            client: Object.assign({}, this.client),
+            parentActivity: this.parentActivity ? this.parentActivity : {}         
         });
   
         return objToExport;
@@ -196,7 +198,7 @@ var Activity = {
                 this.client = client;
             }
         }
-
+        this.parentActivity = activities.filter((activity) => activity.id === this.parentActivity.id)[0];
         this.subactivities = this.subactivities
             .map((subActivity) => activities
                 .filter((storedActivity) => storedActivity.id === subActivity.id)[0]
