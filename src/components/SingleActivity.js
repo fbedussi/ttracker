@@ -7,8 +7,7 @@ import {
     updateTimeEntry,
     startActivity,
     stopActivity,
-    disableEditActivity,
-    enabelEditActivityName
+    
 } from '../actions';
 
 import DeleteIcon from 'material-ui/svg-icons/action/delete';
@@ -20,9 +19,11 @@ import BackToHome from './BackToHome';
 import TimeEntriesRegistry from './TimeEntriesRegistry';
 
 const mapStateToProps = (state) => ({
-    clients: state.clients,
-    activities: state.activities,
-    currency: state.currency
+    clients: state.data.clients,
+    activities: state.data.activities,
+    currency: state.options.currency,
+    ongoingActivities: state.ui.ongoingActivities,
+    lastCreatedActivityId: state.ui.lastCreatedActivityId,        
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -30,9 +31,7 @@ const mapDispatchToProps = (dispatch) => ({
     changeActivityName: (activity, newName) => dispatch(updateActivity(activity, {name: newName})),    
     deleteActivity: (activity) => dispatch(deleteActivity(activity)),    
     startActivity: (activity) => dispatch(startActivity(activity)),
-    stopActivity: (activityId) => dispatch(stopActivity(activityId)),
-    disableEdit: (id) => dispatch(disableEditActivity(id)),
-    enabelEditActivityName: (id) => dispatch(enabelEditActivityName(id)),
+    stopActivity: (activity) => dispatch(stopActivity(activity)),
     changeActivityHourlyRate: (activity, hourlyRate) => dispatch(updateActivity(activity, {hourlyRate: Number(hourlyRate)})),
     updateTimeEntry: (props) => dispatch(updateTimeEntry(props))
 });
@@ -52,7 +51,8 @@ class SingleActivity extends Component {
             disableEdit,
             changeActivityHourlyRate,
             updateTimeEntry,
-            enabelEditActivityName
+            ongoingActivities,
+            lastCreatedActivityId,
         } = this.props;
         const activityId = Number(this.props.match.params.activityId);
         const activity = activities
@@ -77,7 +77,7 @@ class SingleActivity extends Component {
                 <h1 className="activityTitleBar">
                     <EditableText
                         className="activityName row"
-                        editable={activity.editableName}
+                        editable={lastCreatedActivityId === activity.id}
                         text={activity.name}
                         handleChange={(text) => changeActivityName(activity, text)}
                     />
@@ -90,6 +90,10 @@ class SingleActivity extends Component {
                         }}
                     />
                 </h1>
+                <div className="hourlyRateWrapper row">
+                    <span className="clientLabel">Client: </span>
+                    <span className="clientName">{activity.client.name}</span>
+                </div>
                 <div className="hourlyRateWrapper row">
                     <span className="hourlyRateLabel">{`Hourly rate: ${currency}`} </span>
                     <EditableText
@@ -105,11 +109,12 @@ class SingleActivity extends Component {
                 </div>
                 <TimerBox 
                     activity={activity}
+                    isOngoing={ongoingActivities.includes(activity.id)}
                     startActivity={startActivity}
                     stopActivity={stopActivity}
                 />
                 <TimeEntriesRegistry 
-                    activityId={activity.id}
+                    activity={activity}
                     currency={currency}
                     updateTimeEntry={updateTimeEntry}
                     deleteTimeEntry={deleteTimeEntry}

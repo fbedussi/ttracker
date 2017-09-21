@@ -1,16 +1,20 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { createStore, applyMiddleware } from 'redux';
+import { createStore, applyMiddleware, combineReducers } from 'redux';
 import thunkMiddleware from 'redux-thunk';
 import { Provider } from 'react-redux';
 
-import reducer from './reducers';
+import {dataReducer, uiReducer, optionsReducer} from './reducers';
 import { load } from './actions';
 
 import App from './components/App';
 //import registerServiceWorker from './registerServiceWorker';
 
-const store = createStore(reducer, applyMiddleware(thunkMiddleware));
+const store = createStore(combineReducers({
+    data: dataReducer,
+    ui: uiReducer,
+    options: optionsReducer
+  }), applyMiddleware(thunkMiddleware));
 
 function run() {
     ReactDOM.render(

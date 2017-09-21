@@ -10,126 +10,77 @@ function removeActivityFromClient(client, activityId) {
     return client;
 }
 
-export default function reducer(state = {
+export function dataReducer(state = {
     clients: [],
     activities: [],
-    activeTab: 'clients',
-    currency: '€',
-    selectNewEndTimeForTimeEntry: null,
-    timeEntriesRegistryAsTable: false
 }, action) {
 	switch (action.type) {
-		case 'LOAD_APP':
-			return Object.assign({}, state, {
-                clients: action.clients,
-                activities: action.activities
-            });
-           
-        case 'ADD_CLIENT':
+        case 'UPDATE_DATA':
             return Object.assign({}, state, {
-                clients: state.clients.concat(Object.assign({}, action.client, {editableName: true}))
-            });
-
-        case 'REMOVE_CLIENT':
-            return Object.assign({}, state, {
-                clients: state.clients.filter((client) => client.id !== action.id)
+                clients: action.data.clients,
+                activities: action.data.activities
             });
         
-        case 'UPDATE_CLIENT':
+        case 'START_ACTIVITY':
             return Object.assign({}, state, {
-                clients: state.clients.map((client) => client.id === action.client.id ? action.client : client)
-            });
-        
-        case 'ADD_NEW_ACTIVITY_TO_CLIENT':
-            return Object.assign({}, state, {
-                activities: state.activities.concat(Object.assign({}, action.activity, {editableName: true})),
-                clients: state.clients.map((client) => client.id === action.clientId ? 
-                    Object.assign({}, client, {
-                        activities: client.activities.concat(action.activity.id)
-                    })
-                    : client)
-            })
-
-        case 'DISABLE_EDIT_CLIENT':
-            return Object.assign({}, state, {
-                clients: state.clients.map((client) => (!action.clientId || client.id === action.clientId) ? Object.assign({}, client, {editableName: false}) : client)
+                clients: action.data.clients,
+                activities: action.data.activities
             });
 
-        case 'ADD_ACTIVITY':
+        case 'STOP_ACTIVITY':
             return Object.assign({}, state, {
-                activities: state.activities.concat(Object.assign({}, action.activity, {editableName: true}))
+                clients: action.data.clients,
+                activities: action.data.activities
             });
 
-        case 'ENABLE_EDIT_ACTIVITY_NAME':
+		default:
+			return state;
+	}
+}
+
+export function uiReducer(state = {
+    activeTab: 'clients',
+    ongoingActivities: [],
+    selectNewEndTimeForTimeEntry: null,
+    timeEntriesRegistryAsTable: false,
+    lastCreatedActivityId: undefined,
+}, action) {
+	switch (action.type) {
+        case 'UPDATE_DATA':
             return Object.assign({}, state, {
-                activities: state.activities.map((activity) => activity.id === action.activityId ? 
-                    Object.assign({}, activity, {editableName: true})
-                    : activity
-                )
+                lastCreatedActivityId: action.lastCreatedActivityId,
+                lastCreatedClientId: action.lastCreatedClientId
             });
 
-        case 'DISABLE_EDIT_ACTIVITY':
-            return Object.assign({}, state, {
-                activities: state.activities.map((activity) => (!action.activityId || activity.id === action.activityId) ? 
-                    Object.assign({}, activity, {editableName: false}) 
-                    : activity
-                )
-            });
-
-        case 'REMOVE_ACTIVITY':
-            return Object.assign({}, state, {
-                activities: state.activities.filter((activity) => activity.id !== action.id),
-                clients: state.clients.map((client) => removeActivityFromClient(client, action.id))
-            });
-
-        case 'UPDATE_ACTIVITY':
-            return Object.assign({}, state, {
-                activities: state.activities.map((activity) => activity.id === action.activity.id ? action.activity : activity)
-            });
-
-        case 'UPDATE_ACTIVITY_IN_CLIENT':
-            return Object.assign({}, state, {
-                activities: state.activities.map((activity) => activity.id === action.activity.id ? action.activity : activity),
-                clients: state.clients.map((client) => client.id === action.clientId ? Object.assign({}, client, 
-                    {
-                        activities: client.activities.map((activity) => activity.id === action.activity.id ? action.activity : activity)
-                    }
-                ) : client)                
-            });
-
-        case 'REMOVE_TIMEENTRY':
-            return Object.assign({}, state, {
-                activities: state.activities.map((activity) => activity.id === removeTimeEntryFromActivity(activity, action.timeEntryId) ? activity: activity)
-            });
-
-        case 'UPDATE_TIMEENTRY':
-            return Object.assign({}, state);
-        
         case 'SET_ACTIVE_TAB':
             return Object.assign({}, state, {
                 activeTab: action.activeTab
             });
         
-        case 'START_ACTIVITY':
-            return Object.assign({}, state, {
-                activities: state.activities.map((activity) => activity.id === action.id ? Object.assign({}, activity, {
-                    active: true,
-                    timeEntries: activity.timeEntries.concat(action.newTimeEntry)
-                }) : activity)
-            });
-
-        case 'UPDATE_DATA':
-            return Object.assign({}, state, {
-                activities: action.activities,
-                clients: action.clients
-            });
-
         case 'TOGGLE_TIMEENTRIES_REGISTRY_AS_TABLE':
             return Object.assign({}, state, {
                 timeEntriesRegistryAsTable: !state.timeEntriesRegistryAsTable
             });
+        
+        case 'START_ACTIVITY':
+            return Object.assign({}, state, {
+                ongoingActivities: state.ongoingActivities.concat(action.activityId)
+            });
 
+        case 'STOP_ACTIVITY':
+            return Object.assign({}, state, {
+                ongoingActivities: state.ongoingActivities.filter((ongoingActivityId) => ongoingActivityId !== action.activityId)
+            });
 
+		default:
+			return state;
+	}
+}
+
+export function optionsReducer(state = {
+    currency: '€',
+}, action) {
+	switch (action.type) {
 		default:
 			return state;
 	}

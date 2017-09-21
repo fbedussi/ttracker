@@ -3,7 +3,7 @@
         return destObj;
     }
 
-    for (var key in destObj) {        
+    Object.keys(destObj).forEach((key) => {
         if (sourceObj[key] && typeof destObj[key] === typeof sourceObj[key]) {
             if (destObj[key].constructor !== Object) { //typeof !== 'object' won't work becaouse returns true for arrays
                 destObj[key] = sourceObj[key];
@@ -11,7 +11,9 @@
                 merge(destObj[key], sourceObj[key]);
             }
         }
-    }
+    });
+
+    return destObj;
 }
 
 export default merge;

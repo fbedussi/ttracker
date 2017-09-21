@@ -6,8 +6,6 @@ import {
     startActivity,
     stopActivity,
     updateActivity,
-    disableEditActivity,
-    enabelEditActivityName    
 } from '../actions';
 import Subheader from 'material-ui/Subheader';
 import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
@@ -39,10 +37,12 @@ const styles = {
 };
 
 const mapStateToProps = (state) => ({
-    clients: state.clients,
-    activities: state.activities,
-    activeTab: state.activeTab,
-    currency: state.currency
+    clients: state.data.clients,
+    activities: state.data.activities,
+    activeTab: state.ui.activeTab,
+    currency: state.options.currency,
+    ongoingActivities: state.ui.ongoingActivities,
+    lastCreatedActivityId: state.ui.lastCreatedActivityId,    
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -51,8 +51,6 @@ const mapDispatchToProps = (dispatch) => ({
     startActivity: (activity) => dispatch(startActivity(activity)),
     stopActivity: (activityId) => dispatch(stopActivity(activityId)),
     changeActivityName: (activity, newName) => dispatch(updateActivity(activity, {name: newName})),
-    disableEdit: (id) => dispatch(disableEditActivity(id)),
-    enabelEditActivityName: (id) => dispatch(enabelEditActivityName(id))    
 });
 
 
@@ -69,6 +67,8 @@ class ActivityTab extends Component {
             startActivity,
             stopActivity,
             changeActivityName,
+            ongoingActivities,
+            lastCreatedActivityId       
         } = this.props;
         styles.fab.display = activeTab === 'activities' ? 'block' : 'none';
 
@@ -97,7 +97,7 @@ class ActivityTab extends Component {
                         >
                             <EditableText
                                 className="cardTitle"
-                                editable={activity.editableName}
+                                editable={lastCreatedActivityId === activity.id}
                                 text={activity.name}
                                 handleChange={(text) => changeActivityName(activity, text)}
                             />
@@ -114,8 +114,9 @@ class ActivityTab extends Component {
                                 icon={<DeleteIcon />}
                                 onClick={() => deleteActivity(activity)}
                             />
-                            <TimerBox
+                            <TimerBox 
                                 activity={activity}
+                                isOngoing={ongoingActivities.includes(activity.id)}
                                 startActivity={startActivity}
                                 stopActivity={stopActivity}
                             />

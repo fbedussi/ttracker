@@ -12,7 +12,6 @@ const openDb = (dbName) => new Promise((resolve, reject) => {
     request.onupgradeneeded = (event) => {
         const db = event.target.result;
 
-        db.createObjectStore('timeEntry', { keyPath: "id" });
         db.createObjectStore('activity', { keyPath: "id" });
         db.createObjectStore('client', { keyPath: "id" });
     };

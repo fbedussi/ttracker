@@ -19,3 +19,4 @@ export const getOnlyOwnProperies = (obj) => {
     return newObj;
 }
 
+export const deepCloneDataObject = (dataObject) => JSON.parse(JSON.stringify(dataObject));

@@ -11,14 +11,11 @@ const styles = {
 };
 
 const ActivityChip = ({
-        activities,
-        activityId,
+        activity,
     }) => {
-    
-    const activity = activities.find((activity) => activity.id === activityId);
 
     return (
-        <Link to={`/activity/${activityId}`}>
+        <Link to={`/activity/${activity.id}`}>
             <Chip
                 style={styles.chip}
             >                    

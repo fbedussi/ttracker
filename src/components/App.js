@@ -13,8 +13,8 @@ import '../style/app.css';
 import Style from '../style/Style.js';
 
 const mapStateToProps = (state) => ({
-  clients: state.clients,
-  activities: state.activities
+  clients: state.data.clients,
+  activities: state.data.activities
 });
 
 const mapDispatchToProps = (dispatch) => ({

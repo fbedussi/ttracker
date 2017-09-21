@@ -8,88 +8,100 @@ beforeEach(() => {
     Object.keys(db).forEach(method => db[method].mockClear());
 });
 
-test('Create activity with default name', () => {
-    const activity = createActivity({
-        hourlyRate: 10
-    });
+test('Create activity with default data', () => {
+    const activity = createActivity();
 
     expect(activity.id > 0).toBe(true);
-    expect(activity.startTime > 0).toBe(true);
+    expect(activity.hourlyRate === 0).toBe(true);
+    expect(activity.client).toEqual({});
+    expect(activity.parentActivity).toEqual({});
     expect(activity.name).toBe('new activity');
-    expect(activity.hourlyRate).toBe(10);
     expect(activity.subactivities).toEqual([]);
+    expect(activity.timeEntries).toEqual([]);
     expect(db.create).toBeCalled();
 });
 
-test('Create activity with custom name and subacivities', () => {
+test('Create activity with custom data', () => {
     const activity = createActivity({
         name: 'Custom name',
-        subactivities: [{id: 1}, {id: 2}],
-        hourlyRate: 10
+        hourlyRate: 10,
+        client: {
+            id: 1,
+            name: 'baz'
+        }
     });
 
-    expect(activity.name).toBe('Custom name');
-    expect(activity.subactivities.length).toBe(2);
+    expect(activity.name).toEqual('Custom name');
+    expect(activity.hourlyRate).toBe(10);
+    expect(activity.client.id).toBe(1);
+    expect(activity.client.name).toBe('baz');
 });
 
 test('activity.delete()', () => {
+    const removeActivity = jest.fn();
+    const deleteSubactivity = jest.fn();
     const activity = createActivity({
-        hourlyRate: 10,
-        subactivities: [{delete: jest.fn()}],
-        timeEntries: [{delete: jest.fn()}]
+        client: {id: 1, removeActivity: removeActivity},
+        subactivities: [{id: 1, delete: deleteSubactivity}]
     });
 
     activity.delete();
     expect(db.delete).toBeCalled();
+    expect(removeActivity).toBeCalled();
+    expect(deleteSubactivity).not.toBeCalled();
+});
+
+test('activity.delete(true) delete subactivities', () => {
+    const activity = createActivity({
+        client: [{deleteActivity: jest.fn()}],
+        subactivities: [{delete: jest.fn()}, {delete: jest.fn()}]
+    });
+
+    activity.delete(true);
+    expect(db.delete).toBeCalled();
     expect(activity.subactivities[0].delete).toBeCalled();
-    expect(activity.timeEntries[0].delete).toBeCalled();
+    expect(activity.subactivities[1].delete).toBeCalled();
 });
 
 test('activity.update()', () => {
-    const activity = createActivity({
-        hourlyRate: 10
-    });
+    const activity = createActivity();
     
-    activity.update({name: 'baz'});
-    expect(activity.name).toBe('baz');
+    const updatedActivity = activity.update({name: 'baz'});
+    expect(updatedActivity.name).toBe('baz');
     expect(db.update).toBeCalled();    
 });
 
 test('activity.getTotaleTime()', () => {
     const activity = createActivity({
-        hourlyRate: 10
-    });
-
-    activity.update({
-        subactivities: [{getTotalTime: function() {return 3600000}}, {getTotalTime: function() {return 3600000}}],
+        subactivities: [{getTotalTime: function() {return 10}}, {getTotalTime: function() {return 10}}],
         timeEntries: [{
-            endTime: 1,
-            getTotalTime: function() {return 3600000}
+            startTime: 10,
+            endTime: 20,
+            duration: 10
         }, {
-            endTime: 2,
-            getTotalTime: function() {return 3600000}
+            startTime: 30,
+            endTime: 40,
+            duration: 10
         }]
     });
 
-    expect(activity.getTotalTime()).toBe(3600000 * 4);
+    expect(activity.getTotalTime()).toBe(40);
 });
 
 test('activity.getTotaleTime() since a specific time', () => {
     const activity = createActivity({
-        hourlyRate: 10
-    });
-
-    activity.update({
         timeEntries: [{
-            endTime: new Date("1/1/2017 15:00:00").getTime(),
-            getTotalTime: function() {return 3600000}
+            startTime: 10,
+            endTime: 20,
+            duration: 10
         }, {
-            endTime: new Date("3/1/2017 15:00:00").getTime(),
-            getTotalTime: function() {return 3600000}
+            startTime: 30,
+            endTime: 40,
+            duration: 10
         }]
     });
 
-    expect(activity.getTotalTime(new Date("2/1/2017 15:00:00").getTime(),)).toBe(3600000);
+    expect(activity.getTotalTime(25)).toBe(10);
 });
 
 test('activity.getTotaleCost()', () => {
@@ -106,39 +118,51 @@ test('activity.getTotaleCost() since a specific time', () => {
     const activity = loadActivity({
         hourlyRate: 10,
         timeEntries: [{
-            startTime: new Date("1/1/2017 15:00:00").getTime(),
-            endTime: new Date("1/1/2017 16:00:00").getTime()
-        }, { 
-            startTime: new Date("3/1/2017 15:00:00").getTime(),
-            endTime: new Date("3/1/2017 16:00:00").getTime()
+            startTime: new Date("2/1/2017 16:00:00").getTime(),
+            endTime: new Date("2/1/2017 17:00:00").getTime(),
+            duration: 60 * 60 * 1000
+        }, {
+            startTime: new Date("2/3/2017 16:00:00").getTime(),
+            endTime: new Date("2/3/2017 17:00:00").getTime(),
+            duration: 60 * 60 * 1000
         }]
     });
 
-    expect(activity.getTotalCost(new Date("2/1/2017 16:00:00").getTime())).toBe(10);
+    expect(activity.getTotalCost(new Date("2/2/2017 16:00:00").getTime())).toBe(10);
 });
 
 test('activity.addSubactivity()', () => {
-    const activity = createActivity({
-        hourlyRate: 10
-    });
+    const activity = createActivity();
 
     const subactivity = {
         name: 'subactivity1'
     }
-    const result = activity.addSubactivity(subactivity);
-    expect(activity.subactivities.length).toBe(1);
-    expect(result.name).toBe('subactivity1');
+    const updatedActivity = activity.addSubactivity(subactivity);
+    expect(updatedActivity.subactivities.length).toBe(1);
+    expect(updatedActivity.subactivities[0].name).toBe('subactivity1');
+    expect(updatedActivity.subactivities[0].parentActivity).toEqual(activity);
     expect(db.update).toBeCalled();    
 });
 
 test('activity.removeSubactivity()', () => {
     const activity = createActivity({
-        hourlyRate: 10,
         subactivities: [{id: 1}, {id: 2}]
     });
 
-    activity.removeSubactivity(2);
-    expect(activity.subactivities.length).toBe(1);
+    const updatedActivity = activity.removeSubactivity(2);
+    expect(updatedActivity.subactivities.length).toBe(1);
+    expect(db.update).toBeCalled();    
+});
+
+test('activity.removeSubactivity(id, true) delete subactivity', () => {
+    const deleteSubactivity = jest.fn();
+    const activity = createActivity({
+        subactivities: [{id: 1}, {id: 2, delete: deleteSubactivity}]
+    });
+
+    const updatedActivity = activity.removeSubactivity(2, true);
+    expect(updatedActivity.subactivities.length).toBe(1);
+    expect(deleteSubactivity).toBeCalled();
     expect(db.update).toBeCalled();    
 });
 
@@ -147,29 +171,85 @@ test('activity.start()', () => {
         timeEntries: [{id: 1}]
     });
 
-    const result = activity.start();
-    expect(activity.timeEntries.length).toBe(2);
-    expect(isNaN(result.id)).toBe(false);
+    const updatedActivity = activity.start();
+    expect(updatedActivity.timeEntries.length).toBe(2);
     expect(db.update).toBeCalled();    
 });
 
 test('activity.stop()', () => {
     const activity = createActivity({
-        timeEntries: [{id: 1, stop: jest.fn()}]
+        timeEntries: [{id: 1, startTime: 1, endTime: 0}]
     });
 
-    const result = activity.stop();
-    expect(activity.timeEntries[0].stop).toBeCalled();    
+    const updatedActivity = activity.stop();
+    expect(updatedActivity.timeEntries[0].endTime > 0).toBe(true);    
 });
 
-test('activity.removeTimeEntry()', () => {
-    const del = jest.fn();
+test('activity.deleteTimeEntry()', () => {
     const activity = createActivity({
-        timeEntries: [{id: 1, delete: del}]
+        timeEntries: [{startTime: 1}, {startTime: 2}]
     });
 
-    activity.removeTimeEntry(1);
-    expect(del).toBeCalled();
-    expect(activity.timeEntries.length).toBe(0);
+    const updatedActivity = activity.deleteTimeEntry({startTime: 2});    
+    expect(updatedActivity.timeEntries.length).toBe(1);
     expect(db.update).toBeCalled();    
+});
+
+test('activity.updateTimeEntry()', () => {
+    const activity = createActivity({
+        timeEntries: [{id: 1, startTime: 10, endTime: 20}]
+    });
+
+    const updatedActivity = activity.updateTimeEntry({id: 1, endTime: 30});    
+    expect(updatedActivity.timeEntries[0].endTime).toBe(30);
+    expect(db.update).toBeCalled();    
+});
+
+test('activity.exportForDb()', () => {
+    const activity = createActivity({
+        name: 'activity',
+        hourlyRate: 10,
+        client: {id: 1, name: 'client'},
+        parentActivity: {},
+        timeEntries: [{id: 1, startTime: 10, endTime: 20}],
+        subactivities: [{id: 1, name: 'baz'}, {id: 2, name: 'bar'}]
+    });
+
+    const activityReadyForDB = activity.exportForDb();    
+    expect(activityReadyForDB).toEqual({
+        id: activityReadyForDB.id,
+        name: 'activity',
+        hourlyRate: 10,
+        client: {id: 1},
+        parentActivity: {},
+        timeEntries: [{id: 1, startTime: 10, endTime: 20}],
+        subactivities: [{id: 1}, {id:2}]
+    });
+});
+
+
+test('activity.exportForClient()', () => {
+    const activity = createActivity({
+        name: 'activity',
+        hourlyRate: 10,
+        parentActivity: {},
+        client: {id: 1, name: 'client', lastBilledDate: 25},
+        timeEntries: [{id: 1, startTime: 10, endTime: 20, duration: 1 * 1000 * 60 * 60}, {id: 2, startTime: 30, endTime: 40, duration: 1 * 1000 * 60 * 60}],
+        subactivities: [{id: 1, name: 'baz'}, {id: 2, name: 'bar'}]
+    });
+
+    const activityReadyForClient = activity.exportForClient();    
+    expect(activityReadyForClient).toEqual({
+        id: activityReadyForClient.id,
+        name: 'activity',
+        hourlyRate: 10,
+        parentActivity: {},
+        client: {id: 1, name: 'client', lastBilledDate: 25},
+        timeEntries: [{id: 1, startTime: 10, endTime: 20, duration: 1 * 1000 * 60 * 60}, {id: 2, startTime: 30, endTime: 40, duration: 1 * 1000 * 60 * 60}],
+        subactivities: [{id: 1, name: 'baz'}, {id: 2, name: 'bar'}],
+        totalTime: 2 * 1000 * 60 * 60,
+        totalCost: 20,
+        totalTimeToBill: 1 * 1000 * 60 * 60,
+        totalCostToBill: 10
+    });
 });

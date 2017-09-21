@@ -4,8 +4,7 @@ import {
     createNewClient,
     deleteClient,
     addNewActivityToClient,
-    changeClientName,
-    disableEditClient
+    updateClient,
 } from '../actions';
 
 import Subheader from 'material-ui/Subheader';
@@ -33,17 +32,18 @@ const styles = {
 };
 
 const mapStateToProps = (state) => ({
-    clients: state.clients,
-    activities: state.activities,
-    activeTab: state.activeTab
+    clients: state.data.clients,
+    activities: state.data.activities,
+    activeTab: state.ui.activeTab,
+    currency: state.options.currency,
+    lastCreatedClientId: state.ui.lastCreatedClientId,
 });
 
 const mapDispatchToProps = (dispatch) => ({
     createNewClient: () => dispatch(createNewClient()),
     deleteClient: (client) => dispatch(deleteClient(client)),
     addNewActivityToClient: (clientId) => dispatch(addNewActivityToClient(clientId)),
-    changeClientName: (client, newName) => dispatch(changeClientName(client, newName)),
-    disableEdit: (id) => dispatch(disableEditClient(id))
+    updateClient: (client, newName) => dispatch(updateClient(client, newName)),
 });
 
 class ClientTab extends Component {
@@ -55,7 +55,9 @@ class ClientTab extends Component {
             createNewClient,
             deleteClient,
             addNewActivityToClient,
-            changeClientName,
+            updateClient,
+            currency,
+            lastCreatedClientId,
         } = this.props;
         styles.fab.display = activeTab === 'clients' ? 'block' : 'none';
 
@@ -73,9 +75,12 @@ class ClientTab extends Component {
                     >
                         <EditableText
                             className="cardTitle"
-                            editable={client.editableName}
+                            editable={lastCreatedClientId === client.id}
                             text={client.name}
-                            handleChange={(text) => changeClientName(client, text)}
+                            handleChange={(text) => updateClient({
+                                id: client.id,
+                                name: text
+                            })}
                         />
                     </CardHeader>
                     <CardActions>
@@ -89,7 +94,7 @@ class ClientTab extends Component {
                         <Subheader>Last billed date</Subheader>
                         <p>{new Date(client.lastBilledTime).toLocaleString()}</p>
                         <Subheader>Next invoice subtotal</Subheader>
-                        <p>€ 1,000</p>
+                        <p>{`${currency} ${client.totalCostToBill}`}</p>
                         <Subheader>Projects
                         <FlatButton
                                 icon={<ContentAdd />}
@@ -99,10 +104,9 @@ class ClientTab extends Component {
                             />
                         </Subheader>
                         <div style={styles.wrapper}>
-                            {client.activities.map((activityId) => <ActivityChip
-                                key={activityId}
-                                activities={activities}
-                                activityId={activityId}
+                            {client.activities.map((activity) => <ActivityChip
+                                key={activity.id}
+                                activity={activity}
                             />)}
                         </div>
 
