@@ -30,6 +30,11 @@ input.editable {
     margin: 2em 0 1em;
 }
 
+.sectionSubtitle {
+    font-size: 110%;
+    margin: 1em 0 0.5em;
+}
+
 .cardTitle {
     font-size: 150%;
 }
@@ -47,9 +52,13 @@ input.editable {
     margin-bottom: 1em;
 }
 
-.activityTitleBar {
+.titleBar {
     display: flex;
     justify-content: space-between;
+}
+
+.titleBar input {
+    width: calc(100% - 8rem);
 }
 
 .timeEntriesCards {
@@ -63,4 +72,13 @@ input.editable {
 
 .timeEntry-details {
     padding: 1em;
+}
+
+.chipWrapper {
+    display: 'flex';
+    flex-wrap: 'wrap';
+}
+
+.hourlyRate {
+    max-width: 8rem;
 }

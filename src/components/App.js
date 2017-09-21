@@ -8,6 +8,7 @@ import AppBar from 'material-ui/AppBar';
 
 import Home from './Home';
 import SingleActivity from './SingleActivity';
+import SingleClient from './SingleClient';
 
 import '../style/app.css';
 import Style from '../style/Style.js';
@@ -32,6 +33,7 @@ export class App extends Component {
             />
             <Route path="/" exact component={Home} />
             <Route path="/activity/:activityId" component={SingleActivity} />
+            <Route path="/client/:clientId" component={SingleClient} />
           </div>
         </MuiThemeProvider>
       </BrowserRouter>

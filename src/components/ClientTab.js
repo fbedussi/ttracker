@@ -10,7 +10,7 @@ import {
 import Subheader from 'material-ui/Subheader';
 import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
 import DeleteIcon from 'material-ui/svg-icons/action/delete';
-//import DetailsIcon from 'material-ui/svg-icons/action/pageview';
+import DetailsIcon from 'material-ui/svg-icons/action/pageview';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import FlatButton from 'material-ui/FlatButton';
@@ -19,10 +19,6 @@ import EditableText from './EditableText';
 import ActivityChip from './ActivityChip';
 
 const styles = {
-    wrapper: {
-        display: 'flex',
-        flexWrap: 'wrap',
-    },
     fab: {
         display: 'none',
         position: 'fixed',
@@ -49,6 +45,7 @@ const mapDispatchToProps = (dispatch) => ({
 class ClientTab extends Component {
     render() {
         const {
+            history,
             activeTab,
             clients,
             activities,
@@ -85,25 +82,35 @@ class ClientTab extends Component {
                     </CardHeader>
                     <CardActions>
                         <FlatButton
+                                label="Details"
+                                icon={<DetailsIcon />}
+                                onClick={() => history.push(`/client/${client.id}`)}
+                        />
+                        <FlatButton
                             label="Delete"
                             icon={<DeleteIcon />}
                             onClick={() => deleteClient(client)}
                         />
                     </CardActions>
                     <CardText expandable={true}>
-                        <Subheader>Last billed date</Subheader>
-                        <p>{new Date(client.lastBilledTime).toLocaleString()}</p>
-                        <Subheader>Next invoice subtotal</Subheader>
-                        <p>{`${currency} ${client.totalCostToBill}`}</p>
-                        <Subheader>Projects
-                        <FlatButton
+                        <div className="row">
+                            <span className="label">Last billed date </span>
+                            <span>{new Date(client.lastBilledTime).toLocaleString()}</span>
+                        </div>
+                        <div className="row">
+                            <span className="label">{`Total to bill: ${currency}`}</span>
+                            <span>{Math.round(client.totalCostToBill)}</span>
+                        </div>
+                        
+                        <h2 className="sectionSubtitle">Projects
+                            <FlatButton
                                 icon={<ContentAdd />}
                                 onClick={() => {
                                     addNewActivityToClient(client.id);
                                 }}
                             />
-                        </Subheader>
-                        <div style={styles.wrapper}>
+                        </h2>
+                        <div className="chipWrapper">
                             {client.activities.map((activity) => <ActivityChip
                                 key={activity.id}
                                 activity={activity}

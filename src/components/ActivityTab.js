@@ -7,6 +7,9 @@ import {
     stopActivity,
     updateActivity,
 } from '../actions';
+
+import {formatTime} from '../helpers/helpers';
+
 import Subheader from 'material-ui/Subheader';
 import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
 import DeleteIcon from 'material-ui/svg-icons/action/delete';
@@ -75,14 +78,6 @@ class ActivityTab extends Component {
         return (
             <div>
                 {activities.map((activity) => {
-                    const client = clients
-                        .filter((client) => client
-                            .activities
-                            .some((clientActivity) => clientActivity.id === activity.id)
-                        )
-                        .reduce((acc, item) => item, null)
-                        ;
-
                     return <Card
                         key={activity.id}
                         style={{ position: 'relative' }}
@@ -101,7 +96,7 @@ class ActivityTab extends Component {
                                 text={activity.name}
                                 handleChange={(text) => changeActivityName(activity, text)}
                             />
-                            <div>{client ? client.name : ''}</div>
+                            <div>{activity.client && activity.client.name ? 'Client: ' + activity.client.name : ''}</div>
                         </CardHeader>
                         <CardActions>
                             <FlatButton
@@ -123,21 +118,26 @@ class ActivityTab extends Component {
 
                         </CardActions>
                         <CardText expandable={true}>
-                            <Subheader>Total time</Subheader>
-                            {/* <p>{new Date(activity.getTotalTime()).toLocaleString()}</p> */}
+                            <div className="row">
+                                <span className="label">Total time: </span>
+                                <span className="totaleTime">{formatTime(activity.totalTime)}</span>
+                            </div>
                             <div className="totalCostWrapper row">
-                            <span className="totalCostLabel">{`Total cost: ${currency}`} </span>
-                            <span className="totalCost">{Math.round(activity.totalCost)}</span>
+                                <span className="totalCostLabel">{`Total cost: ${currency}`} </span>
+                                <span className="totalCost">{Math.round(activity.totalCost)}</span>
+                            </div>
 
-                            {/* <p>{`€ ${activity.getTotalCost()}`}</p> */}
-                            {/* <Subheader>Last billed date</Subheader>
-                            <p>{new Date(client.lastBilledDate()).toLocaleString()}</p>
-                            <Subheader>Next invoice subtotal</Subheader>
-                            <p>€ 1,000</p> */}
+                            <div className="row">
+                                <span className="label">Total time to bill: </span>
+                                <span className="totalTimeToBill">{formatTime(activity.totalTimeToBill)}</span>
+                            </div>
 
+                            <div className="totalCostWrapper row">
+                                <span className="label">{`Total cost: ${currency}`} </span>
+                                <span className="totalCostToBill">{Math.round(activity.totalCostToBill)}</span>
+                            </div>
                             
-                </div>
-                            <Subheader>Tasks</Subheader>
+                            <h2 className="sectionSubtitle">Tasks</h2>
                             <div style={styles.wrapper}>
                                 {activity.subactivities.map((subactivity) => <Chip
                                     style={styles.chip}

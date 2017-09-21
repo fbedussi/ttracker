@@ -40,6 +40,12 @@ var Activity = {
     load: function(props) {
         merge(this, props);
         //this.subactivities = this.subactivities.map(activityProps => loadActivity(activityProps));
+        if (props && props.client) {
+            this.client = props.client;
+        }
+        if (props && props.parentActivity) {
+            this.parentActivity = props.parentActivity;
+        }
         
         return this;
     },

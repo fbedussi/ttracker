@@ -48,7 +48,6 @@ class SingleActivity extends Component {
             changeActivityName,
             startActivity,
             stopActivity,
-            disableEdit,
             changeActivityHourlyRate,
             updateTimeEntry,
             ongoingActivities,
@@ -74,7 +73,7 @@ class SingleActivity extends Component {
                 <div className="activityId">
                     Activity Id: {activity.id}
                 </div>
-                <h1 className="activityTitleBar">
+                <h1 className="activityTitleBar titleBar">
                     <EditableText
                         className="activityName row"
                         editable={lastCreatedActivityId === activity.id}
@@ -90,7 +89,7 @@ class SingleActivity extends Component {
                         }}
                     />
                 </h1>
-                <div className="hourlyRateWrapper row">
+                <div className="clientWrapper row">
                     <span className="clientLabel">Client: </span>
                     <span className="clientName">{activity.client.name}</span>
                 </div>
