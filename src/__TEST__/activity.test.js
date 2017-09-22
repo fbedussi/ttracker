@@ -40,14 +40,20 @@ test('Create activity with custom data', () => {
 test('activity.delete()', () => {
     const removeActivity = jest.fn();
     const deleteSubactivity = jest.fn();
+    const parentActivity = {
+        id: 2,
+        removeSubactivity: jest.fn()
+    }
     const activity = createActivity({
         client: {id: 1, removeActivity: removeActivity},
+        parentActivity,
         subactivities: [{id: 1, delete: deleteSubactivity}]
     });
 
     activity.delete();
     expect(db.delete).toBeCalled();
     expect(removeActivity).toBeCalled();
+    expect(parentActivity.removeSubactivity).toBeCalled();
     expect(deleteSubactivity).not.toBeCalled();
 });
 

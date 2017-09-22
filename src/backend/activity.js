@@ -65,6 +65,10 @@ var Activity = {
             const updatedClient = this.client.removeActivity(this.id);
         }
 
+        if (this.parentActivity && this.parentActivity.id) {
+            this.parentActivity.removeSubactivity(this.id);
+        }
+
         deletedIds.push(this.id);
 
         db.delete(DBCOLLECTION, this.id);
@@ -73,7 +77,7 @@ var Activity = {
     },
     getTotalTime: function(sinceTime = 0) {
         var subactivitiesTotalTime = this.subactivities
-            .reduce((totalTime, subactivity) => subactivity.getTotalTime ? 
+            .reduce((totalTime, subactivity) => subactivity && subactivity.getTotalTime ? 
                 totalTime + subactivity.getTotalTime(sinceTime)
                 : 0
             , 0);
