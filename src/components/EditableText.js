@@ -1,11 +1,24 @@
 import React, { Component } from 'react';
 
 class EditableText extends Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            text: props.text,
+            editing: props.editable
+        }
+    }
+
     componentDidMount() {
         if (this.props.editable) {
             this.input.focus();
             this.input.select();
         }
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this.setState({text: nextProps.text});        
     }
 
     handleKeyUp(keyCode) {
@@ -15,8 +28,24 @@ class EditableText extends Component {
         this.input.blur();
     }
 
+    handleLocalChange(text) {
+        this.setState({
+            text,
+            editing: true
+        });
+    }
+
+    save(text) {
+        this.setState({
+            text,
+            editing: false
+        });
+
+        this.props.handleChange(text);
+    }
+
     render() {
-        const {
+        var {
             className,
             text,
             handleChange
@@ -26,8 +55,9 @@ class EditableText extends Component {
             <input
                 ref={(input) => { this.input = input; }}
                 className={className}
-                value={text}
-                onChange={(e) => handleChange(e.target.value)}
+                value={this.state.text}
+                onChange={(e) => this.handleLocalChange(e.target.value)}
+                onBlur={(e) => this.save(e.target.value)}
                 onKeyUp={(e) => this.handleKeyUp(e.keyCode)}
             />
         );
