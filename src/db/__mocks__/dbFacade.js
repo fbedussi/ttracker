@@ -20,6 +20,7 @@ function getCollection(collection) {
             id: 1,
             name: collection + ' bar',
             getTotalToBill: function() {return 10},
+            timeEntries: [{id: 1, startTime: 1000, endTime: 2000}, {id: 2, startTime: 3000, endTime: 3000}]
         },
         {
             id: 2,

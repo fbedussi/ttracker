@@ -8,7 +8,7 @@ const TimeEntriesAsCards = ({
         <div className="timeEntriesCards">
             {activity.timeEntries.map((timeEntry, i) =>
                 <TimeEntry
-                    key={timeEntry.startTime}
+                    key={timeEntry.id}
                     activity={activity}
                     timeEntry={timeEntry}
                 />

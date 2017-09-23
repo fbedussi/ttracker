@@ -126,6 +126,7 @@ var Activity = {
     },
     start: function() {
         const newTimeEntry = {
+            id: this.timeEntries.length + 1,
             startTime: Date.now(),
             endTime: 0,
             duration: 0
@@ -151,9 +152,9 @@ var Activity = {
         
         return this;
     },
-    deleteTimeEntry: function(timeEntryToDelete) {
+    deleteTimeEntry: function(timeEntryId) {
         this.timeEntries = this.timeEntries
-            .filter(timeEntry => timeEntry.startTime !== timeEntryToDelete.startTime);
+            .filter(timeEntry => timeEntry.id !== timeEntryId);
 
         //TODO: update DB only if something changes
         db.update(DBCOLLECTION, this.exportForDb());
@@ -166,7 +167,15 @@ var Activity = {
         }
 
         this.timeEntries = this.timeEntries
-            .map(timeEntry => timeEntry.id === props.id ? merge(timeEntry, props) : timeEntry);
+            .map(timeEntry => {
+                if (timeEntry.id !== props.id) {
+                    return timeEntry;
+                }
+
+                merge(timeEntry, props);
+                timeEntry.duration = timeEntry.endTime - timeEntry.startTime;
+                return timeEntry;
+            });
 
         db.update(DBCOLLECTION, this.exportForDb());
 
@@ -187,6 +196,7 @@ var Activity = {
             totalTimeToBill: this.getTotalTime(lastBilledDate),
             totalCostToBill: this.getTotalCost(lastBilledDate),
             totalTime: this.getTotalTime(),
+            timeEntries: this.timeEntries.map((timeEntry) => Object.assign({}, timeEntry, {cost: this.hourlyRate * convertMsToH(timeEntry.duration)})),
             
             subactivities: this.subactivities.map((activity) => activity.exportForClient ? activity.exportForClient() : Object.assign({}, activity)),            
             client: Object.assign({}, this.client),

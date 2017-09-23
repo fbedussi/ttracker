@@ -114,8 +114,8 @@ export function stopActivity(activity) {
     };
 }
 
-export function deleteTimeEntry(timeEntry, activity) {
-    const data = backend.deleteTimeEntry(activity.id, timeEntry);
+export function deleteTimeEntry(activity, timeEntry) {
+    const data = backend.deleteTimeEntry(activity.id, timeEntry.id);
 
     return {
         type: 'UPDATE_DATA',
@@ -132,12 +132,12 @@ export function updateActivity(activity, newProps) { //TODO: pass newprops only
     };
 }
 
-export function updateTimeEntry(props) { //TODO
-    //backend.get
+export function updateTimeEntry(activity, timeEntry) {
+    const data = backend.updateTimeEntry(activity.id, timeEntry);
 
     return {
-        type: 'UPDATE_TIME_ENTRY',
-        props
+        type: 'UPDATE_DATA',
+        data
     };
 }
 

@@ -164,21 +164,28 @@ test('start activity', () => {
 
 test('stop activity', () => {
     return loadApp().then((app) => {
-        app.startActivity(1);
+        app.startActivity(2);
         Date.now = () => 1000000000000000000000;
-        app.stopActivity(1);
-        expect(app.activities[0].timeEntries[0].endTime > 0).toBe(true);
-        expect(app.activities[0].timeEntries[0].duration > 0).toBe(true);
+        app.stopActivity(2);
+        expect(app.activities[1].timeEntries[0].endTime > 0).toBe(true);
+        expect(app.activities[1].timeEntries[0].duration > 0).toBe(true);
     });
 });
 
 test('delete timeEntry', () => {
     return loadApp().then((app) => {
-        app.startActivity(1);
-        const timeEntryStartTime = app._getActivity(1).timeEntries[0].startTime;
-        app.stopActivity(1);
-        app.deleteTimeEntry(1,{startTime: timeEntryStartTime});
-        expect(app.activities[0].timeEntries.length).toBe(0);
+        app.startActivity(2);
+        const timeEntryId = app._getActivity(2).timeEntries[0].id;
+        app.stopActivity(2);
+        app.deleteTimeEntry(2, timeEntryId);
+        expect(app.activities[1].timeEntries.length).toBe(0);
+    });
+});
+
+test('update timeEntry', () => {
+    return loadApp().then((app) => {
+        app.updateTimeEntry(1, {id: 1, startTime: 1000, endTime: 2500});
+        expect(app.activities[0].timeEntries[0].endTime).toBe(2500);
     });
 })
 

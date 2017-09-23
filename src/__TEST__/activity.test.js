@@ -179,6 +179,7 @@ test('activity.start()', () => {
 
     const updatedActivity = activity.start();
     expect(updatedActivity.timeEntries.length).toBe(2);
+    expect(updatedActivity.timeEntries[1].id).toBe(2);
     expect(db.update).toBeCalled();    
 });
 
@@ -193,21 +194,21 @@ test('activity.stop()', () => {
 
 test('activity.deleteTimeEntry()', () => {
     const activity = createActivity({
-        timeEntries: [{startTime: 1}, {startTime: 2}]
+        timeEntries: [{id: 1}, {id: 2}]
     });
 
-    const updatedActivity = activity.deleteTimeEntry({startTime: 2});    
+    const updatedActivity = activity.deleteTimeEntry(2);    
     expect(updatedActivity.timeEntries.length).toBe(1);
     expect(db.update).toBeCalled();    
 });
 
 test('activity.updateTimeEntry()', () => {
     const activity = createActivity({
-        timeEntries: [{id: 1, startTime: 10, endTime: 20}]
+        timeEntries: [{id: 1, startTime: 10, endTime: 20, duration: 10}]
     });
 
     const updatedActivity = activity.updateTimeEntry({id: 1, endTime: 30});    
-    expect(updatedActivity.timeEntries[0].endTime).toBe(30);
+    expect(updatedActivity.timeEntries[0]).toEqual({id: 1, startTime: 10, endTime: 30, duration: 20});
     expect(db.update).toBeCalled();    
 });
 
@@ -251,7 +252,7 @@ test('activity.exportForClient()', () => {
         hourlyRate: 10,
         parentActivity: {},
         client: {id: 1, name: 'client', lastBilledDate: 25},
-        timeEntries: [{id: 1, startTime: 10, endTime: 20, duration: 1 * 1000 * 60 * 60}, {id: 2, startTime: 30, endTime: 40, duration: 1 * 1000 * 60 * 60}],
+        timeEntries: [{id: 1, startTime: 10, endTime: 20, duration: 1 * 1000 * 60 * 60, cost: 10}, {id: 2, startTime: 30, endTime: 40, duration: 1 * 1000 * 60 * 60, cost: 10}],
         subactivities: [{id: 1, name: 'baz'}, {id: 2, name: 'bar'}],
         totalTime: 2 * 1000 * 60 * 60,
         totalCost: 20,

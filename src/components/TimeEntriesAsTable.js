@@ -27,7 +27,7 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-    deleteTimeEntry: (timeEntry, activity) => dispatch(deleteTimeEntry(timeEntry, activity))
+    deleteTimeEntry: (activity, timeEntry) => dispatch(deleteTimeEntry(activity, timeEntry))
 });
 
 class TimeEntriesAsTable extends Component {
@@ -57,19 +57,19 @@ class TimeEntriesAsTable extends Component {
                 <TableBody
                     displayRowCheckbox={false}
                 >
-                    {activity.timeEntries.map((timeEntry, i) => {
+                    {activity.timeEntries.map((timeEntry) => {
                         
                         return <TableRow
-                            key={i}
+                            key={timeEntry.id}
                             selectable={false}
                         >
                             <TableRowColumn>{new Date(timeEntry.startTime).toLocaleString()}</TableRowColumn>
                             <TableRowColumn>{timeEntry.endTime > 0 ? new Date(timeEntry.endTime).toLocaleString() : ''}</TableRowColumn>
                             <TableRowColumn>{timeEntry.duration > 0 ? formatTime(timeEntry.duration) : ''}</TableRowColumn>
-                            <TableRowColumn>{currency + ' ' + Math.round(convertMsToH(timeEntry.duration) * activity.hourlyRate)}</TableRowColumn>
+                            <TableRowColumn>{currency + ' ' + Math.round(timeEntry.cost)}</TableRowColumn>
                             <TableRowColumn>
                                 <IconButton
-                                    onClick={() => deleteTimeEntry(timeEntry, activity)}
+                                    onClick={() => deleteTimeEntry(activity, timeEntry)}
                                 >
                                     <DeleteIcon />
                                 </IconButton>

@@ -8,7 +8,7 @@ import { formatTime } from '../helpers/helpers';
 import {
     deleteTimeEntry,
     updateTimeEntry
-    } from '../actions';
+} from '../actions';
 
 import DeleteIcon from 'material-ui/svg-icons/action/delete';
 import FlatButton from 'material-ui/FlatButton';
@@ -21,8 +21,8 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-    deleteTimeEntry: (timeEntry, activity) => dispatch(deleteTimeEntry(timeEntry, activity)),
-    updateTimeEntry: (props) => dispatch(updateTimeEntry(props))
+    deleteTimeEntry: (activity, timeEntry) => dispatch(deleteTimeEntry(activity, timeEntry)),
+    updateTimeEntry: (activity, props) => dispatch(updateTimeEntry(activity, props))
 });
 
 class TimeEntry extends Component {
@@ -35,8 +35,6 @@ class TimeEntry extends Component {
             deleteTimeEntry,
         } = this.props;
 
-        const totalTime = timeEntry.endTime > 0 ? timeEntry.endTime - timeEntry.startTime : 0;
-
         return (
             <Card
                 className="timeEntry"
@@ -48,6 +46,7 @@ class TimeEntry extends Component {
                         <DateTime
                             time={timeEntry.startTime}
                             updateTime={(newTime) => updateTimeEntry(
+                                activity,
                                 Object.assign({}, timeEntry, {
                                     startTime: newTime
                                 })
@@ -58,18 +57,19 @@ class TimeEntry extends Component {
                         <DateTime
                             time={timeEntry.endTime}
                             updateTime={(newTime) => updateTimeEntry(
+                                activity,
                                 Object.assign({}, timeEntry, {
                                     endTime: newTime
                                 })
                             )}
                         />
                     </div>
-                    <div className="row">Time (h:mm:ss): {totalTime > 0 ? formatTime(totalTime) : ''}</div>
-                    <div>Cost: {currency + ' ' + Math.round(convertMsToH(totalTime) * activity.hourlyRate)}</div>
+                    <div className="row">Time (h:mm:ss): {timeEntry.duration > 0 ? formatTime(timeEntry.duration) : ''}</div>
+                    <div>Cost: {currency + ' ' + Math.round(timeEntry.cost)}</div>
                 </CardText>
                 <CardActions>
                     <FlatButton
-                        onClick={() => deleteTimeEntry(timeEntry, activity)}
+                        onClick={() => deleteTimeEntry(activity, timeEntry)}
                         fullWidth={true}
                         label="delete"
                         icon={<DeleteIcon />}

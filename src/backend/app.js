@@ -157,8 +157,13 @@ const App = {
         
         return this.exportForClient();
     },
-    deleteTimeEntry: function(activityId, timeEntry) {
-        this._getActivity(activityId).deleteTimeEntry(timeEntry);
+    deleteTimeEntry: function(activityId, timeEntryId) {
+        this._getActivity(activityId).deleteTimeEntry(timeEntryId);
+        
+        return this.exportForClient();        
+    },
+    updateTimeEntry: function(activityId, timeEntry) {
+        this._getActivity(activityId).updateTimeEntry(timeEntry);
         
         return this.exportForClient();        
     },
