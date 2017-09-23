@@ -112,12 +112,12 @@ test('activity.getTotaleTime() since a specific time', () => {
 
 test('activity.getTotaleCost()', () => {
     const activity = createActivity({
-        hourlyRate: 10
+        hourlyRate: 10,
     });
 
-    activity.update({subactivities: [{getTotalTime: function() {return 3600000}}, {getTotalTime: function() {return 3600000}}]});
+    activity.update({subactivities: [{getTotalCost: function() {return 10}}, {getTotalCost: function() {return 20}}]});
 
-    expect(activity.getTotalCost()).toBe(20);
+    expect(activity.getTotalCost()).toBe(30);
 });
 
 test('activity.getTotaleCost() since a specific time', () => {

@@ -89,7 +89,18 @@ var Activity = {
         return subactivitiesTotalTime + timeEntriesTotalTime;
     },
     getTotalCost: function(sinceTime = 0) {
-        return convertMsToH(this.getTotalTime(sinceTime)) * this.hourlyRate;
+        var subactivitiesTotalCost = this.subactivities
+            .reduce((totalCost, subactivity) => subactivity && subactivity.getTotalCost ? 
+                totalCost + subactivity.getTotalCost(sinceTime)
+                : 0
+            , 0);
+            
+        var timeEntriesTotalTime = this.timeEntries
+            .filter(timeEntry => timeEntry.endTime > sinceTime)
+            .reduce((totalTime, timeEntry) => totalTime + timeEntry.duration, 0)
+        ;
+        
+        return subactivitiesTotalCost + convertMsToH(timeEntriesTotalTime) * this.hourlyRate;
     },
     addSubactivity: function(props = {}) {
         var newActivity;
