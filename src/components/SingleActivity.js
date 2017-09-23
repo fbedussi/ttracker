@@ -15,10 +15,16 @@ import {
 import DeleteIcon from 'material-ui/svg-icons/action/delete';
 import FlatButton from 'material-ui/FlatButton';
 import ContentAdd from 'material-ui/svg-icons/content/add';
+import SvgIconFace from 'material-ui/svg-icons/action/face';
+import HubIcon from 'material-ui/svg-icons/hardware/device-hub';
+import Avatar from 'material-ui/Avatar';
+import Chip from 'material-ui/Chip';
+import {blue300, indigo900} from 'material-ui/styles/colors';
 
 import EditableText from './EditableText';
 import TimerBox from './TimerBox';
 import BackToHome from './BackToHome';
+import BackTo from './BackTo';
 import TimeEntriesRegistry from './TimeEntriesRegistry';
 import ActivityChip from './ActivityChip';
 
@@ -31,7 +37,7 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-    deleteTimeEntry: (timeEntry, activity) => dispatch(deleteTimeEntry(timeEntry, activity)),
+    deleteTimeEntry: (activity, timeEntry) => dispatch(deleteTimeEntry(activity, timeEntry)),
     changeActivityName: (activity, newName) => dispatch(updateActivity(activity, {name: newName})),    
     deleteActivity: (activity) => dispatch(deleteActivity(activity)),    
     startActivity: (activity) => dispatch(startActivity(activity)),
@@ -73,19 +79,40 @@ class SingleActivity extends Component {
             );
         }
 
+        var parentActivities = [];
+        var parentActivity = activity.parentActivity;
+        while (parentActivity && parentActivity.id) {
+            parentActivities = [parentActivity].concat(parentActivities);
+            parentActivity = parentActivity.parentActivity;
+        }
+
         return (
             <div className="mainWrapper">
-                <BackToHome />
+                <BackTo history={history} />
                 <div className="activityId row">
                     Activity Id: {activity.id}
                 </div>
-                {activity.parentActivity && activity.parentActivity.id ? <div>
-                    <span>Parent activity: </span>
-                    <Link to={`/activity/${activity.parentActivity.id}`}>
-                        {activity.parentActivity.name}
-                    </Link>
+                <div className="chipWrapper row">
+                    {activity.client && activity.client.id ? 
+                        <Chip className="chip"
+                            backgroundColor={blue300}
+                            onClick={() => history.push(`/client/${activity.client.id}`)}
+                        >
+                            <Avatar color="#fff" icon={<SvgIconFace />} backgroundColor={indigo900}/>
+                            {activity.client.name}
+                        </Chip>
+                        : null
+                    }
+                    {parentActivities.map((parentActivity) => (
+                        <Chip className="chip"
+                            onClick={() => history.push(`/activity/${parentActivity.id}`)}
+                        >
+                            <Avatar color="#444" icon={<HubIcon />} />
+                            {parentActivity.name}
+                        </Chip> 
+                    ))}
                 </div>
-                : null}
+            
                 <h1 className="activityTitleBar titleBar">
                     <EditableText
                         className="activityName row"
@@ -102,12 +129,7 @@ class SingleActivity extends Component {
                         }}
                     />
                 </h1>
-                <div className="clientWrapper row">
-                    <span className="clientLabel">Client: </span>
-                    <Link to={`/client/${activity.client.id}`}>
-                        <span className="clientName">{activity.client.name}</span>
-                    </Link>
-                </div>
+                
                 <div className="hourlyRateWrapper row">
                     <span className="hourlyRateLabel">{`Hourly rate: ${currency}`} </span>
                     <EditableText

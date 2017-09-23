@@ -14,7 +14,7 @@ import ActivityChip from './ActivityChip';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 
 import EditableText from './EditableText';
-import BackToHome from './BackToHome';
+import BackTo from './BackTo';
 
 const mapStateToProps = (state) => ({
     clients: state.data.clients,
@@ -48,7 +48,7 @@ class SingleClient extends Component {
         if (!client) {
             return (
                 <div>
-                    <BackToHome />
+                    <BackTo history={history} />
                     <div>{`ERROR: no client with id ${clientId}`}</div>
                 </div>
             );
@@ -56,7 +56,7 @@ class SingleClient extends Component {
 
         return (
             <div className="mainWrapper">
-                <BackToHome />
+                <BackTo history={history} />
                 <div className="clientId row">
                     Client Id: {client.id}
                 </div>

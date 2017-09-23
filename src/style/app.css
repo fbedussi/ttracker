@@ -79,6 +79,10 @@ input.editable {
     flex-wrap: wrap;
 }
 
+.chip {
+    margin-right: 0.5em !important;
+}
+
 .hourlyRate {
     max-width: 8rem;
 }
