@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 
 import IconButton from 'material-ui/IconButton';
 import BackIcon from 'material-ui/svg-icons/hardware/keyboard-backspace';
+import HomeIcon from 'material-ui/svg-icons/action/home';
 
 const BackTo = ({history}) => (
   <div className="backToWrapper">
@@ -11,6 +12,11 @@ const BackTo = ({history}) => (
       >
         <BackIcon />
       </IconButton>
+      <Link to="/">
+        <IconButton>
+          <HomeIcon />
+        </IconButton>
+    </Link>
   </div>
 );
 

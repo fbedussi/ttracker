@@ -4,13 +4,15 @@ import { Link } from 'react-router-dom'
 
 import {
     deleteActivity,
-    updateActivity,    
+    updateActivity,
     deleteTimeEntry,
     updateTimeEntry,
     startActivity,
     stopActivity,
-    addSubactivity,    
+    addSubactivity,
 } from '../actions';
+
+import { formatTime } from '../helpers/helpers';
 
 import DeleteIcon from 'material-ui/svg-icons/action/delete';
 import FlatButton from 'material-ui/FlatButton';
@@ -19,7 +21,7 @@ import SvgIconFace from 'material-ui/svg-icons/action/face';
 import HubIcon from 'material-ui/svg-icons/hardware/device-hub';
 import Avatar from 'material-ui/Avatar';
 import Chip from 'material-ui/Chip';
-import {blue300, indigo900} from 'material-ui/styles/colors';
+import { blue300, indigo900 } from 'material-ui/styles/colors';
 
 import EditableText from './EditableText';
 import TimerBox from './TimerBox';
@@ -33,18 +35,18 @@ const mapStateToProps = (state) => ({
     activities: state.data.activities,
     currency: state.options.currency,
     ongoingActivities: state.ui.ongoingActivities,
-    lastCreatedActivityId: state.ui.lastCreatedActivityId,        
+    lastCreatedActivityId: state.ui.lastCreatedActivityId,
 });
 
 const mapDispatchToProps = (dispatch) => ({
     deleteTimeEntry: (activity, timeEntry) => dispatch(deleteTimeEntry(activity, timeEntry)),
-    changeActivityName: (activity, newName) => dispatch(updateActivity(activity, {name: newName})),    
-    deleteActivity: (activity) => dispatch(deleteActivity(activity)),    
+    changeActivityName: (activity, newName) => dispatch(updateActivity(activity, { name: newName })),
+    deleteActivity: (activity) => dispatch(deleteActivity(activity)),
     startActivity: (activity) => dispatch(startActivity(activity)),
     stopActivity: (activity) => dispatch(stopActivity(activity)),
-    changeActivityHourlyRate: (activity, hourlyRate) => dispatch(updateActivity(activity, {hourlyRate: Number(hourlyRate)})),
+    changeActivityHourlyRate: (activity, hourlyRate) => dispatch(updateActivity(activity, { hourlyRate: Number(hourlyRate) })),
     updateTimeEntry: (props) => dispatch(updateTimeEntry(props)),
-    addSubactivity: (activity) => dispatch(addSubactivity(activity)),    
+    addSubactivity: (activity) => dispatch(addSubactivity(activity)),
 });
 
 
@@ -63,7 +65,7 @@ class SingleActivity extends Component {
             updateTimeEntry,
             ongoingActivities,
             lastCreatedActivityId,
-            addSubactivity,            
+            addSubactivity,
         } = this.props;
         const activityId = Number(this.props.match.params.activityId);
         const activity = activities
@@ -89,31 +91,35 @@ class SingleActivity extends Component {
         return (
             <div className="mainWrapper">
                 <BackTo history={history} />
-                <div className="activityId row">
-                    Activity Id: {activity.id}
-                </div>
+
                 <div className="chipWrapper row">
-                    {activity.client && activity.client.id ? 
+                    {activity.client && activity.client.id ?
                         <Chip className="chip"
                             backgroundColor={blue300}
                             onClick={() => history.push(`/client/${activity.client.id}`)}
                         >
-                            <Avatar color="#fff" icon={<SvgIconFace />} backgroundColor={indigo900}/>
+                            <Avatar color="#fff" icon={<SvgIconFace />} backgroundColor={indigo900} />
                             {activity.client.name}
                         </Chip>
                         : null
                     }
                     {parentActivities.map((parentActivity) => (
-                        <Chip className="chip"
+                        <Chip
+                            key={parentActivity.id}
+                            className="chip"
                             onClick={() => history.push(`/activity/${parentActivity.id}`)}
                         >
                             <Avatar color="#444" icon={<HubIcon />} />
                             {parentActivity.name}
-                        </Chip> 
+                        </Chip>
                     ))}
                 </div>
-            
+
                 <h1 className="activityTitleBar titleBar">
+                    <span className="idWrapper">
+                        {`id: ${activity.id}`}
+                    </span>
+
                     <EditableText
                         className="activityName row"
                         editable={lastCreatedActivityId === activity.id}
@@ -129,7 +135,7 @@ class SingleActivity extends Component {
                         }}
                     />
                 </h1>
-                
+
                 <div className="hourlyRateWrapper row">
                     <span className="hourlyRateLabel">{`Hourly rate: ${currency}`} </span>
                     <EditableText
@@ -139,18 +145,24 @@ class SingleActivity extends Component {
                         handleChange={(hourlyRate) => changeActivityHourlyRate(activity, hourlyRate)}
                     />
                 </div>
+
+                <div className="totalTimeWrapper row">
+                    <span className="totalTimeLabel">{'Total time: (h:mm:ss)'} </span>
+                    <span className="totalTime">{formatTime(activity.totalTime)}</span>
+                </div>
+
                 <div className="totalCostWrapper row">
                     <span className="totalCostLabel">{`Total cost: ${currency}`} </span>
                     <span className="totalCost">{Math.round(activity.totalCost)}</span>
                 </div>
-                <TimerBox 
+                <TimerBox
                     activity={activity}
                     isOngoing={ongoingActivities.includes(activity.id)}
                     startActivity={startActivity}
                     stopActivity={stopActivity}
                 />
 
-                <h2 className="sectionSubtitle">Tasks 
+                <h2 className="sectionSubtitle">Tasks
                     <FlatButton
                         icon={<ContentAdd />}
                         onClick={() => {
@@ -158,7 +170,7 @@ class SingleActivity extends Component {
                         }}
                     />
                 </h2>
-                
+
                 <div className="chipWrapper">
                     {activity.subactivities.map((activity) => <ActivityChip
                         key={activity.id}
@@ -166,7 +178,7 @@ class SingleActivity extends Component {
                     />)}
                 </div>
 
-                <TimeEntriesRegistry 
+                <TimeEntriesRegistry
                     activity={activity}
                     currency={currency}
                     updateTimeEntry={updateTimeEntry}

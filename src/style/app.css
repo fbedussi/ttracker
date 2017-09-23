@@ -90,3 +90,22 @@ input.editable {
 .cardClientName {
     margin-top: 1em;
 }
+
+.idWrapper {
+    display: inline-block;
+    border-radius: 1em;
+    background-color: grey;
+    color: white;
+    margin-right: 0.5em;
+    font-size: 50%;
+    padding: 0;
+    width: 5em;
+    height: 2em;
+    line-height: 2em;
+    text-align: center;
+}
+
+.backToWrapper {
+    display: flex;
+    justify-content: space-between;
+}
