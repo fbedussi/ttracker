@@ -1,5 +1,10 @@
 import React, { Component } from 'react';
 
+const selectText = (inputEl) => {
+    inputEl.focus();
+    inputEl.select();
+}
+
 class EditableText extends Component {
     constructor(props) {
         super(props);
@@ -12,13 +17,19 @@ class EditableText extends Component {
 
     componentDidMount() {
         if (this.props.editable) {
-            this.input.focus();
-            this.input.select();
+            selectText(this.input);
         }
     }
 
     componentWillReceiveProps(nextProps) {
-        this.setState({text: nextProps.text});        
+        this.setState({
+            text: nextProps.text,
+            editing: nextProps.editable
+        });    
+        
+        if (nextProps.editable) {
+            selectText(this.input);
+        }    
     }
 
     handleKeyUp(keyCode) {
@@ -36,6 +47,10 @@ class EditableText extends Component {
     }
 
     save(text) {
+        if (!this.state.editing) {
+            return;
+        }
+        
         this.setState({
             text,
             editing: false

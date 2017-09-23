@@ -93,7 +93,7 @@ class ActivityTab extends Component {
                         >
                             <EditableText
                                 className="cardTitle"
-                                editable={lastCreatedActivityId === activity.id}
+                                editable={activeTab === 'projects' && lastCreatedActivityId === activity.id}
                                 text={activity.name}
                                 handleChange={(text) => changeActivityName(activity, text)}
                             />

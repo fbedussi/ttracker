@@ -72,7 +72,7 @@ class ClientTab extends Component {
                     >
                         <EditableText
                             className="cardTitle"
-                            editable={lastCreatedClientId === client.id}
+                            editable={activeTab === 'clients' && lastCreatedClientId === client.id}
                             text={client.name}
                             handleChange={(text) => updateClient({
                                 id: client.id,
