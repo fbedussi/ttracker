@@ -41,7 +41,7 @@ var Client = {
     },
     load: function(props) {
         merge(this, props);
-        this.activities = this.activities.map(activityProps => loadActivity(activityProps));
+        //this.activities = this.activities.map(activityProps => loadActivity(activityProps));
         return this;
     },
     update: function(newProps) {

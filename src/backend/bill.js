@@ -25,14 +25,21 @@ var Bill = {
         if (!(props && props.client && props.client.activities && props.client.activities.length)) {
             return false;
         }
+        const lastBilledTime = props.client.bills.reduce((lastBilledTime, bill) => bill.date, 0);
+        const date = Date.now();
+        if (lastBilledTime > date) {
+            return false;
+        }
+        const total = props.client.activities.reduce((total, activity) => total += activity.getTotalCost(lastBilledTime), 0);
+        if (total === 0) {
+            return false;
+        }
         Object.assign(this, Object.assign({}, deepCloneDataObject(defaultBillProps)));
         merge(this, props);
         this.id = billIdMaker.next().value;
         this.client = props.client;
-        this.date = Date.now();
-        
-        const lastBilledTime = this.client.bills.reduce((lastBilledTime, bill) => bill.date, 0);
-        this.total = this.client.activities.reduce((total, activity) => total += activity.getTotalCost(lastBilledTime), 0);
+        this.date = date;
+        this.total = total;
         const templateWithThisKeyword = this.textTemplate.replace(/(\${)([^}]*})/g, '$1' + 'this.' + '$2');
         const textTemplate = new Function(`return \`${templateWithThisKeyword}\`;`);
         const textTemplateVariables = {
@@ -52,10 +59,17 @@ var Bill = {
     },
     load: function(props) {
         merge(this, props);
-        this.activities = this.activities.map(activityProps => loadActivity(activityProps));
         return this;
     },
     update: function(newProps) {
+        if (!this.client.bills.length) {
+            return false;
+        }
+        const lastBill = this.client.bills[this.client.bills.length - 1];
+        console.log('newProps.id !== lastBill.id', newProps.id, lastBill.id)
+        if (newProps.id !== lastBill.id) {
+            return false;
+        }
         merge(this, newProps);
 
         db.update(DBCOLLECTION, this.exportForDb());
@@ -71,78 +85,19 @@ var Bill = {
 
         return this.id;
     },
-    getTotalTime: function(startTime) {
-        return this.activities.reduce((totalTime, activity) => totalTime + activity.getTotalTime(startTime), 0);
-    },
-    getTotalCost: function(startTime) {
-        return this.activities.reduce((totalCost, activity) => totalCost + activity.getTotalCost(startTime), 0);
-    },
-    addActivity: function(activity) {
-        this.activities.push(activity);
-        db.update(DBCOLLECTION, this.exportForDb());
-        
-        return this;
-    },
-    removeActivity: function(id, deleteActivity = false) {
-        if (deleteActivity) {
-            const activityToDelete = this.activities.filter(activity => activity.id === id)[0];
-            if (activityToDelete.delete) {
-                activityToDelete.delete(true);
-            }
-        }
-        
-        const initialActivitiesLenght = this.activities.length;
-        this.activities = this.activities.filter(activity => activity.id !== id);
-
-        if (this.activities.length !== initialActivitiesLenght) {
-            db.update(DBCOLLECTION, this.exportForDb());
-        }
-        
-        return this;
-    },
-    bill: function() {
-        const amount = this.getTotalCost(this.lastBilledTime);
-        var  billedActivities =  [];
-        
-        if (this.activities.length && this.activities[0].getTotalTime) {
-            billedActivities = this.activities.filter((activity) => activity.getTotalTime(this.lastBilledTime) > 0);
-        }
-
-        this.lastBilledTime = Date.now();
-        this.bills.push({
-            date: this.lastBilledTime,
-            amount,
-            billedActivities
-        })
-
-        db.update(DBCOLLECTION, this.exportForDb());
-
-        return this;
-    },
     exportForDb: function() {
         var objToSave = Object.assign({}, this);
         objToSave.client = {id: this.client.id};
 
         return objToSave;
     },
-    exportForClient: function(activityDependency = false) {
-        var objToExport = Object.assign({}, this, {
-            totalTime: this.getTotalTime(),
-            totalCost: this.getTotalCost(),
-            totalTimeToBill: this.getTotalTime(this.lastBilledTime),
-            totalCostToBill: this.getTotalCost(this.lastBilledTime),
-
-            //this must be set last otherwise when activityDependency is true this.getTotalTime calls activity.getTotalTime which is undefined
-            activities: this.activities.map((activity) => !activityDependency && activity.exportForClient ? activity.exportForClient() : Object.assign({}, activity)),
-        });
+    exportForClient: function() {
+        var objToExport = Object.assign({}, this);
   
         return objToExport;
     },
-    resolveDependencies: function(activities) {
-        this.activities = this.activities
-        .map((clientActivity) => activities
-            .filter((storedActivity) => storedActivity.id === clientActivity.id)[0]
-        );
+    resolveDependencies: function(clients) {
+        this.client = clients.filter((client) => client.id === this.client.id)[0];
 
         return this;
     }
