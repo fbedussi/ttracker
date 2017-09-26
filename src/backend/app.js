@@ -1,5 +1,8 @@
+// @ts-check
+
 import {createClient, loadClient} from '../backend/client';
 import {createActivity, loadActivity} from './activity';
+import {createBill, loadBill} from './bill';
 import db from '../db/dbFacade';
 
 function updateClientTotalCost(client, activityId) {
@@ -13,6 +16,7 @@ function updateClientTotalCost(client, activityId) {
 const App = {
     clients: [],
     activities: [],
+    bills: [],
     defaultHourlyRate: 0,
     load: function() {
         return db
@@ -29,12 +33,18 @@ const App = {
                         .readAll('activity')
                         .then((activitiesData) => activitiesData
                             .map((activityData) => loadActivity(activityData))
-                    )
+                    ),
+                    db
+                        .readAll('bill')
+                        .then((billsData) =>billsData
+                            .map((billData) => loadBill(billData))
+                ),
                 ])
             )
-            .then(([clients, activities]) => { //resolve cross dependencies
+            .then(([clients, activities, bills]) => { //resolve cross dependencies
                 this.activities = activities.map((activity) => activity.resolveDependencies(clients, activities));
-                this.clients = clients.map((client) => client.resolveDependencies(activities));
+                this.clients = clients.map((client) => client.resolveDependencies(activities, bills));
+                this.bills = bills.map((bill) => bill.resolveDependencies(clients));
                 
                 return this;
             })
@@ -177,7 +187,8 @@ const App = {
     exportForClient: function() {
         return {
             activities: this.activities.map((activity) => activity.exportForClient()),
-            clients: this.clients.map((client) => client.exportForClient())
+            clients: this.clients.map((client) => client.exportForClient()),
+            bills: this.bills.map((bill) => bill.exportForClient()),
         }
     }
 }

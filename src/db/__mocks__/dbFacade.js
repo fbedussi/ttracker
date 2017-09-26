@@ -5,6 +5,7 @@ function getCollection(collection) {
             id: 1,
             name: 'client 1',
             activities: [],
+            bills: [{id: 1}],
             getTotalToBill: function() {return 10},
             addActivity: jest.fn()
         },

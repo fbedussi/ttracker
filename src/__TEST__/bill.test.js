@@ -88,29 +88,6 @@ test('bill.update()', () => {
     expect(db.update).toBeCalled();    
 });
 
-test('bill.update() do not change date if it is not the last bill', () => {
-    Date.now = () => 104;
-    
-
-    const bill = createBill({
-        client,
-        textTemplate,
-        currency: '€'
-    });
-    
-    bill.update({
-        id: 1,
-        date: 200,
-        total: 70,
-        text: 'baz'
-    });
-    expect(bill.date).toBe(104);
-    expect(bill.text).toBe('baz');
-    expect(bill.total).toBe(70);
-    expect(db.update).toBeCalled();    
-    
-});
-
 test('bill.delete()', () => {
     const bill = createBill({
         client,

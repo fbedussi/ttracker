@@ -1,3 +1,5 @@
+// @ts-check
+
 import initIdMaker from '../helpers/idMaker';
 import merge from '../helpers/merge';
 import db from '../db/dbFacade';
@@ -127,12 +129,17 @@ var Client = {
   
         return objToExport;
     },
-    resolveDependencies: function(activities) {
+    resolveDependencies: function(activities, bills) {
         this.activities = this.activities
-        .map((clientActivity) => activities
-            .filter((storedActivity) => storedActivity.id === clientActivity.id)[0]
-        );
-
+            .map((clientActivity) => activities
+                .filter((storedActivity) => storedActivity.id === clientActivity.id)[0]
+            )
+        ;
+        this.bills = this.bills
+            .map((clientBill) => bills
+                .filter((storedBill) => storedBill.id === clientBill.id)[0]
+            )
+        ;
         return this;
     }
 }

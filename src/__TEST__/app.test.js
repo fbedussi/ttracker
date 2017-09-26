@@ -65,7 +65,35 @@ test('bill client', () => {
     return loadApp().then((app) => {
         app.billClient(2);
 
-        expect(app.clients.filter((client) => client.id === 2)[0].lastBilledTime > 0).toBe(true);
+        expect(app.clients.filter((client) => client.id === 2)[0].bills.length).toBe(1);
+    });
+});
+
+test('delete last bill', () => {
+    return loadApp().then((app) => {
+        app.billClient(1);
+        app.deleteLastBill(1)
+        expect(app.clients.filter((client) => client.id === 1)[0].bills.length).toBe(1);
+    });
+});
+
+test('update bill', () => {
+    return loadApp().then((app) => {
+        app.billClient(1);
+        
+        const billUpdates = createBill({
+            id: 2,
+            text: 'baz',
+            currency: '$',
+            total: 70000,
+        });
+        
+        const updatedApp = app.updateBill(1, billUpdates);
+        const updatedBill = updatedApp.clients.filter((client) => client.id === 1)[0].bills.filter((bill) => bill.id === 2)[0];
+        expect(updatedBill.text).toBe('baz');
+        expect(updatedBill.currency).toBe('$');
+        expect(updatedBill.total).toBe(70000);
+        expect(db.update).toBeCalled();    
     });
 });
 
