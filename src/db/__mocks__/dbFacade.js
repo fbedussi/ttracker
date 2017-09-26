@@ -1,34 +1,53 @@
 function getCollection(collection) {
-    return collection === 'client' ?
-    [
-        {
-            id: 1,
-            name: 'client 1',
-            activities: [],
-            bills: [{id: 1}],
-            getTotalToBill: function() {return 10},
-            addActivity: jest.fn()
-        },
-        {
-            id: 2,
-            name: 'client 2',
-            activities: [],            
-            getTotalToBill: function() {return 10}            
-        }
-    ] 
-    : [
-        {
-            id: 1,
-            name: collection + ' bar',
-            getTotalToBill: function() {return 10},
-            timeEntries: [{id: 1, startTime: 1000, endTime: 2000}, {id: 2, startTime: 3000, endTime: 3000}]
-        },
-        {
-            id: 2,
-            name: collection + ' baz',
-            getTotalToBill: function() {return 10}            
-        }
-    ]
+    var response;
+
+    switch (collection) {
+        case 'client':
+            response = [
+                {
+                    id: 1,
+                    name: 'client 1',
+                    activities: [{id: 1, getTotalCost: function() {return 10}}],
+                    bills: [{id: 1}],
+                    addActivity: jest.fn()
+                },
+                {
+                    id: 2,
+                    name: 'client 2',
+                    activities: [{id: 1, getTotalCost: function() {return 10}}],            
+                }
+            ];
+            break;
+        case 'activity':
+            response = [
+                {
+                    id: 1,
+                    name: collection + ' bar',
+                    getTotalCost: function() {return 10},
+                    timeEntries: [{id: 1, startTime: 1000, endTime: 2000}, {id: 2, startTime: 3000, endTime: 3000}]
+                },
+                {
+                    id: 2,
+                    name: collection + ' baz',
+                    getTotalCost: function() {return 10},
+                }
+            ];
+            break;
+        case 'bill':
+            response = [
+                {
+                    id: 1,
+                    total: 10,
+                    date: 101,
+                    client: {
+                        id: 1
+                    }
+                }
+            ];
+            break;
+    }
+
+    return response; 
 }
 
 const mockDb = {

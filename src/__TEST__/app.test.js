@@ -69,30 +69,38 @@ test('bill client', () => {
     });
 });
 
-test('delete last bill', () => {
+test('delete bill only if it is the last bill for that client', () => {
     return loadApp().then((app) => {
         app.billClient(1);
-        app.deleteLastBill(1)
-        expect(app.clients.filter((client) => client.id === 1)[0].bills.length).toBe(1);
+        const client = app.bills[app.bills.length - 1].client;
+        const clientLastBillId = client.bills[client.bills.length - 1].id;
+        app.deleteBill(1)
+        expect(app.clients.filter((client) => client.id === 1)[0].bills.length).toBe(2); //not deleted
+        app.deleteBill(clientLastBillId)
+        expect(app.clients.filter((client) => client.id === 1)[0].bills.length).toBe(1); //deleted
     });
 });
 
 test('update bill', () => {
     return loadApp().then((app) => {
         app.billClient(1);
+        const client = app.clients.filter((client) => client.id === 1)[0];
+        const clientBill = client.bills[client.bills.length - 1]; 
+        const billId = clientBill.id;
         
-        const billUpdates = createBill({
-            id: 2,
+        const billUpdates = {
+            id: billId,
             text: 'baz',
             currency: '$',
             total: 70000,
-        });
+        };
         
-        const updatedApp = app.updateBill(1, billUpdates);
-        const updatedBill = updatedApp.clients.filter((client) => client.id === 1)[0].bills.filter((bill) => bill.id === 2)[0];
+        const updatedApp = app.updateBill(billUpdates);
+        const updatedBill = updatedApp.bills.filter((bill) => bill.id === billId)[0];
         expect(updatedBill.text).toBe('baz');
         expect(updatedBill.currency).toBe('$');
         expect(updatedBill.total).toBe(70000);
+        expect(clientBill).toEqual(updatedBill);
         expect(db.update).toBeCalled();    
     });
 });
@@ -103,7 +111,7 @@ test('addNewActivityToClient', () => {
         const updatedApp = app.addNewActivityToClient(2)
 
         expect(updatedApp.activities.length).toBe(prevApp.activities.length + 1);
-        expect(updatedApp.clients[1].activities.length).toBe(1);
+        expect(updatedApp.clients[1].activities.length).toBe(prevApp.clients[1].activities.length + 1);
     });
 });
 
@@ -117,7 +125,7 @@ test('remove activity from client', () => {
             clientId: 2
         })
 
-        expect(updatedApp2.clients.filter((client) => client.id === 2)[0].activities.length).toBe(0);
+        expect(updatedApp2.clients.filter((client) => client.id === 2)[0].activities.length).toBe(prevApp.clients.filter((client) => client.id === 2)[0].activities.length);
     });
 });
 

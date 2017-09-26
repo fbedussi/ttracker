@@ -91,20 +91,23 @@ var Client = {
         
         return this;
     },
-    bill: function() {
-        const amount = this.getTotalCost(this.lastBilledTime);
-        var  billedActivities =  [];
+    addBill: function(bill) {
+        this.bills.push(bill);
+        this.lastBilledTime = bill.date;
+
+        db.update(DBCOLLECTION, this.exportForDb());
         
-        if (this.activities.length && this.activities[0].getTotalTime) {
-            billedActivities = this.activities.filter((activity) => activity.getTotalTime(this.lastBilledTime) > 0);
+        return this;
+    },
+    deleteBill: function(id) {
+        const lastBill = this.bills[this.bills.length - 1];
+        if (lastBill.id !== id) {
+            return this;            
         }
 
-        this.lastBilledTime = Date.now();
-        this.bills.push({
-            date: this.lastBilledTime,
-            amount,
-            billedActivities
-        })
+        lastBill.delete();
+
+        this.bills = this.bills.slice(0, -1);
 
         db.update(DBCOLLECTION, this.exportForDb());
 
@@ -113,18 +116,20 @@ var Client = {
     exportForDb: function() {
         var objToSave = Object.assign({}, this);
         objToSave.activities = objToSave.activities.map((activity) => ({id: activity.id}));
+        objToSave.bills = objToSave.bills.map((bill) => ({id: bill.id}));
 
         return objToSave;
     },
-    exportForClient: function(activityDependency = false) {
+    exportForClient: function() {
         var objToExport = Object.assign({}, this, {
             totalTime: this.getTotalTime(),
             totalCost: this.getTotalCost(),
             totalTimeToBill: this.getTotalTime(this.lastBilledTime),
             totalCostToBill: this.getTotalCost(this.lastBilledTime),
+            bills: this.bills.map((bill) => bill.exportForClient()),
 
-            //this must be set last otherwise when activityDependency is true this.getTotalTime calls activity.getTotalTime which is undefined
-            activities: this.activities.map((activity) => !activityDependency && activity.exportForClient ? activity.exportForClient() : Object.assign({}, activity)),
+            //this must be set last otherwise when resolvingDependency is true this.getTotalTime calls activity.getTotalTime which is undefined
+            activities: this.activities.map((activity) => activity.exportForClient()),
         });
   
         return objToExport;
@@ -140,6 +145,7 @@ var Client = {
                 .filter((storedBill) => storedBill.id === clientBill.id)[0]
             )
         ;
+        
         return this;
     }
 }

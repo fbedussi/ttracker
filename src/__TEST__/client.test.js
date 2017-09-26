@@ -160,7 +160,7 @@ test('client.getTotalCost()', () => {
     expect(client.getTotalCost()).toBe(20);
 });
 
-test('client.bill()', () => {
+test('client.addBill()', () => {
     const client = createClient({
         id: 1,
         name: 'Client name',
@@ -174,10 +174,28 @@ test('client.bill()', () => {
             getTotalCost: () => 10
         }]
     });
-    const updatedClient = client.bill();
+    const bill = {
+        id: 1,
+        date: 101
+    }
+    const updatedClient = client.addBill(bill);
 
-    expect(updatedClient.lastBilledTime > 0).toBe(true);
+    expect(updatedClient.lastBilledTime).toBe(101);
     expect(updatedClient.bills.length).toBe(1);
+});
+
+test('delete bill only if it is the last bill', () => {
+    const mockDelete = jest.fn();
+    const client = createClient({
+        id: 1,
+        name: 'Client name',
+        bills: [{id: 1}, {id: 2, delete: mockDelete}]
+    });
+    const updatedClient = client.deleteBill(1);
+    expect(updatedClient.bills.length).toBe(2); //not deleted
+    client.deleteBill(2)
+    expect(updatedClient.bills.length).toBe(1); //deleted
+    expect(mockDelete).toBeCalled();
 });
 
 test('client.exportForDb()', () => {

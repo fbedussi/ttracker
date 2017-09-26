@@ -45,7 +45,6 @@ const App = {
                 this.activities = activities.map((activity) => activity.resolveDependencies(clients, activities));
                 this.clients = clients.map((client) => client.resolveDependencies(activities, bills));
                 this.bills = bills.map((bill) => bill.resolveDependencies(clients));
-                
                 return this;
             })
         ;
@@ -55,6 +54,9 @@ const App = {
     },
     _getClient: function(id) {   
         return this.clients.filter((client) => client.id === id)[0];  
+    },
+    _getBill: function(id) {   
+        return this.bills.filter((bill) => bill.id === id)[0];  
     },
     createClient: function(props = {}) {
         var newClient = createClient(Object.assign({defaultHourlyRate: this.defaultHourlyRate}, props));
@@ -85,8 +87,44 @@ const App = {
 
         return this.exportForClient();
     },
-    billClient: function(id) {
-        this._getClient(id).bill();
+    billClient: function(clientId, textTemplate, currency) {
+        var client = this._getClient(clientId);
+        var bill;
+
+        if (!client) {
+            return this.exportForClient();
+        }
+
+        bill = createBill({
+            client,
+            textTemplate,
+            currency
+        });
+        this.bills.push(bill);
+        client.addBill(bill);
+
+        return this.exportForClient();
+    },
+    deleteBill: function(id) {
+        const bill = this._getBill(id);
+        if (!bill) {
+            return this.exportForClient();
+        }
+        const client = bill.client;
+        if (!client) {
+            return this.exportForClient();
+        }
+
+        client.deleteBill(id);
+        
+        return this.exportForClient();        
+    },
+    updateBill: function(props) {
+        if (!props.id) {
+            return this.exportForClient();
+        }
+
+        this._getBill(props.id).update(props);
 
         return this.exportForClient();
     },

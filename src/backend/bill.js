@@ -30,7 +30,7 @@ var Bill = {
         if (lastBilledTime > date) {
             return false;
         }
-        const total = props.client.activities.reduce((total, activity) => total += activity.getTotalCost(lastBilledTime), 0);
+        const total = props.client.activities.reduce((total, activity) => total + activity.getTotalCost(lastBilledTime), 0);
         if (total === 0) {
             return false;
         }
@@ -38,6 +38,8 @@ var Bill = {
         merge(this, props);
         this.id = billIdMaker.next().value;
         this.client = props.client;
+        //delete this.client.bills;
+        //console.log('BILL CLIENT', this.client)
         this.date = date;
         this.total = total;
         const templateWithThisKeyword = this.textTemplate.replace(/(\${)([^}]*})/g, '$1' + 'this.' + '$2');
@@ -59,31 +61,31 @@ var Bill = {
     },
     load: function(props) {
         merge(this, props);
+        if (props && props.client) {
+            this.client = props.client;
+        }
+
         return this;
     },
     update: function(newProps) {
-        if (!this.client.bills.length) {
-            return false;
-        }
-        const lastBill = this.client.bills[this.client.bills.length - 1];
-        console.log('newProps.id !== lastBill.id', newProps.id, lastBill.id)
-        if (newProps.id !== lastBill.id) {
-            return false;
-        }
+        // if (!this.client.bills.length) {
+        //     return false;
+        // }
+        // const lastBill = this.client.bills[this.client.bills.length - 1];
+        // console.log('newProps.id !== lastBill.id', newProps.id, lastBill.id)
+        // if (newProps.id !== lastBill.id) {
+        //     return false;
+        // }
         merge(this, newProps);
 
         db.update(DBCOLLECTION, this.exportForDb());
 
         return this;
     },
-    delete: function(deleteActivities = false) {
-        if (deleteActivities) {
-            this.activities.forEach((activity) => activity.delete(true));
-        }
-
+    delete: function() {
         db.delete(DBCOLLECTION, this.id);
 
-        return this.id;
+            return this.id;
     },
     exportForDb: function() {
         var objToSave = Object.assign({}, this);
@@ -98,6 +100,7 @@ var Bill = {
     },
     resolveDependencies: function(clients) {
         this.client = clients.filter((client) => client.id === this.client.id)[0];
+        //delete this.client.bills;
 
         return this;
     }
