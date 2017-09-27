@@ -92,6 +92,9 @@ test('update bill', () => {
             id: billId,
             text: 'baz',
             currency: '$',
+            client: {
+                id: 1
+            },
             total: 70000,
         };
         

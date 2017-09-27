@@ -31,15 +31,18 @@ var Bill = {
             return false;
         }
         const total = props.client.activities.reduce((total, activity) => total + activity.getTotalCost(lastBilledTime), 0);
+        
+        //is it ok to have a bill with total = 0? maybe is something like a pro bono project 
+        //and we want to track activities even if we don't charge anything
+        //TODO: handle this trought a configuration flag
         if (total === 0) {
             return false;
         }
+        
         Object.assign(this, Object.assign({}, deepCloneDataObject(defaultBillProps)));
         merge(this, props);
         this.id = billIdMaker.next().value;
         this.client = props.client;
-        //delete this.client.bills;
-        //console.log('BILL CLIENT', this.client)
         this.date = date;
         this.total = total;
         const templateWithThisKeyword = this.textTemplate.replace(/(\${)([^}]*})/g, '$1' + 'this.' + '$2');
@@ -68,14 +71,6 @@ var Bill = {
         return this;
     },
     update: function(newProps) {
-        // if (!this.client.bills.length) {
-        //     return false;
-        // }
-        // const lastBill = this.client.bills[this.client.bills.length - 1];
-        // console.log('newProps.id !== lastBill.id', newProps.id, lastBill.id)
-        // if (newProps.id !== lastBill.id) {
-        //     return false;
-        // }
         merge(this, newProps);
 
         db.update(DBCOLLECTION, this.exportForDb());
@@ -100,7 +95,6 @@ var Bill = {
     },
     resolveDependencies: function(clients) {
         this.client = clients.filter((client) => client.id === this.client.id)[0];
-        //delete this.client.bills;
 
         return this;
     }

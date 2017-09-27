@@ -120,11 +120,11 @@ const App = {
         return this.exportForClient();        
     },
     updateBill: function(props) {
-        if (!props.id) {
+        if (!(props.id && props.client && props.client.id)) {
             return this.exportForClient();
         }
 
-        this._getBill(props.id).update(props);
+        this._getClient(props.client.id).updateBill(props);
 
         return this.exportForClient();
     },

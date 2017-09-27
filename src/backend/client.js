@@ -43,7 +43,7 @@ var Client = {
     },
     load: function(props) {
         merge(this, props);
-        //this.activities = this.activities.map(activityProps => loadActivity(activityProps));
+
         return this;
     },
     update: function(newProps) {
@@ -112,6 +112,36 @@ var Client = {
         db.update(DBCOLLECTION, this.exportForDb());
 
         return this;
+    },
+    updateBill: function(props) {
+        const billsData = {
+            billToUpdate: null,
+            prevBill: null,
+            nextBill: null
+        }
+        
+        this.bills.reduce((result, bill, i, bills) => {
+            if (bill.id === props.id) {
+                Object.assign(billsData, {
+                    billToUpdate: bill,
+                    prevBill: bills[i - 1],
+                    nextBill: bills[i + 1]
+                });
+            }
+
+            return billsData; 
+        }, billsData);
+
+        if (!billsData.billToUpdate) {
+            return this.exportForClient();
+        }
+
+        if ((billsData.nextBill && props.date >= billsData.nextBill.date) || (billsData.prevBill && props.date <= billsData.prevBill.date)) {
+            props.date = billsData.billToUpdate.date;
+        }
+        billsData.billToUpdate.update(props);
+
+        return this.exportForClient();
     },
     exportForDb: function() {
         var objToSave = Object.assign({}, this);
