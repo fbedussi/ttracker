@@ -79,6 +79,7 @@ export function uiReducer(state = {
 
 export function optionsReducer(state = {
     currency: '€',
+    billTextTemplate: '${clientName}\n${clientAddress}\n${clientVatNumber}\n\ndate: ${date}\n\nthe invoice total is ${currency}${total}.\nfor the following activities: ${activities}.',
 }, action) {
 	switch (action.type) {
 		default:

@@ -146,3 +146,7 @@ export function toggleTimeEntriesRegistryAsTable() {
         type: 'TOGGLE_TIMEENTRIES_REGISTRY_AS_TABLE',
     };
 }
+
+export function createNewBill(clientId) {
+    const data = backed.billClient(clientId, )
+}
