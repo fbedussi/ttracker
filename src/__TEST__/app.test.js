@@ -74,10 +74,11 @@ test('delete bill only if it is the last bill for that client', () => {
         app.billClient(1);
         const client = app.bills[app.bills.length - 1].client;
         const clientLastBillId = client.bills[client.bills.length - 1].id;
-        app.deleteBill(1)
-        expect(app.clients.filter((client) => client.id === 1)[0].bills.length).toBe(2); //not deleted
+        
+        expect(() => app.deleteBill(1)).toThrow(); //not deleted
         app.deleteBill(clientLastBillId)
         expect(app.clients.filter((client) => client.id === 1)[0].bills.length).toBe(1); //deleted
+        expect(app.bills.length).toBe(1);    
     });
 });
 

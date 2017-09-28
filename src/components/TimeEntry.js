@@ -37,7 +37,7 @@ class TimeEntry extends Component {
 
         return (
             <Card
-                className="timeEntry"
+                className="timeEntry card"
                 expandable={false}
                 expanded={true}
             >

@@ -191,9 +191,9 @@ test('delete bill only if it is the last bill', () => {
         name: 'Client name',
         bills: [{id: 1}, {id: 2, delete: mockDelete}]
     });
-    const updatedClient = client.deleteBill(1);
-    expect(updatedClient.bills.length).toBe(2); //not deleted
-    client.deleteBill(2)
+    
+    expect(() => client.deleteBill(1)).toThrow(); //not deleted
+    const updatedClient = client.deleteBill(2)
     expect(updatedClient.bills.length).toBe(1); //deleted
     expect(mockDelete).toBeCalled();
 });

@@ -5,7 +5,7 @@ import TimeEntry from './TimeEntry';
 const TimeEntriesAsCards = ({
             activity,
         }) => (
-        <div className="timeEntriesCards">
+        <div className="timeEntriesCards cardsWrapper">
             {activity.timeEntries.map((timeEntry, i) =>
                 <TimeEntry
                     key={timeEntry.id}

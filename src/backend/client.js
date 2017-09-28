@@ -102,7 +102,7 @@ var Client = {
     deleteBill: function(id) {
         const lastBill = this.bills[this.bills.length - 1];
         if (lastBill.id !== id) {
-            return this;            
+            throw new Error('Cannot delete bill, it\'s not the last bill for this client');            
         }
 
         lastBill.delete();

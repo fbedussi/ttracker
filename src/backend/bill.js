@@ -30,7 +30,7 @@ var Bill = {
         if (lastBilledTime > date) {
             return false;
         }
-        const total = props.client.activities.reduce((total, activity) => total + activity.getTotalCost(lastBilledTime), 0);
+        const total = Math.round(props.client.activities.reduce((total, activity) => total + activity.getTotalCost(lastBilledTime), 0));
         
         //is it ok to have a bill with total = 0? maybe is something like a pro bono project 
         //and we want to track activities even if we don't charge anything

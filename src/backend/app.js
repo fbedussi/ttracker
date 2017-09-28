@@ -115,7 +115,12 @@ const App = {
             return this.exportForClient();
         }
 
-        client.deleteBill(id);
+        try {
+            client.deleteBill(id);
+            this.bills = this.bills.filter((bill) => bill.id !== id);
+        } catch(e) {
+            throw e;
+        }
         
         return this.exportForClient();        
     },

@@ -18,7 +18,8 @@ export function dataReducer(state = {
         case 'UPDATE_DATA':
             return Object.assign({}, state, {
                 clients: action.data.clients,
-                activities: action.data.activities
+                activities: action.data.activities,
+                bills: action.data.bills
             });
         
         case 'START_ACTIVITY':

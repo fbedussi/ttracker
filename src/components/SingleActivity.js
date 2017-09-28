@@ -90,7 +90,10 @@ class SingleActivity extends Component {
 
         return (
             <div className="mainWrapper">
-                <BackTo history={history} />
+                <BackTo
+                    history={history}
+                    title={`Activity id:${activity.id}`}
+                />
 
                 <div className="chipWrapper row">
                     {activity.client && activity.client.id ?
@@ -116,10 +119,6 @@ class SingleActivity extends Component {
                 </div>
 
                 <h1 className="activityTitleBar titleBar">
-                    <span className="idWrapper">
-                        {`id: ${activity.id}`}
-                    </span>
-
                     <EditableText
                         className="activityName row"
                         editable={lastCreatedActivityId === activity.id}

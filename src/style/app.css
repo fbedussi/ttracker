@@ -61,12 +61,12 @@ input.editable {
     width: calc(100% - 8rem);
 }
 
-.timeEntriesCards {
+.cardsWrapper {
     display: flex;
     flex-wrap: wrap;
 }
 
-.timeEntry {
+.card {
     margin: 0 1em 1em 0;
 }
 
@@ -108,4 +108,12 @@ input.editable {
 .backToWrapper {
     display: flex;
     justify-content: space-between;
+    align-items: center;
+}
+
+.billText {
+    width: 100%;
+    max-width: 70em;
+    margin: 0 auto;
+    height: 30em;
 }

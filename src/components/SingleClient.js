@@ -30,7 +30,7 @@ const mapDispatchToProps = (dispatch) => ({
     deleteClient: (client) => dispatch(deleteClient(client)),
     updateClient: (props) => dispatch(updateClient(props)),
     addNewActivityToClient: (clientId) => dispatch(addNewActivityToClient(clientId)),
-    createNewBill: (clientId) => dispatch(createNewBill(clientId)),
+    createNewBill: (clientId, billTextTemplate, currency) => dispatch(createNewBill(clientId, billTextTemplate, currency)),
 });
 
 
@@ -63,10 +63,10 @@ class SingleClient extends Component {
 
         return (
             <div className="mainWrapper">
-                <BackTo history={history} />
-                <div className="clientId row">
-                    Client Id: {client.id}
-                </div>
+                <BackTo 
+                    history={history}
+                    title={`Client id:${client.id}`}
+                />
                 <h1 className="clientTitleBar titleBar">
                     <EditableText
                         className="clientName row"
@@ -183,7 +183,7 @@ class SingleClient extends Component {
 
                 <h2 className="sectionSubtitle">Invoices
                 <FlatButton
-                        icon={<BillIcon />}
+                        icon={<ContentAdd />}
                         onClick={() => createNewBill(client.id, billTextTemplate, currency)}
                     />
                 </h2>
@@ -193,8 +193,6 @@ class SingleClient extends Component {
                         bill={bill}
                     />)}
                 </div>
-
-
             </div>
         )
     }
