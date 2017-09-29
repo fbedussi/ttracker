@@ -155,7 +155,8 @@ export function updateBill(bill) {
 
     return {
         type: 'UPDATE_DATA',
-        data
+        data,
+        lastUpdatedBillId: bill.id
     };
 }
 

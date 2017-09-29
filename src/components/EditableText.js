@@ -69,7 +69,7 @@ class EditableText extends Component {
         return (
             <input
                 ref={(input) => { this.input = input; }}
-                className={className}
+                className={className + ' editableText'}
                 value={this.state.text}
                 onChange={(e) => this.handleLocalChange(e.target.value)}
                 onBlur={(e) => this.save(e.target.value)}

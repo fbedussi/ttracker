@@ -27,7 +27,7 @@ const mapDispatchToProps = (dispatch) => ({
     updateBill: (bill) => dispatch(updateBill(bill))
 });
 
-class Bill extends Component {
+class BillCard extends Component {
     render() {
         const { 
             history,
@@ -43,24 +43,20 @@ class Bill extends Component {
                 expanded={true}
             >
                 <CardText className="bill-details">
-                    <p className="row">Invoice number {bill.id}</p>
-                    <Link to={`/bill/${bill.id}`}>
-                        <FlatButton
-                            label="Details"
-                            icon={<DetailsIcon />}
-                        />
-                    </Link>
-                    <div className="row">Date:
-                        <DateBox
-                            time={bill.date}
-                            updateDate={(newDate) => updateBill(
-                                Object.assign({}, bill, {
-                                    date: newDate
-                                })
-                            )}
-                        />
+                    <div className="row billCardHeader">
+                        <span>Invoice number {bill.id}</span>
+                        <Link to={`/bill/${bill.id}`}>
+                            <FlatButton
+                                label="Details"
+                                icon={<DetailsIcon />}
+                            />
+                        </Link>
                     </div>
-                    <div className="row">Total: {bill.currency + ' ' + bill.total}</div>
+                    <div className="row">
+                        <span className="label">Date: </span>
+                        <span className="field">{new Date(bill.date).toLocaleDateString()}</span>
+                    </div>
+                    <div>Total: {bill.currency + ' ' + bill.total}</div>
                 </CardText>
                 {bill.client.bills[bill.client.bills.length - 1].id === bill.id ? 
                 <CardActions>
@@ -78,4 +74,4 @@ class Bill extends Component {
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Bill);
+export default connect(mapStateToProps, mapDispatchToProps)(BillCard);

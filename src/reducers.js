@@ -50,7 +50,8 @@ export function uiReducer(state = {
         case 'UPDATE_DATA':
             return Object.assign({}, state, {
                 lastCreatedActivityId: action.lastCreatedActivityId,
-                lastCreatedClientId: action.lastCreatedClientId
+                lastCreatedClientId: action.lastCreatedClientId,
+                lastUpdatedBillId: action.lastUpdatedBillId
             });
 
         case 'SET_ACTIVE_TAB':

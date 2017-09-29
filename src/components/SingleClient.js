@@ -17,7 +17,7 @@ import ContentAdd from 'material-ui/svg-icons/content/add';
 
 import EditableText from './EditableText';
 import BackTo from './BackTo';
-import Bill from './Bill';
+import BillCard from './BillCard';
 
 const mapStateToProps = (state) => ({
     clients: state.data.clients,
@@ -188,7 +188,7 @@ class SingleClient extends Component {
                     />
                 </h2>
                 <div className="invoicesWrapper row">
-                    {client.bills.map((bill) => <Bill
+                    {client.bills.map((bill) => <BillCard
                         key={bill.id}
                         bill={bill}
                     />)}

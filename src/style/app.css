@@ -115,5 +115,14 @@ input.editable {
     width: 100%;
     max-width: 70em;
     margin: 0 auto;
-    height: 30em;
+}
+
+.billCardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.editableText {
+    border-bottom: solid 1px lightgray;
 }
