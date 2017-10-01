@@ -3,8 +3,11 @@ import ReactDOM from 'react-dom';
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 import thunkMiddleware from 'redux-thunk';
 import { Provider } from 'react-redux';
+import { BrowserRouter } from 'react-router-dom'
 
-import {dataReducer, uiReducer, optionsReducer} from './reducers';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+
+import { dataReducer, uiReducer, optionsReducer } from './reducers';
 import { load } from './actions';
 
 import App from './components/App';
@@ -14,12 +17,16 @@ const store = createStore(combineReducers({
     data: dataReducer,
     ui: uiReducer,
     options: optionsReducer
-  }), applyMiddleware(thunkMiddleware));
+}), applyMiddleware(thunkMiddleware));
 
 function run() {
     ReactDOM.render(
         <Provider store={store}>
-            <App />
+            <BrowserRouter>
+                <MuiThemeProvider>
+                    <App />
+                </MuiThemeProvider>
+            </BrowserRouter>
         </Provider>, document.getElementById('root'));
 }
 

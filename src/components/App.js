@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { BrowserRouter, Route } from 'react-router-dom'
+import { BrowserRouter, Route, withRouter } from 'react-router-dom'
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import AppBar from 'material-ui/AppBar';
@@ -25,21 +25,18 @@ const mapDispatchToProps = (dispatch) => ({
 export class App extends Component {
   render() {
     return (
-      <BrowserRouter>
-        <MuiThemeProvider>
-          <div className="App">
-            <AppBar
-              title="tTracker"
-            />
-            <Route path="/" exact component={Home} />
-            <Route path="/activity/:activityId" component={SingleActivity} />
-            <Route path="/client/:clientId" component={SingleClient} />
-            <Route path="/bill/:billId" component={SingleBill} />
-          </div>
-        </MuiThemeProvider>
-      </BrowserRouter>
+      <div className="App">
+        <AppBar
+          title="tTracker"
+          onTitleTouchTap={() => this.props.history.push('/')}
+        />
+        <Route path="/" exact component={Home} />
+        <Route path="/activity/:activityId" component={SingleActivity} />
+        <Route path="/client/:clientId" component={SingleClient} />
+        <Route path="/bill/:billId" component={SingleBill} />
+      </div>
     );
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(App));

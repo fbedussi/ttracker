@@ -13,11 +13,11 @@ const BackTo = ({history, title}) => (
         <BackIcon />
       </IconButton>
       {title? title : null}
-      <Link to="/">
+      {/* <Link to="/">
         <IconButton>
           <HomeIcon />
         </IconButton>
-    </Link>
+    </Link> */}
   </div>
 );
 
