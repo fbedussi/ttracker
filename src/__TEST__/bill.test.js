@@ -88,6 +88,26 @@ test('bill.update()', () => {
     expect(db.update).toBeCalled();    
 });
 
+test('bill.refreshText()', () => {
+    Date.now = () => 102;
+    const bill = createBill({
+        client,
+        textTemplate,
+        currency: '€'
+    });
+    
+    bill.update({
+        id: 1,
+        date: 20000000,
+        total: 500,
+    });
+
+    bill.refreshText();
+
+    expect(bill.text).toBe(`client 1\nOxford street, 1\nabcde\n\ndate: ${new Date(20000000).toLocaleDateString()}\n\nthe invoice total is €500.\nfor the following activities: activity 1, activity 2.`)    
+    expect(db.update).toBeCalled();    
+});
+
 test('bill.delete()', () => {
     const bill = createBill({
         client,

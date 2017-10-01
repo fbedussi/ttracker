@@ -109,6 +109,35 @@ test('update bill', () => {
     });
 });
 
+// test('refresh bill Text', () => {
+//     return loadApp().then((app) => {
+//         Date.now = () => 101;
+//         const textTemplate = '${clientName}\n${clientAddress}\n${clientVatNumber}\n\ndate: ${date}\n\nthe invoice total is ${currency}${total}.\nfor the following activities: ${activities}.';
+        
+//         app.billClient(
+//             1,
+//             textTemplate,
+//             '€'
+//         );
+//         const client = app.clients.filter((client) => client.id === 1)[0];
+//         const clientBill = client.bills[client.bills.length - 1]; 
+//         const billId = clientBill.id;
+        
+//         const billUpdates = {
+//             id: billId,
+//             date: 20000000,
+//             total: 500,
+//         };
+        
+//         const updatedApp = app.updateBill(billUpdates);
+
+//         app.refreshBillText(billId);
+//         const updatedBill = updatedApp.bills.filter((bill) => bill.id === billId)[0];
+//         expect(updatedBill.text).toBe(`client 1\n\n\n\ndate: ${new Date(20000000).toLocaleDateString()}\n\nthe invoice total is €500.\nfor the following activities: activity bar`)    
+//         expect(db.update).toBeCalled();    
+//     });
+// });
+
 test('addNewActivityToClient', () => {
     return loadApp().then((app) => {
         const prevApp = app.exportForClient();

@@ -218,7 +218,7 @@ var Activity = {
     },
     resolveDependencies: function(clients, activities) {
         if (this.client.id) {
-            const client = clients.filter((client) => client.id = this.client.id)[0];
+            const client = clients.filter((client) => client.id === this.client.id)[0];
             if (client) {
                 this.client = client;
             }

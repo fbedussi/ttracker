@@ -187,7 +187,7 @@ class SingleClient extends Component {
                         onClick={() => createNewBill(client.id, billTextTemplate, currency)}
                     />
                 </h2>
-                <div className="invoicesWrapper row">
+                <div className="invoicesWrapper cardsWrapper row">
                     {client.bills.map((bill) => <BillCard
                         key={bill.id}
                         bill={bill}

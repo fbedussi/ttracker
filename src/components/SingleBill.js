@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom'
+
 import {
     deleteBill,
     updateBill,
+    refreshBillText,
 } from '../actions';
 
 import { formatTime } from '../helpers/helpers';
@@ -26,6 +29,7 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
     deleteBill: (billId) => dispatch(deleteBill(billId)),
     updateBill: (bill) => dispatch(updateBill(bill)),
+    refreshBillText: (billId) => dispatch(refreshBillText(billId)),
 });
 
 
@@ -36,6 +40,7 @@ class SingleBill extends Component {
             bills,
             deleteBill,
             updateBill,
+            refreshBillText,
             lastUpdatedBillId,
         } = this.props;
         const billId = Number(this.props.match.params.billId);
@@ -59,7 +64,21 @@ class SingleBill extends Component {
                     history={history}
                     title={`Bill id:${bill.id}`}
                 />
-                <p className="row">Invoice number {bill.id}</p>
+                <h1 className="titleBar">
+                    <span className="row">Invoice number {bill.id}</span>
+                    {bill.client.bills[bill.client.bills.length - 1].id === bill.id ?
+                        <span>
+                            <FlatButton
+                                onClick={() => deleteBill(bill.id)}
+                                fullWidth={true}
+                                label="delete"
+                                icon={<DeleteIcon />}
+                            >
+                            </FlatButton>
+                        </span>
+                        : null
+                    }
+                </h1>
 
                 <div className="row">Date:
                         <DateBox
@@ -88,15 +107,20 @@ class SingleBill extends Component {
                     <RaisedButton
                         label="Refresh bill text"
                         icon={<RefreshIcon />}
+                        onClick={() => refreshBillText(bill.id)}
                     />
                 </div>
                 : null }
 
                 <div className="row">
-                    <p>Cilient data</p>
+                    <h2 className="sectionSubtitle">Client data</h2>
                     <p>
                         <span className="label">Name: </span>
-                        <span className="data">{bill.client.name}</span>
+                        <span className="data">
+                            <Link to={`/client/${bill.client.id}`}>
+                                {bill.client.name}
+                            </Link>
+                        </span>
                     </p>
                     <p>
                         <span className="label">Address: </span>
@@ -115,23 +139,13 @@ class SingleBill extends Component {
                         <span className="data">{bill.client.billingInfo.phone}</span>
                     </p>
                 </div>
-
+                
+                <h2 className="sectionSubtitle">Bill text</h2>
                 <BillText 
                         text={bill.text}
                         className="billText"
                         handleChange={(text) => updateBill(Object.assign({}, bill, {text}))}
                 />
-
-                {bill.client.bills[bill.client.bills.length - 1].id === bill.id ?
-                    <FlatButton
-                        onClick={() => deleteBill(bill.id)}
-                        fullWidth={true}
-                        label="delete"
-                        icon={<DeleteIcon />}
-                    >
-                    </FlatButton>
-                    : null
-                }
             </div >
         )
     }

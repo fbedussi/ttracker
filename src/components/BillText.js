@@ -18,6 +18,12 @@ class BillText extends Component {
         this.setHeight();
     }
 
+    componentWillReceiveProps(nextProps) {
+        this.setState({
+            text: nextProps.text,
+        });    
+    }
+
     handleLocalChange(text) {
         this.setState({
             text,

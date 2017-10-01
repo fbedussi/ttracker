@@ -28,7 +28,6 @@ export class App extends Component {
       <BrowserRouter>
         <MuiThemeProvider>
           <div className="App">
-            <Style></Style>
             <AppBar
               title="tTracker"
             />

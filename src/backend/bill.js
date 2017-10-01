@@ -21,6 +21,20 @@ const defaultBillProps = {
 };
 
 var Bill = {
+    _createText: function() {
+        const templateWithThisKeyword = this.textTemplate.replace(/(\${)([^}]*})/g, '$1' + 'this.' + '$2');
+        const textTemplate = new Function(`return \`${templateWithThisKeyword}\`;`);
+        const textTemplateVariables = {
+            clientName: this.client.name,
+            clientAddress: this.client.billingInfo.address,
+            clientVatNumber: this.client.billingInfo.vatNumber,
+            date: new Date(this.date).toLocaleDateString(),
+            currency: this.currency,
+            total: this.total,
+            activities: this.client.activities.reduce((activityList, activity) => `${activityList}${activityList.length ? ', ' : ''}${activity.name}`, '')
+        };
+        this.text = textTemplate.call(textTemplateVariables);
+    },
     create: function(props) {
         if (!(props && props.client && props.client.activities && props.client.activities.length)) {
             return false;
@@ -45,18 +59,7 @@ var Bill = {
         this.client = props.client;
         this.date = date;
         this.total = total;
-        const templateWithThisKeyword = this.textTemplate.replace(/(\${)([^}]*})/g, '$1' + 'this.' + '$2');
-        const textTemplate = new Function(`return \`${templateWithThisKeyword}\`;`);
-        const textTemplateVariables = {
-            clientName: this.client.name,
-            clientAddress: this.client.billingInfo.address,
-            clientVatNumber: this.client.billingInfo.vatNumber,
-            date: new Date(this.date).toLocaleDateString(),
-            currency: this.currency,
-            total: this.total,
-            activities: this.client.activities.reduce((activityList, activity) => `${activityList}${activityList.length ? ', ' : ''}${activity.name}`, '')
-        };
-        this.text = textTemplate.call(textTemplateVariables);
+        this._createText();
 
         db.create(DBCOLLECTION, this.exportForDb());
 
@@ -73,6 +76,13 @@ var Bill = {
     update: function(newProps) {
         merge(this, newProps);
 
+        db.update(DBCOLLECTION, this.exportForDb());
+
+        return this;
+    },
+    refreshText: function() {
+        this._createText();
+        
         db.update(DBCOLLECTION, this.exportForDb());
 
         return this;

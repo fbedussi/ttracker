@@ -8,6 +8,7 @@
 - configuration flag to disallow 0 total bills
 
 - firebase
+- responsive ui
 
 
 

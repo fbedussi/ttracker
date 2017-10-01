@@ -133,6 +133,11 @@ const App = {
 
         return this.exportForClient();
     },
+    refreshBillText: function(billId) {
+        this._getBill(billId).refreshText();
+
+        return this.exportForClient();
+    },
     addNewActivityToClient: function(clientId) {
         var client = this._getClient(clientId);
         var activity;

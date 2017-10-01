@@ -75,12 +75,13 @@ class ActivityTab extends Component {
         styles.fab.display = activeTab === 'activities' ? 'block' : 'none';
 
         return (
-            <div>
+            <div className="tabContent cardsWrapper">
                 {activities
                     .filter((activity) => !activity.parentActivity || !activity.parentActivity.id)
                     .map((activity) => {
                     return <Card
-                        key={activity.id}
+                        className="card"
+                        key={'activity_' + activity.id}
                         style={{ position: 'relative' }}
                         expandable={false}
                         expanded={true}

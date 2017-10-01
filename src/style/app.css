@@ -61,15 +61,6 @@ input.editable {
     width: calc(100% - 8rem);
 }
 
-.cardsWrapper {
-    display: flex;
-    flex-wrap: wrap;
-}
-
-.card {
-    margin: 0 1em 1em 0;
-}
-
 .timeEntry-details {
     padding: 1em;
 }
@@ -114,7 +105,6 @@ input.editable {
 .billText {
     width: 100%;
     max-width: 70em;
-    margin: 0 auto;
 }
 
 .billCardHeader {
@@ -125,4 +115,19 @@ input.editable {
 
 .editableText {
     border-bottom: solid 1px lightgray;
+}
+
+@media screen and (min-width: 30em) {
+    .cardsWrapper {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    
+    .card {
+        margin: 0 1em 1em 0;
+    }
+
+    .tabContent {
+        padding: 1em;
+    }
 }

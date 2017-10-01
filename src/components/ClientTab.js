@@ -59,9 +59,10 @@ class ClientTab extends Component {
         styles.fab.display = activeTab === 'clients' ? 'block' : 'none';
 
         return (
-            <div>
+            <div className="tabContent cardsWrapper">
                 {clients.map((client) => <Card
-                    key={client.id}
+                    className="card"
+                    key={'client_' + client.id}
                     expandable={false}
                     expanded={true}
                 >

@@ -7,6 +7,7 @@ import { setActiveTab } from '../actions';
 
 import ClientTab from './ClientTab';
 import ActivityTab from './ActivityTab';
+import BillTab from './BillTab';
 
 const mapStateToProps = (state) => ({
   activeTab: state.ui.activeTab
@@ -30,6 +31,9 @@ class App extends Component {
         </Tab>
         <Tab label="Projects" value="activities">
           <ActivityTab history={history}/>
+        </Tab>
+        <Tab label="Bills" value="bills">
+          <BillTab history={history}/>
         </Tab>
       </Tabs>
     );

@@ -160,6 +160,15 @@ export function updateBill(bill) {
     };
 }
 
+export function refreshBillText(billId) {
+    const data = backend.refreshBillText(billId);
+
+    return {
+        type: 'UPDATE_DATA',
+        data,
+    };
+}
+
 export function deleteBill(billId) {
     const data = backend.deleteBill(billId);
 
