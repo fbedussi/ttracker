@@ -26,6 +26,10 @@ input.editable {
     border-bottom: solid 2px black;
 }
 
+:root {
+    --currency-width: 3em;
+}
+
 .sectionTitle {
     margin: 2em 0 1em;
 }
@@ -78,6 +82,10 @@ input.editable {
     max-width: 8rem;
 }
 
+.card {
+    margin: 0 0 1em 0;
+}
+
 .cardClientName {
     margin-top: 1em;
 }
@@ -102,9 +110,10 @@ input.editable {
     align-items: center;
 }
 
-.billText {
+.editableTextArea {
     width: 100%;
     max-width: 70em;
+    border: none;
 }
 
 .billCardHeader {
@@ -119,6 +128,18 @@ input.editable {
 
 .appbar h1 {
     cursor: pointer;
+}
+
+.optionsWrapper {
+    padding: 1em;
+}
+
+.currencyField {
+    width: var(--currency-width);
+}
+
+.hourlyRateField {
+    width: calc(100% - var(--currency-width));
 }
 
 @media screen and (min-width: 30em) {

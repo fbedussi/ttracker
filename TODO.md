@@ -1,6 +1,5 @@
-- options pane to store default hourlyRate and other settings
-- configuration flag to disallow 0 total bills
 - firebase
+- confirmation box for deleting
 - dialog box for deep deleting client/activity/subactivity
 - MarkDown in bills text
 - add searchbox for client/projects panels

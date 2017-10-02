@@ -6,6 +6,7 @@ var db;
 
 const openDb = (dbName) => new Promise((resolve, reject) => {
     const request = indexedDB.open(dbName);
+    var newDb = false;
 
     request.onerror = (event) => reject(`Error opening DB ${dbName}: : ${request.error}`);
 
@@ -15,10 +16,15 @@ const openDb = (dbName) => new Promise((resolve, reject) => {
         db.createObjectStore('activity', { keyPath: "id" });
         db.createObjectStore('client', { keyPath: "id" });
         db.createObjectStore('bill', { keyPath: "id" });
+        db.createObjectStore('option', { keyPath: "id" });
+        newDb = true;
     };
-
+    
     request.onsuccess = (event) => {
         db = event.target.result;
+        if (newDb) {
+            createInStore('option', {id: 1});
+        }
         resolve(dbInterface)
     };
 });

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-class BillText extends Component {
+class EditableTextArea extends Component {
     constructor(props) {
         super(props);
 
@@ -56,7 +56,7 @@ class BillText extends Component {
         return (
             <textarea
                 ref={(textarea) => { this.textarea = textarea; }}
-                className={className + ' editableTextarea'}
+                className={className + ' editableTextArea'}
                 value={this.state.text}
                 onChange={(e) => this.handleLocalChange(e.target.value)}
                 onBlur={(e) => this.save(e.target.value)}
@@ -65,4 +65,4 @@ class BillText extends Component {
     }
 }
 
-export default BillText;
+export default EditableTextArea;

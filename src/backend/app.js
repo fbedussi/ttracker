@@ -5,19 +5,16 @@ import {createActivity, loadActivity} from './activity';
 import {createBill, loadBill} from './bill';
 import db from '../db/dbFacade';
 
-function updateClientTotalCost(client, activityId) {
-    if (client.activities.some((activity) => activity.id === activityId).length) {
-        client.totalCost = client.getTotalCost();
-    }
-
-    return client;
-}
-
 const App = {
     clients: [],
     activities: [],
     bills: [],
-    defaultHourlyRate: 0,
+    options: {
+        currency: '€',
+        billTextTemplate: '${clientName}\n${clientAddress}\n${clientVatNumber}\n\ndate: ${date}\n\nthe invoice total is ${currency}${total}.\nfor the following activities: ${activities}.',
+        defaultHourlyRate: 0,
+        allowZeroTotalBill: false,
+    },
     load: function() {
         return db
             .openDb('ttracker')
@@ -33,21 +30,34 @@ const App = {
                         .readAll('activity')
                         .then((activitiesData) => activitiesData
                             .map((activityData) => loadActivity(activityData))
-                    ),
+                        )
+                    ,
                     db
                         .readAll('bill')
                         .then((billsData) =>billsData
                             .map((billData) => loadBill(billData))
-                ),
+                        )
+                    ,
+                    db
+                        .readAll('option')
+                        .then((options) => options[0])
                 ])
             )
-            .then(([clients, activities, bills]) => { //resolve cross dependencies
+            .then(([clients, activities, bills, options]) => { //resolve cross dependencies
                 this.activities = activities.map((activity) => activity.resolveDependencies(clients, activities));
                 this.clients = clients.map((client) => client.resolveDependencies(activities, bills));
                 this.bills = bills.map((bill) => bill.resolveDependencies(clients));
+                this.options = options;
                 return this;
             })
         ;
+    },
+    saveOptions: function(options) {
+        this.options = Object.assign({}, this.options, options);
+        
+        db.update('option', Object.assign({id: 1}, this.options));
+        
+        return this.options;
     },
     _getActivity: function(id) {
         return this.activities.filter((activity) => activity.id === id)[0];
@@ -59,7 +69,7 @@ const App = {
         return this.bills.filter((bill) => bill.id === id)[0];  
     },
     createClient: function(props = {}) {
-        var newClient = createClient(Object.assign({defaultHourlyRate: this.defaultHourlyRate}, props));
+        var newClient = createClient(Object.assign({defaultHourlyRate: this.options.defaultHourlyRate}, props));
         this.clients.push(newClient);
         
         return this.exportForClient();
