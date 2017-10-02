@@ -117,6 +117,10 @@ input.editable {
     border-bottom: solid 1px lightgray;
 }
 
+.appbar h1 {
+    cursor: pointer;
+}
+
 @media screen and (min-width: 30em) {
     .cardsWrapper {
         display: flex;
@@ -129,5 +133,26 @@ input.editable {
 
     .tabContent {
         padding: 1em;
+    }
+}
+
+@media print {
+    @page 
+    {
+        size: auto;   /* auto is the initial value */
+        margin: 0mm;  /* this affects the margin in the printer settings */
+    }
+
+    .hideInPrint,
+    .hideInPrint * {
+        display: none !important;
+    }
+
+    .billText {
+        border: none;
+        appearance: none;
+        margin: 5cm 3cm 4cm;
+        font-size: 14px;
+        height: calc(100vh - 9cm) !important;
     }
 }

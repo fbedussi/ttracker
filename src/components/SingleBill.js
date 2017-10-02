@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+    import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom'
 
@@ -11,9 +11,15 @@ import {
 import { formatTime } from '../helpers/helpers';
 
 import DeleteIcon from 'material-ui/svg-icons/action/delete';
+import PrintIcon from 'material-ui/svg-icons/action/print';
 import RefreshIcon from 'material-ui/svg-icons/navigation/refresh';
 import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
+import SvgIconFace from 'material-ui/svg-icons/action/face';
+import HubIcon from 'material-ui/svg-icons/hardware/device-hub';
+import Avatar from 'material-ui/Avatar';
+import Chip from 'material-ui/Chip';
+import { blue300, indigo900 } from 'material-ui/styles/colors';
 
 import EditableText from './EditableText';
 import BackTo from './BackTo';
@@ -64,7 +70,21 @@ class SingleBill extends Component {
                     history={history}
                     title={`Bill id:${bill.id}`}
                 />
-                <h1 className="titleBar">
+
+                <div className="chipWrapper row hideInPrint">
+                    {bill.client && bill.client.id ?
+                        <Chip className="chip"
+                            backgroundColor={blue300}
+                            onClick={() => history.push(`/client/${bill.client.id}`)}
+                        >
+                            <Avatar color="#fff" icon={<SvgIconFace />} backgroundColor={indigo900} />
+                            {bill.client.name}
+                        </Chip>
+                        : null
+                    }
+                </div>
+
+                <h1 className="titleBar hideInPrint">
                     <span className="row">Invoice number {bill.id}</span>
                     {bill.client.bills[bill.client.bills.length - 1].id === bill.id ?
                         <span>
@@ -80,7 +100,7 @@ class SingleBill extends Component {
                     }
                 </h1>
 
-                <div className="row">Date:
+                <div className="row hideInPrint">Date:
                         <DateBox
                         time={bill.date}
                         updateDate={(newDate) => updateBill(
@@ -91,7 +111,7 @@ class SingleBill extends Component {
                     />
                 </div>
 
-                <div className="row">
+                <div className="row hideInPrint">
                     <span className="label">Total: {bill.currency} </span>
                     <EditableText
                         className="billTotal"
@@ -105,47 +125,29 @@ class SingleBill extends Component {
 
                 {lastUpdatedBillId === bill.id ? <div className="row">
                     <RaisedButton
-                        label="Refresh bill text"
+                        label="Refresh bill text hideInPrint"
                         icon={<RefreshIcon />}
                         onClick={() => refreshBillText(bill.id)}
                     />
                 </div>
                 : null }
-
-                <div className="row">
-                    <h2 className="sectionSubtitle">Client data</h2>
-                    <p>
-                        <span className="label">Name: </span>
-                        <span className="data">
-                            <Link to={`/client/${bill.client.id}`}>
-                                {bill.client.name}
-                            </Link>
-                        </span>
-                    </p>
-                    <p>
-                        <span className="label">Address: </span>
-                        <span className="data">{bill.client.billingInfo.address}</span>
-                    </p>
-                    <p>
-                        <span className="label">VAT number: </span>
-                        <span className="data">{bill.client.billingInfo.vatNumber}</span>
-                    </p>
-                    <p>
-                        <span className="label">E-mail: </span>
-                        <span className="data">{bill.client.billingInfo.email}</span>
-                    </p>
-                    <p>
-                        <span className="label">Phone: </span>
-                        <span className="data">{bill.client.billingInfo.phone}</span>
-                    </p>
-                </div>
                 
-                <h2 className="sectionSubtitle">Bill text</h2>
-                <BillText 
-                        text={bill.text}
-                        className="billText"
-                        handleChange={(text) => updateBill(Object.assign({}, bill, {text}))}
-                />
+                <h2 className="sectionSubtitle hideInPrint">Bill text</h2>
+                <div className="row">
+                    <BillText 
+                            text={bill.text}
+                            className="billText print"
+                            handleChange={(text) => updateBill(Object.assign({}, bill, {text}))}
+                    />
+                </div>
+
+                <div className="row hideInPrint">
+                    <RaisedButton
+                        label="Print"
+                        icon={<PrintIcon/>}
+                        onClick={() => window.print()}
+                    />
+                </div>
             </div >
         )
     }

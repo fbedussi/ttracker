@@ -27,6 +27,7 @@ export class App extends Component {
     return (
       <div className="App">
         <AppBar
+          className="hideInPrint appbar"
           title="tTracker"
           onTitleTouchTap={() => this.props.history.push('/')}
         />

@@ -6,18 +6,18 @@ import BackIcon from 'material-ui/svg-icons/hardware/keyboard-backspace';
 import HomeIcon from 'material-ui/svg-icons/action/home';
 
 const BackTo = ({history, title}) => (
-  <div className="backToWrapper">
+  <div className="backToWrapper hideInPrint">
       <IconButton
         onClick={() => history.goBack()}
       >
         <BackIcon />
       </IconButton>
       {title? title : null}
-      {/* <Link to="/">
+      <Link to="/">
         <IconButton>
           <HomeIcon />
         </IconButton>
-    </Link> */}
+    </Link>
   </div>
 );
 
