@@ -61,15 +61,6 @@ input.editable {
     width: calc(100% - 8rem);
 }
 
-.timeEntriesCards {
-    display: flex;
-    flex-wrap: wrap;
-}
-
-.timeEntry {
-    margin: 0 1em 1em 0;
-}
-
 .timeEntry-details {
     padding: 1em;
 }
@@ -108,4 +99,60 @@ input.editable {
 .backToWrapper {
     display: flex;
     justify-content: space-between;
+    align-items: center;
+}
+
+.billText {
+    width: 100%;
+    max-width: 70em;
+}
+
+.billCardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.editableText {
+    border-bottom: solid 1px lightgray;
+}
+
+.appbar h1 {
+    cursor: pointer;
+}
+
+@media screen and (min-width: 30em) {
+    .cardsWrapper {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    
+    .card {
+        margin: 0 1em 1em 0;
+    }
+
+    .tabContent {
+        padding: 1em;
+    }
+}
+
+@media print {
+    @page 
+    {
+        size: auto;   /* auto is the initial value */
+        margin: 0mm;  /* this affects the margin in the printer settings */
+    }
+
+    .hideInPrint,
+    .hideInPrint * {
+        display: none !important;
+    }
+
+    .billText {
+        border: none;
+        appearance: none;
+        margin: 5cm 3cm 4cm;
+        font-size: 14px;
+        height: calc(100vh - 9cm) !important;
+    }
 }

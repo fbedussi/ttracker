@@ -160,7 +160,7 @@ test('client.getTotalCost()', () => {
     expect(client.getTotalCost()).toBe(20);
 });
 
-test('client.bill()', () => {
+test('client.addBill()', () => {
     const client = createClient({
         id: 1,
         name: 'Client name',
@@ -174,10 +174,88 @@ test('client.bill()', () => {
             getTotalCost: () => 10
         }]
     });
-    const updatedClient = client.bill();
+    const bill = {
+        id: 1,
+        date: 101
+    }
+    const updatedClient = client.addBill(bill);
 
-    expect(updatedClient.lastBilledTime > 0).toBe(true);
+    expect(updatedClient.lastBilledTime).toBe(101);
     expect(updatedClient.bills.length).toBe(1);
+});
+
+test('delete bill only if it is the last bill', () => {
+    const mockDelete = jest.fn();
+    const client = createClient({
+        id: 1,
+        name: 'Client name',
+        bills: [{id: 1}, {id: 2, delete: mockDelete}]
+    });
+    
+    expect(() => client.deleteBill(1)).toThrow(); //not deleted
+    const updatedClient = client.deleteBill(2)
+    expect(updatedClient.bills.length).toBe(1); //deleted
+    expect(mockDelete).toBeCalled();
+});
+
+test('update client bill', () => {
+    const mockDelete = jest.fn();
+    const client = createClient({
+        id: 1,
+        name: 'Client name',
+        bills: [{
+            id: 1,
+            date: 100,
+            update: jest.fn(),
+            exportForClient: function() {return Object.assign({}, this)}
+        }, {
+            id: 2,
+            date: 200,
+            update: jest.fn(),
+            exportForClient: function() {return Object.assign({}, this)}            
+        }, {
+            id: 3,
+            date: 300,
+            update: jest.fn(),
+            exportForClient: function() {return Object.assign({}, this)}            
+        }]
+    });
+    var updatedClient = client.updateBill({
+        id: 3,
+        date: 500,
+        total: 10,
+        text: 'baz'
+    });
+    expect(updatedClient.bills[2].update).toHaveBeenCalledWith({
+        id: 3,
+        date: 500, 
+        total: 10,
+        text: 'baz'
+    });
+    updatedClient = client.updateBill({
+        id: 2,
+        date: 500,
+        total: 10,
+        text: 'baz'
+    });
+    expect(updatedClient.bills[1].update).toHaveBeenCalledWith({
+        id: 2,
+        date: 200, //do not change date if the new value is after next bill date
+        total: 10,
+        text: 'baz'
+    });
+    updatedClient = client.updateBill({
+        id: 2,
+        date: 50,
+        totoal: 10,
+        text: 'baz'
+    });
+    expect(updatedClient.bills[1].update).toHaveBeenCalledWith({
+        id: 2,
+        date: 200, //do not change date if the new value is before prev bill date
+        totoal: 10,
+        text: 'baz'
+    });
 });
 
 test('client.exportForDb()', () => {

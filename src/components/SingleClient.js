@@ -4,28 +4,33 @@ import {
     deleteClient,
     updateClient,
     addNewActivityToClient,
+    createNewBill,
 } from '../actions';
 
-import {formatTime} from '../helpers/helpers';
+import { formatTime } from '../helpers/helpers';
 
 import DeleteIcon from 'material-ui/svg-icons/action/delete';
+import BillIcon from 'material-ui/svg-icons/action/receipt';
 import FlatButton from 'material-ui/FlatButton';
 import ActivityChip from './ActivityChip';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 
 import EditableText from './EditableText';
 import BackTo from './BackTo';
+import BillCard from './BillCard';
 
 const mapStateToProps = (state) => ({
     clients: state.data.clients,
     activities: state.data.activities,
     currency: state.options.currency,
+    billTextTemplate: state.options.billTextTemplate,
 });
 
 const mapDispatchToProps = (dispatch) => ({
-    deleteClient: (client) => dispatch(deleteClient(client)),    
+    deleteClient: (client) => dispatch(deleteClient(client)),
     updateClient: (props) => dispatch(updateClient(props)),
-    addNewActivityToClient: (clientId) => dispatch(addNewActivityToClient(clientId)),    
+    addNewActivityToClient: (clientId) => dispatch(addNewActivityToClient(clientId)),
+    createNewBill: (clientId, billTextTemplate, currency) => dispatch(createNewBill(clientId, billTextTemplate, currency)),
 });
 
 
@@ -38,12 +43,14 @@ class SingleClient extends Component {
             deleteClient,
             updateClient,
             addNewActivityToClient,
+            createNewBill,
+            billTextTemplate,
         } = this.props;
         const clientId = Number(this.props.match.params.clientId);
         const client = clients
             .filter((client) => client.id === clientId)
             .reduce((acc, i) => i, null)
-        ;
+            ;
 
         if (!client) {
             return (
@@ -56,10 +63,10 @@ class SingleClient extends Component {
 
         return (
             <div className="mainWrapper">
-                <BackTo history={history} />
-                <div className="clientId row">
-                    Client Id: {client.id}
-                </div>
+                <BackTo 
+                    history={history}
+                    title={`Client id:${client.id}`}
+                />
                 <h1 className="clientTitleBar titleBar">
                     <EditableText
                         className="clientName row"
@@ -91,7 +98,7 @@ class SingleClient extends Component {
                         })}
                     />
                 </div>
-                <h2 className="sectionSubtitle">Billing data</h2>        
+                <h2 className="sectionSubtitle">Billing data</h2>
                 <div className="row">
                     <span className="label">{'Address: '} </span>
                     <EditableText
@@ -100,7 +107,7 @@ class SingleClient extends Component {
                         text={client.billingInfo.address}
                         handleChange={(address) => updateClient({
                             id: client.id,
-                            billignInfo: Object.assign(client.billingInfo, {address})
+                            billignInfo: Object.assign(client.billingInfo, { address })
                         })}
                     />
                 </div>
@@ -112,7 +119,7 @@ class SingleClient extends Component {
                         text={client.billingInfo.phone}
                         handleChange={(phone) => updateClient({
                             id: client.id,
-                            billignInfo: Object.assign(client.billingInfo, {phone})
+                            billignInfo: Object.assign(client.billingInfo, { phone })
                         })}
                     />
                 </div>
@@ -124,7 +131,7 @@ class SingleClient extends Component {
                         text={client.billingInfo.email}
                         handleChange={(email) => updateClient({
                             id: client.id,
-                            billignInfo: Object.assign(client.billingInfo, {email})
+                            billignInfo: Object.assign(client.billingInfo, { email })
                         })}
                     />
                 </div>
@@ -136,12 +143,12 @@ class SingleClient extends Component {
                         text={client.billingInfo.vatNumber}
                         handleChange={(vatNumber) => updateClient({
                             id: client.id,
-                            billignInfo: Object.assign(client.billingInfo, {vatNumber})
+                            billignInfo: Object.assign(client.billingInfo, { vatNumber })
                         })}
                     />
                 </div>
-                
-                <h2 className="sectionSubtitle">Time overview</h2>        
+
+                <h2 className="sectionSubtitle">Time overview</h2>
                 <div className="totalTimeWrapper row">
                     <span className="totalTimeLabel">{'Total time: (h:mm:ss)'} </span>
                     <span className="totalTime">{formatTime(client.totalTime)}</span>
@@ -158,14 +165,14 @@ class SingleClient extends Component {
                     <span className="totalCostToBillLabel">{`Total cost to bill: ${currency}`} </span>
                     <span className="totalCostToBill">{Math.round(client.totalCostToBill)}</span>
                 </div>
-                
-                <h2 className="sectionSubtitle">Projects 
+
+                <h2 className="sectionSubtitle">Projects
                 <FlatButton
-                    icon={<ContentAdd />}
-                    onClick={() => {
-                        addNewActivityToClient(client.id);
-                    }}
-                />
+                        icon={<ContentAdd />}
+                        onClick={() => {
+                            addNewActivityToClient(client.id);
+                        }}
+                    />
                 </h2>
                 <div className="chipWrapper">
                     {client.activities.map((activity) => <ActivityChip
@@ -174,7 +181,18 @@ class SingleClient extends Component {
                     />)}
                 </div>
 
-                
+                <h2 className="sectionSubtitle">Invoices
+                <FlatButton
+                        icon={<ContentAdd />}
+                        onClick={() => createNewBill(client.id, billTextTemplate, currency)}
+                    />
+                </h2>
+                <div className="invoicesWrapper cardsWrapper row">
+                    {client.bills.map((bill) => <BillCard
+                        key={bill.id}
+                        bill={bill}
+                    />)}
+                </div>
             </div>
         )
     }

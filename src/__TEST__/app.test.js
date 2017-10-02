@@ -65,9 +65,78 @@ test('bill client', () => {
     return loadApp().then((app) => {
         app.billClient(2);
 
-        expect(app.clients.filter((client) => client.id === 2)[0].lastBilledTime > 0).toBe(true);
+        expect(app.clients.filter((client) => client.id === 2)[0].bills.length).toBe(1);
     });
 });
+
+test('delete bill only if it is the last bill for that client', () => {
+    return loadApp().then((app) => {
+        app.billClient(1);
+        const client = app.bills[app.bills.length - 1].client;
+        const clientLastBillId = client.bills[client.bills.length - 1].id;
+        
+        expect(() => app.deleteBill(1)).toThrow(); //not deleted
+        app.deleteBill(clientLastBillId)
+        expect(app.clients.filter((client) => client.id === 1)[0].bills.length).toBe(1); //deleted
+        expect(app.bills.length).toBe(1);    
+    });
+});
+
+test('update bill', () => {
+    return loadApp().then((app) => {
+        app.billClient(1);
+        const client = app.clients.filter((client) => client.id === 1)[0];
+        const clientBill = client.bills[client.bills.length - 1]; 
+        const billId = clientBill.id;
+        
+        const billUpdates = {
+            id: billId,
+            text: 'baz',
+            currency: '$',
+            client: {
+                id: 1
+            },
+            total: 70000,
+        };
+        
+        const updatedApp = app.updateBill(billUpdates);
+        const updatedBill = updatedApp.bills.filter((bill) => bill.id === billId)[0];
+        expect(updatedBill.text).toBe('baz');
+        expect(updatedBill.currency).toBe('$');
+        expect(updatedBill.total).toBe(70000);
+        expect(clientBill).toEqual(updatedBill);
+        expect(db.update).toBeCalled();    
+    });
+});
+
+// test('refresh bill Text', () => {
+//     return loadApp().then((app) => {
+//         Date.now = () => 101;
+//         const textTemplate = '${clientName}\n${clientAddress}\n${clientVatNumber}\n\ndate: ${date}\n\nthe invoice total is ${currency}${total}.\nfor the following activities: ${activities}.';
+        
+//         app.billClient(
+//             1,
+//             textTemplate,
+//             '€'
+//         );
+//         const client = app.clients.filter((client) => client.id === 1)[0];
+//         const clientBill = client.bills[client.bills.length - 1]; 
+//         const billId = clientBill.id;
+        
+//         const billUpdates = {
+//             id: billId,
+//             date: 20000000,
+//             total: 500,
+//         };
+        
+//         const updatedApp = app.updateBill(billUpdates);
+
+//         app.refreshBillText(billId);
+//         const updatedBill = updatedApp.bills.filter((bill) => bill.id === billId)[0];
+//         expect(updatedBill.text).toBe(`client 1\n\n\n\ndate: ${new Date(20000000).toLocaleDateString()}\n\nthe invoice total is €500.\nfor the following activities: activity bar`)    
+//         expect(db.update).toBeCalled();    
+//     });
+// });
 
 test('addNewActivityToClient', () => {
     return loadApp().then((app) => {
@@ -75,7 +144,7 @@ test('addNewActivityToClient', () => {
         const updatedApp = app.addNewActivityToClient(2)
 
         expect(updatedApp.activities.length).toBe(prevApp.activities.length + 1);
-        expect(updatedApp.clients[1].activities.length).toBe(1);
+        expect(updatedApp.clients[1].activities.length).toBe(prevApp.clients[1].activities.length + 1);
     });
 });
 
@@ -89,7 +158,7 @@ test('remove activity from client', () => {
             clientId: 2
         })
 
-        expect(updatedApp2.clients.filter((client) => client.id === 2)[0].activities.length).toBe(0);
+        expect(updatedApp2.clients.filter((client) => client.id === 2)[0].activities.length).toBe(prevApp.clients.filter((client) => client.id === 2)[0].activities.length);
     });
 });
 

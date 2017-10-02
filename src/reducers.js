@@ -18,7 +18,8 @@ export function dataReducer(state = {
         case 'UPDATE_DATA':
             return Object.assign({}, state, {
                 clients: action.data.clients,
-                activities: action.data.activities
+                activities: action.data.activities,
+                bills: action.data.bills
             });
         
         case 'START_ACTIVITY':
@@ -49,7 +50,8 @@ export function uiReducer(state = {
         case 'UPDATE_DATA':
             return Object.assign({}, state, {
                 lastCreatedActivityId: action.lastCreatedActivityId,
-                lastCreatedClientId: action.lastCreatedClientId
+                lastCreatedClientId: action.lastCreatedClientId,
+                lastUpdatedBillId: action.lastUpdatedBillId
             });
 
         case 'SET_ACTIVE_TAB':
@@ -79,6 +81,7 @@ export function uiReducer(state = {
 
 export function optionsReducer(state = {
     currency: '€',
+    billTextTemplate: '${clientName}\n${clientAddress}\n${clientVatNumber}\n\ndate: ${date}\n\nthe invoice total is ${currency}${total}.\nfor the following activities: ${activities}.',
 }, action) {
 	switch (action.type) {
 		default:

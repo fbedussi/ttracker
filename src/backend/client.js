@@ -1,3 +1,5 @@
+// @ts-check
+
 import initIdMaker from '../helpers/idMaker';
 import merge from '../helpers/merge';
 import db from '../db/dbFacade';
@@ -41,7 +43,7 @@ var Client = {
     },
     load: function(props) {
         merge(this, props);
-        this.activities = this.activities.map(activityProps => loadActivity(activityProps));
+
         return this;
     },
     update: function(newProps) {
@@ -89,50 +91,91 @@ var Client = {
         
         return this;
     },
-    bill: function() {
-        const amount = this.getTotalCost(this.lastBilledTime);
-        var  billedActivities =  [];
+    addBill: function(bill) {
+        this.bills.push(bill);
+        this.lastBilledTime = bill.date;
+
+        db.update(DBCOLLECTION, this.exportForDb());
         
-        if (this.activities.length && this.activities[0].getTotalTime) {
-            billedActivities = this.activities.filter((activity) => activity.getTotalTime(this.lastBilledTime) > 0);
+        return this;
+    },
+    deleteBill: function(id) {
+        const lastBill = this.bills[this.bills.length - 1];
+        if (lastBill.id !== id) {
+            throw new Error('Cannot delete bill, it\'s not the last bill for this client');            
         }
 
-        this.lastBilledTime = Date.now();
-        this.bills.push({
-            date: this.lastBilledTime,
-            amount,
-            billedActivities
-        })
+        lastBill.delete();
+
+        this.bills = this.bills.slice(0, -1);
 
         db.update(DBCOLLECTION, this.exportForDb());
 
         return this;
     },
+    updateBill: function(props) {
+        const billsData = {
+            billToUpdate: null,
+            prevBill: null,
+            nextBill: null
+        }
+        
+        this.bills.reduce((result, bill, i, bills) => {
+            if (bill.id === props.id) {
+                Object.assign(billsData, {
+                    billToUpdate: bill,
+                    prevBill: bills[i - 1],
+                    nextBill: bills[i + 1]
+                });
+            }
+
+            return billsData; 
+        }, billsData);
+
+        if (!billsData.billToUpdate) {
+            return this.exportForClient();
+        }
+
+        if ((billsData.nextBill && props.date >= billsData.nextBill.date) || (billsData.prevBill && props.date <= billsData.prevBill.date)) {
+            props.date = billsData.billToUpdate.date;
+        }
+        billsData.billToUpdate.update(props);
+
+        return this.exportForClient();
+    },
     exportForDb: function() {
         var objToSave = Object.assign({}, this);
         objToSave.activities = objToSave.activities.map((activity) => ({id: activity.id}));
+        objToSave.bills = objToSave.bills.map((bill) => ({id: bill.id}));
 
         return objToSave;
     },
-    exportForClient: function(activityDependency = false) {
+    exportForClient: function() {
         var objToExport = Object.assign({}, this, {
             totalTime: this.getTotalTime(),
             totalCost: this.getTotalCost(),
             totalTimeToBill: this.getTotalTime(this.lastBilledTime),
             totalCostToBill: this.getTotalCost(this.lastBilledTime),
+            bills: this.bills.map((bill) => bill.exportForClient()),
 
-            //this must be set last otherwise when activityDependency is true this.getTotalTime calls activity.getTotalTime which is undefined
-            activities: this.activities.map((activity) => !activityDependency && activity.exportForClient ? activity.exportForClient() : Object.assign({}, activity)),
+            //this must be set last otherwise when resolvingDependency is true this.getTotalTime calls activity.getTotalTime which is undefined
+            activities: this.activities.map((activity) => activity.exportForClient()),
         });
   
         return objToExport;
     },
-    resolveDependencies: function(activities) {
+    resolveDependencies: function(activities, bills) {
         this.activities = this.activities
-        .map((clientActivity) => activities
-            .filter((storedActivity) => storedActivity.id === clientActivity.id)[0]
-        );
-
+            .map((clientActivity) => activities
+                .filter((storedActivity) => storedActivity.id === clientActivity.id)[0]
+            )
+        ;
+        this.bills = this.bills
+            .map((clientBill) => bills
+                .filter((storedBill) => storedBill.id === clientBill.id)[0]
+            )
+        ;
+        
         return this;
     }
 }

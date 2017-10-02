@@ -141,6 +141,43 @@ export function updateTimeEntry(activity, timeEntry) {
     };
 }
 
+export function createNewBill(clientId, billTextTemplate, currency) {
+    const data = backend.billClient(clientId, billTextTemplate, currency);
+
+    return {
+        type: 'UPDATE_DATA',
+        data
+    };
+}
+
+export function updateBill(bill) {
+    const data = backend.updateBill(bill);
+
+    return {
+        type: 'UPDATE_DATA',
+        data,
+        lastUpdatedBillId: bill.id
+    };
+}
+
+export function refreshBillText(billId) {
+    const data = backend.refreshBillText(billId);
+
+    return {
+        type: 'UPDATE_DATA',
+        data,
+    };
+}
+
+export function deleteBill(billId) {
+    const data = backend.deleteBill(billId);
+
+    return {
+        type: 'UPDATE_DATA',
+        data
+    };
+}
+
 export function toggleTimeEntriesRegistryAsTable() {
     return {
         type: 'TOGGLE_TIMEENTRIES_REGISTRY_AS_TABLE',

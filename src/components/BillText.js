@@ -1,42 +1,27 @@
 import React, { Component } from 'react';
 
-const selectText = (inputEl) => {
-    inputEl.focus();
-    inputEl.select();
-}
-
-class EditableText extends Component {
+class BillText extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
             text: props.text,
-            editing: props.editable
+            editing: false
         }
     }
 
+    setHeight() {
+        this.textarea.style.height = `${this.textarea.scrollHeight}px`;
+    }
+
     componentDidMount() {
-        if (this.props.editable) {
-            selectText(this.input);
-        }
+        this.setHeight();
     }
 
     componentWillReceiveProps(nextProps) {
         this.setState({
             text: nextProps.text,
-            editing: nextProps.editable
         });    
-        
-        if (nextProps.editable) {
-            selectText(this.input);
-        }    
-    }
-
-    handleKeyUp(keyCode) {
-        if (keyCode !== 13) {
-            return;
-        }
-        this.input.blur();
     }
 
     handleLocalChange(text) {
@@ -44,6 +29,8 @@ class EditableText extends Component {
             text,
             editing: true
         });
+
+        this.setHeight();
     }
 
     save(text) {
@@ -61,22 +48,21 @@ class EditableText extends Component {
 
     render() {
         var {
-            className,
+            className = '',
             text,
             handleChange
         } = this.props;
 
         return (
-            <input
-                ref={(input) => { this.input = input; }}
-                className={className + ' editableText'}
+            <textarea
+                ref={(textarea) => { this.textarea = textarea; }}
+                className={className + ' editableTextarea'}
                 value={this.state.text}
                 onChange={(e) => this.handleLocalChange(e.target.value)}
                 onBlur={(e) => this.save(e.target.value)}
-                onKeyUp={(e) => this.handleKeyUp(e.keyCode)}
             />
         );
     }
 }
 
-export default EditableText;
+export default BillText;

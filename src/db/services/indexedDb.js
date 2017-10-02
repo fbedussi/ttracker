@@ -14,6 +14,7 @@ const openDb = (dbName) => new Promise((resolve, reject) => {
 
         db.createObjectStore('activity', { keyPath: "id" });
         db.createObjectStore('client', { keyPath: "id" });
+        db.createObjectStore('bill', { keyPath: "id" });
     };
 
     request.onsuccess = (event) => {

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { BrowserRouter, Route } from 'react-router-dom'
+import { BrowserRouter, Route, withRouter } from 'react-router-dom'
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import AppBar from 'material-ui/AppBar';
@@ -9,6 +9,7 @@ import AppBar from 'material-ui/AppBar';
 import Home from './Home';
 import SingleActivity from './SingleActivity';
 import SingleClient from './SingleClient';
+import SingleBill from './SingleBill';
 
 import '../style/app.css';
 import Style from '../style/Style.js';
@@ -24,21 +25,19 @@ const mapDispatchToProps = (dispatch) => ({
 export class App extends Component {
   render() {
     return (
-      <BrowserRouter>
-        <MuiThemeProvider>
-          <div className="App">
-            <Style></Style>
-            <AppBar
-              title="tTracker"
-            />
-            <Route path="/" exact component={Home} />
-            <Route path="/activity/:activityId" component={SingleActivity} />
-            <Route path="/client/:clientId" component={SingleClient} />
-          </div>
-        </MuiThemeProvider>
-      </BrowserRouter>
+      <div className="App">
+        <AppBar
+          className="hideInPrint appbar"
+          title="tTracker"
+          onTitleTouchTap={() => this.props.history.push('/')}
+        />
+        <Route path="/" exact component={Home} />
+        <Route path="/activity/:activityId" component={SingleActivity} />
+        <Route path="/client/:clientId" component={SingleClient} />
+        <Route path="/bill/:billId" component={SingleBill} />
+      </div>
     );
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(App));
