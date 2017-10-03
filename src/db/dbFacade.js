@@ -1,5 +1,5 @@
-import db from './services/indexedDb';
-//import db from './services/firebase';
+//import db from './services/indexedDb';
+import db from './services/firebase';
 
 //All methods return a promise
 export default {

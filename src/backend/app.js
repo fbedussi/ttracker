@@ -40,7 +40,7 @@ const App = {
                     ,
                     db
                         .readAll('option')
-                        .then((options) => options[0])
+                        .then((options) => options && options.length ? options[0]: {})
                 ])
             )
             .then(([clients, activities, bills, options]) => { //resolve cross dependencies
@@ -89,10 +89,9 @@ const App = {
         return this.exportForClient();
     },
     updateClient: function(props) {
-        if (!props.id) {
+        if (!props.hasOwnProperty('id')) {
             return this.exportForClient();
         }
-
         this.clients = this.clients.map((client) => client.id === props.id ? client.update(props) : client);
 
         return this.exportForClient();
@@ -135,7 +134,7 @@ const App = {
         return this.exportForClient();        
     },
     updateBill: function(props) {
-        if (!(props.id && props.client && props.client.id)) {
+        if (!(props.hasOwnProperty('id') && props.hasOwnProperty('client') && props.client.hasOwnProperty('id'))) {
             return this.exportForClient();
         }
 
@@ -207,7 +206,7 @@ const App = {
         return this.exportForClient();
     },
     updateActivity: function(props) {
-        if (!props.id) {
+        if (!props.hasOwnProperty('id')) {
             return this.exportForClient();
         }
 

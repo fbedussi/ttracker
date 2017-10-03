@@ -40,7 +40,7 @@ const readInStore = (storeName, contentId) => new Promise((resolve, reject) => {
     .once('value')
     .then((snapshot) => {
       console.log(snapshot.val());
-      resolve(snapshot.val())
+      resolve(snapshot.val() || [])
     })
     .catch((error) => reject(error))
   ;
@@ -52,7 +52,9 @@ const readAllInStore = (storeName) => new Promise((resolve, reject) => {
   .once('value')
   .then((snapshot) => {
     console.log(snapshot.val());
-    resolve(snapshot.val())
+    var val = snapshot.val();
+    var result = val ? [].concat(val) : []; 
+    resolve(result);
   })
   .catch((error) => reject(error))
 ;
@@ -65,7 +67,7 @@ const updateInStore = (storeName, content) => new Promise((resolve, reject) => {
 });
 
 const deleteInStore = (storeName, contentId) => new Promise((resolve, reject) => {
-  db.ref(`/${storeName}/${contentId}`).delete();
+  db.ref(`/${storeName}/${contentId}`).remove();
   
   resolve(contentId);
 });

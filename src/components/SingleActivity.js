@@ -11,7 +11,7 @@ import {
     addSubactivity,
 } from '../actions';
 
-import { formatTime } from '../helpers/helpers';
+import { formatTime, objHasDeepProp } from '../helpers/helpers';
 
 import DeleteIcon from 'material-ui/svg-icons/action/delete';
 import FlatButton from 'material-ui/FlatButton';
@@ -95,7 +95,7 @@ class SingleActivity extends Component {
                 />
 
                 <div className="chipWrapper row">
-                    {activity.client && activity.client.id ?
+                    {objHasDeepProp(activity, 'client.id') ?
                         <Chip className="chip"
                             backgroundColor={blue300}
                             onClick={() => history.push(`/client/${activity.client.id}`)}
