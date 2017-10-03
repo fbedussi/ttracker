@@ -1,6 +1,5 @@
     import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom'
 
 import {
     deleteBill,
@@ -8,15 +7,12 @@ import {
     refreshBillText,
 } from '../actions';
 
-import { formatTime } from '../helpers/helpers';
-
 import DeleteIcon from 'material-ui/svg-icons/action/delete';
 import PrintIcon from 'material-ui/svg-icons/action/print';
 import RefreshIcon from 'material-ui/svg-icons/navigation/refresh';
 import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
 import SvgIconFace from 'material-ui/svg-icons/action/face';
-import HubIcon from 'material-ui/svg-icons/hardware/device-hub';
 import Avatar from 'material-ui/Avatar';
 import Chip from 'material-ui/Chip';
 import { blue300, indigo900 } from 'material-ui/styles/colors';
@@ -24,7 +20,7 @@ import { blue300, indigo900 } from 'material-ui/styles/colors';
 import EditableText from './EditableText';
 import BackTo from './BackTo';
 import DateBox from './DateBox';
-import BillText from './BillText';
+import EditableTextArea from './EditableTextArea';
 
 
 const mapStateToProps = (state) => ({
@@ -85,7 +81,7 @@ class SingleBill extends Component {
                 </div>
 
                 <h1 className="titleBar hideInPrint">
-                    <span className="row">Invoice number {bill.id}</span>
+                    <span className="row">Invoice</span>
                     {bill.client.bills[bill.client.bills.length - 1].id === bill.id ?
                         <span>
                             <FlatButton
@@ -99,6 +95,8 @@ class SingleBill extends Component {
                         : null
                     }
                 </h1>
+
+                <div className="row hideInPrint">Number: {bill.id}</div>
 
                 <div className="row hideInPrint">Date:
                         <DateBox
@@ -134,7 +132,7 @@ class SingleBill extends Component {
                 
                 <h2 className="sectionSubtitle hideInPrint">Bill text</h2>
                 <div className="row">
-                    <BillText 
+                    <EditableTextArea 
                             text={bill.text}
                             className="billText print"
                             handleChange={(text) => updateBill(Object.assign({}, bill, {text}))}

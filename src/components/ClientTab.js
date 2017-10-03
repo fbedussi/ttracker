@@ -7,7 +7,6 @@ import {
     updateClient,
 } from '../actions';
 
-import Subheader from 'material-ui/Subheader';
 import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
 import DeleteIcon from 'material-ui/svg-icons/action/delete';
 import DetailsIcon from 'material-ui/svg-icons/action/pageview';
@@ -48,7 +47,6 @@ class ClientTab extends Component {
             history,
             activeTab,
             clients,
-            activities,
             createNewClient,
             deleteClient,
             addNewActivityToClient,

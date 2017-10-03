@@ -10,7 +10,6 @@ import {
 import { formatTime } from '../helpers/helpers';
 
 import DeleteIcon from 'material-ui/svg-icons/action/delete';
-import BillIcon from 'material-ui/svg-icons/action/receipt';
 import FlatButton from 'material-ui/FlatButton';
 import ActivityChip from './ActivityChip';
 import ContentAdd from 'material-ui/svg-icons/content/add';

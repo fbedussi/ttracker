@@ -15,8 +15,13 @@ export function load() {
                     type: 'UPDATE_DATA',
                     data
                 });
+
+                dispatch({
+                    type: 'UPDATE_OPTIONS',
+                    options: app.options
+                });
             })
-            ;
+        ;
     };
 }
 
@@ -49,8 +54,8 @@ export function createNewActivity() {
     };
 }
 
-export function addNewActivityToClient(client) {
-    const data = backend.addNewActivityToClient(client.id);
+export function addNewActivityToClient(clientId) {
+    const data = backend.addNewActivityToClient(clientId);
 
     return {
         type: 'UPDATE_DATA',
@@ -182,4 +187,19 @@ export function toggleTimeEntriesRegistryAsTable() {
     return {
         type: 'TOGGLE_TIMEENTRIES_REGISTRY_AS_TABLE',
     };
+}
+
+export function toggleDrawer() {
+    return {
+        type: 'TOGGLE_DRAWER'
+    }
+}
+
+export function updateOptions(options) {
+    backend.saveOptions(options);
+
+    return {
+        type: 'UPDATE_OPTIONS',
+        options
+    }
 }

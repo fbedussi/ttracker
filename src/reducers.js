@@ -41,6 +41,7 @@ export function dataReducer(state = {
 
 export function uiReducer(state = {
     activeTab: 'clients',
+    drawerOpen: false,
     ongoingActivities: [],
     selectNewEndTimeForTimeEntry: null,
     timeEntriesRegistryAsTable: false,
@@ -73,6 +74,10 @@ export function uiReducer(state = {
             return Object.assign({}, state, {
                 ongoingActivities: state.ongoingActivities.filter((ongoingActivityId) => ongoingActivityId !== action.activityId)
             });
+        case 'TOGGLE_DRAWER':
+            return Object.assign({}, state, {
+                drawerOpen: !state.drawerOpen
+            });
 
 		default:
 			return state;
@@ -82,8 +87,13 @@ export function uiReducer(state = {
 export function optionsReducer(state = {
     currency: '€',
     billTextTemplate: '${clientName}\n${clientAddress}\n${clientVatNumber}\n\ndate: ${date}\n\nthe invoice total is ${currency}${total}.\nfor the following activities: ${activities}.',
+    defaultHourlyRate: 0,
+    allowZeroTotalBill: false,
 }, action) {
 	switch (action.type) {
+        case 'UPDATE_OPTIONS':
+            return Object.assign({}, state, action.options);
+            
 		default:
 			return state;
 	}
