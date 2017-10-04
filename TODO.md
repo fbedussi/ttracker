@@ -1,4 +1,3 @@
-- firebase
 - confirmation box for deleting
 - dialog box for deep deleting client/activity/subactivity
 - MarkDown in bills text
