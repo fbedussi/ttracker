@@ -36,7 +36,7 @@ export class App extends Component {
       toggleDrawer,
     } = this.props;
     return (
-      <BrowserRouter>
+      
         <MuiThemeProvider>
           <div className="App">
             <AppBar
@@ -60,7 +60,7 @@ export class App extends Component {
             <Route path="/bill/:billId" component={SingleBill} />
           </div>
         </MuiThemeProvider>
-      </BrowserRouter>
+
     );
   }
 }

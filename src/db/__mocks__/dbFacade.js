@@ -52,7 +52,6 @@ function getCollection(collection) {
 
 const mockDb = {
         openDb: jest.fn(() => Promise.resolve(mockDb)),
-        deleteDb: jest.fn(),
     
         create: jest.fn(),
         read: jest.fn(),

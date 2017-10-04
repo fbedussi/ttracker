@@ -1,7 +1,7 @@
 import initIdMaker from '../helpers/idMaker';
 import merge from '../helpers/merge';
 import db from '../db/dbFacade';
-import {convertMsToH, deepCloneDataObject} from '../helpers/helpers';
+import {convertMsToH, deepCloneDataObject, objHasDeepProp} from '../helpers/helpers';
 
 var activityIdMaker = null;
 initIdMaker('activity').then((idMaker) => activityIdMaker = idMaker);
@@ -65,7 +65,7 @@ var Activity = {
             const updatedClient = this.client.removeActivity(this.id);
         }
 
-        if (this.parentActivity && this.parentActivity.id) {
+        if (objHasDeepProp(this, 'parentActivity.id')) {
             this.parentActivity.removeSubactivity(this.id);
         }
 

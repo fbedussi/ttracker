@@ -4,7 +4,6 @@ import db from './services/firebase';
 //All methods return a promise
 export default {
     openDb: db.openDb,
-    deleteDb: db.deleteDb,
 
     create: db.create,
     read: db.read,

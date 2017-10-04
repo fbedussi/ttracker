@@ -22,7 +22,9 @@ const store = createStore(combineReducers({
 function run() {
     ReactDOM.render(
         <Provider store={store}>
-            <App />
+            <BrowserRouter>
+                <App />
+            </BrowserRouter>
         </Provider>, document.getElementById('root'));
 }
 

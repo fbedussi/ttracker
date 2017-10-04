@@ -11,7 +11,7 @@ import {
     addSubactivity,
 } from '../actions';
 
-import {formatTime} from '../helpers/helpers';
+import { formatTime, objHasDeepProp } from '../helpers/helpers';
 
 import Subheader from 'material-ui/Subheader';
 import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
@@ -98,7 +98,7 @@ class ActivityTab extends Component {
                                 text={activity.name}
                                 handleChange={(text) => changeActivityName(activity, text)}
                             />
-                            <div className="cardClientName" style={activity.client && activity.client.name ? {display: 'block'} : {display: 'none'}}>
+                            <div className="cardClientName" style={objHasDeepProp(activity, 'client.name') ? {display: 'block'} : {display: 'none'}}>
                                 <span>Client: </span>
                                 <Link to={`/client/${activity.client.id}`}>
                                    {activity.client.name}

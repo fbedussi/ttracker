@@ -3,7 +3,9 @@
 import {createClient, loadClient} from '../backend/client';
 import {createActivity, loadActivity} from './activity';
 import {createBill, loadBill} from './bill';
+
 import db from '../db/dbFacade';
+import {objHasDeepProp} from '../helpers/helpers';
 
 const App = {
     clients: [],
@@ -55,7 +57,7 @@ const App = {
     saveOptions: function(options) {
         this.options = Object.assign({}, this.options, options);
         
-        db.update('option', Object.assign({id: 1}, this.options));
+        db.update('option', Object.assign({id: 0}, this.options));
         
         return this.options;
     },
@@ -89,7 +91,7 @@ const App = {
         return this.exportForClient();
     },
     updateClient: function(props) {
-        if (!props.hasOwnProperty('id')) {
+        if (!objHasDeepProp(props, 'id')) {
             return this.exportForClient();
         }
         this.clients = this.clients.map((client) => client.id === props.id ? client.update(props) : client);
@@ -108,9 +110,12 @@ const App = {
             client,
             textTemplate,
             currency
-        });
-        this.bills.push(bill);
-        client.addBill(bill);
+        }, this.options);
+
+        if (bill) {
+            this.bills.push(bill);
+            client.addBill(bill);
+        }
 
         return this.exportForClient();
     },
@@ -134,7 +139,7 @@ const App = {
         return this.exportForClient();        
     },
     updateBill: function(props) {
-        if (!(props.hasOwnProperty('id') && props.hasOwnProperty('client') && props.client.hasOwnProperty('id'))) {
+        if (!(props.hasOwnProperty('id') && objHasDeepProp(props, 'client.id'))) {
             return this.exportForClient();
         }
 
@@ -206,7 +211,7 @@ const App = {
         return this.exportForClient();
     },
     updateActivity: function(props) {
-        if (!props.hasOwnProperty('id')) {
+        if (!objHasDeepProp(props, 'id')) {
             return this.exportForClient();
         }
 

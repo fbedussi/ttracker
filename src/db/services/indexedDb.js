@@ -29,14 +29,6 @@ const openDb = (dbName) => new Promise((resolve, reject) => {
     };
 });
 
-const deleteDb = (dbName) => new Promise((resolve, reject) => {
-    const request = indexedDB.deleteDatabase(dbName);
-
-    request.onerror = (event) => reject(`Error deleting DB ${dbName}: ${request.error}`);
-
-    request.onsuccess = (event) => resolve(event.result === undefined); //event should be undefined
-});
-
 const createInStore = (storeName, content) => new Promise((resolve, reject) => {
     const transaction = db.transaction([storeName], 'readwrite');
     const request = transaction
@@ -116,7 +108,6 @@ const deleteInStore = (storeName, contentId) => new Promise((resolve, reject) =>
 
 const dbInterface = {
     openDb,
-    deleteDb,
 
     create: createInStore,
     read: readInStore,
