@@ -5,7 +5,7 @@ var backend;
 
 export function load() {
     return function (dispatch) {
-        loadBackend()
+        loadBackend({email: 'francesco@francescobedussi.it', password: 'FBfirC916'})
             .then((app) => {
                 backend = app;
 
@@ -20,6 +20,9 @@ export function load() {
                     type: 'UPDATE_OPTIONS',
                     options: app.options
                 });
+            })
+            .catch((err) => {
+                console.log(err);
             })
         ;
     };

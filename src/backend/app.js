@@ -5,6 +5,8 @@ import {createActivity, loadActivity} from './activity';
 import {createBill, loadBill} from './bill';
 
 import db from '../db/dbFacade';
+import auth from '../auth/authFacade';
+
 import {objHasDeepProp} from '../helpers/helpers';
 
 const App = {
@@ -16,6 +18,12 @@ const App = {
         billTextTemplate: '${clientName}\n${clientAddress}\n${clientVatNumber}\n\ndate: ${date}\n\nthe invoice total is ${currency}${total}.\nfor the following activities: ${activities}.',
         defaultHourlyRate: 0,
         allowZeroTotalBill: false,
+    },
+    auth: function(data) {
+        return auth.logIn(Object.assign({method: 'email'}, data))
+            .then(() => App.load())
+            .catch((e) => e)
+        ;
     },
     load: function() {
         return db
@@ -255,8 +263,8 @@ const App = {
     }
 }
 
-const loadApp = () => {
-    return Object.create(App).load();
+const loadApp = (loginData) => {
+    return Object.create(App).auth(loginData);
 }
 
 export default loadApp;
