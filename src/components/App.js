@@ -36,27 +36,31 @@ export class App extends Component {
       toggleDrawer,
     } = this.props;
     return (
-      <div className="App">
-        <AppBar
-          className="hideInPrint appbar"
-          title="tTracker"
-          onTitleTouchTap={() => this.props.history.push('/')}
-          onLeftIconButtonTouchTap={() => toggleDrawer()}
-          iconElementLeft={<IconButton><SettingsIcon /></IconButton>}
-        />
-        <Drawer
-          docked={false}
-          open={drawerOpen}
-          width={300}
-          onRequestChange={() => toggleDrawer()}
-        >
-          <OptionsPane/>
-        </Drawer>
-        <Route path="/" exact component={Home} />
-        <Route path="/activity/:activityId" component={SingleActivity} />
-        <Route path="/client/:clientId" component={SingleClient} />
-        <Route path="/bill/:billId" component={SingleBill} />
-      </div>
+      
+        <MuiThemeProvider>
+          <div className="App">
+            <AppBar
+              className="hideInPrint appbar"
+              title="tTracker"
+              onTitleTouchTap={() => this.props.history.push('/')}
+              onLeftIconButtonTouchTap={() => toggleDrawer()}
+              iconElementLeft={<IconButton><SettingsIcon /></IconButton>}
+            />
+            <Drawer
+              docked={false}
+              open={drawerOpen}
+              width={300}
+              onRequestChange={() => toggleDrawer()}
+            >
+              <OptionsPane />
+            </Drawer>
+            <Route path="/" exact component={Home} />
+            <Route path="/activity/:activityId" component={SingleActivity} />
+            <Route path="/client/:clientId" component={SingleClient} />
+            <Route path="/bill/:billId" component={SingleBill} />
+          </div>
+        </MuiThemeProvider>
+
     );
   }
 }

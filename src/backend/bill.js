@@ -1,7 +1,7 @@
 import initIdMaker from '../helpers/idMaker';
 import merge from '../helpers/merge';
 import db from '../db/dbFacade';
-import {deepCloneDataObject} from '../helpers/helpers';
+import {deepCloneDataObject, objHasDeepProp} from '../helpers/helpers';
 
 import {loadClient} from './client';
 
@@ -35,8 +35,8 @@ var Bill = {
         };
         this.text = textTemplate.call(textTemplateVariables);
     },
-    create: function(props) {
-        if (!(props && props.client && props.client.activities && props.client.activities.length)) {
+    create: function(props, options = {}) {
+        if (!(objHasDeepProp(props, 'client.activities') && props.client.activities.length)) {
             return false;
         }
         const lastBilledTime = props.client.bills.reduce((lastBilledTime, bill) => bill.date, 0);
@@ -46,10 +46,7 @@ var Bill = {
         }
         const total = Math.round(props.client.activities.reduce((total, activity) => total + activity.getTotalCost(lastBilledTime), 0));
         
-        //is it ok to have a bill with total = 0? maybe is something like a pro bono project 
-        //and we want to track activities even if we don't charge anything
-        //TODO: handle this trought a configuration flag
-        if (total === 0) {
+        if (total === 0 && !(objHasDeepProp(options, 'allowZeroTotalBill') && options.allowZeroTotalBill)) {
             return false;
         }
         
@@ -67,7 +64,7 @@ var Bill = {
     },
     load: function(props) {
         merge(this, props);
-        if (props && props.client) {
+        if (objHasDeepProp(props, 'client')) {
             this.client = props.client;
         }
 
@@ -90,7 +87,7 @@ var Bill = {
     delete: function() {
         db.delete(DBCOLLECTION, this.id);
 
-            return this.id;
+        return this.id;
     },
     exportForDb: function() {
         var objToSave = Object.assign({}, this);
@@ -110,7 +107,7 @@ var Bill = {
     }
 }
 
-const createBill = (props) => Object.create(Bill).create(props);
+const createBill = (props, options) => Object.create(Bill).create(props, options);
 
 const loadBill = (props) => Object.assign(Object.create(Bill), deepCloneDataObject(defaultBillProps)).load(props);
 

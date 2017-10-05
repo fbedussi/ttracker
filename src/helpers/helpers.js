@@ -19,4 +19,25 @@ export const getOnlyOwnProperies = (obj) => {
     return newObj;
 }
 
+export const objHasDeepProp = (obj, deepProp) => {
+    const props = deepProp.split('.');
+    var objToTest = obj;
+    var result = true;
+
+    if (!obj) {
+        return false;
+    }
+
+    for (let i = 0; i < props.length; i++) {
+        if (objToTest && objToTest.hasOwnProperty(props[i])) {
+            objToTest = objToTest[props[i]];
+        } else {
+            result = false;
+            break;
+        }
+    }
+    
+    return result;
+}
+
 export const deepCloneDataObject = (dataObject) => JSON.parse(JSON.stringify(dataObject));

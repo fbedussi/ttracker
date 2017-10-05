@@ -1,7 +1,7 @@
 import initIdMaker from '../helpers/idMaker';
 import merge from '../helpers/merge';
 import db from '../db/dbFacade';
-import {convertMsToH, deepCloneDataObject} from '../helpers/helpers';
+import {convertMsToH, deepCloneDataObject, objHasDeepProp} from '../helpers/helpers';
 
 var activityIdMaker = null;
 initIdMaker('activity').then((idMaker) => activityIdMaker = idMaker);
@@ -65,7 +65,7 @@ var Activity = {
             const updatedClient = this.client.removeActivity(this.id);
         }
 
-        if (this.parentActivity && this.parentActivity.id) {
+        if (objHasDeepProp(this, 'parentActivity.id')) {
             this.parentActivity.removeSubactivity(this.id);
         }
 
@@ -137,7 +137,7 @@ var Activity = {
     },
     start: function() {
         const newTimeEntry = {
-            id: this.timeEntries.length + 1,
+            id: this.timeEntries.length,
             startTime: Date.now(),
             endTime: 0,
             duration: 0
@@ -173,7 +173,7 @@ var Activity = {
         return this;
     },
     updateTimeEntry: function(props) {
-        if (!props.id) {
+        if (!props.hasOwnProperty('id')) {
             return this;
         }
 
@@ -195,7 +195,7 @@ var Activity = {
     exportForDb: function() {
         var objToSave = Object.assign({},this);
         objToSave.parentActivity = objToSave.parentActivity && objToSave.parentActivity.id? {id: objToSave.parentActivity.id} : {};
-        objToSave.client = objToSave.client.id ? {id: objToSave.client.id} : {};
+        objToSave.client = objToSave.client.hasOwnProperty('id') ? {id: objToSave.client.id} : {};
         objToSave.subactivities = objToSave.subactivities.map((subactivity) => ({id: subactivity.id}));
 
         return objToSave;
@@ -217,7 +217,7 @@ var Activity = {
         return objToExport;
     },
     resolveDependencies: function(clients, activities) {
-        if (this.client.id) {
+        if (this.client.hasOwnProperty('id')) {
             const client = clients.filter((client) => client.id === this.client.id)[0];
             if (client) {
                 this.client = client;

@@ -32,28 +32,27 @@ test('Create client', () => {
 
 test('delete client', () => {
     return loadApp().then((app) => {
-        app.deleteClient(2);
+        app.deleteClient(1);
 
         expect(app.clients.length).toBe(1);
-
     });
 });
 
 test('update client', () => {
     return loadApp().then((app) => {
         app.updateClient({
-            id: 2,
+            id: 1,
             name: 'new client 2'
         })
 
-        expect(app.clients.filter((client) => client.id === 2)[0].name).toBe('new client 2');
+        expect(app.clients.filter((client) => client.id === 1)[0].name).toBe('new client 2');
     });
 });
 
 test('update non existent client', () => {
     return loadApp().then((app) => {
         const updatedApp = app.updateClient({
-            id: 3,
+            id: 2,
             name: 'new client 2'
         })
 
@@ -63,29 +62,29 @@ test('update non existent client', () => {
 
 test('bill client', () => {
     return loadApp().then((app) => {
-        app.billClient(2);
+        app.billClient(1);
 
-        expect(app.clients.filter((client) => client.id === 2)[0].bills.length).toBe(1);
+        expect(app.clients.filter((client) => client.id === 1)[0].bills.length).toBe(1);
     });
 });
 
 test('delete bill only if it is the last bill for that client', () => {
     return loadApp().then((app) => {
-        app.billClient(1);
+        app.billClient(0);
         const client = app.bills[app.bills.length - 1].client;
         const clientLastBillId = client.bills[client.bills.length - 1].id;
         
-        expect(() => app.deleteBill(1)).toThrow(); //not deleted
+        expect(() => app.deleteBill(0)).toThrow(); //not deleted
         app.deleteBill(clientLastBillId)
-        expect(app.clients.filter((client) => client.id === 1)[0].bills.length).toBe(1); //deleted
+        expect(app.clients.filter((client) => client.id === 0)[0].bills.length).toBe(1); //deleted
         expect(app.bills.length).toBe(1);    
     });
 });
 
 test('update bill', () => {
     return loadApp().then((app) => {
-        app.billClient(1);
-        const client = app.clients.filter((client) => client.id === 1)[0];
+        app.billClient(0);
+        const client = app.clients.filter((client) => client.id === 0)[0];
         const clientBill = client.bills[client.bills.length - 1]; 
         const billId = clientBill.id;
         
@@ -94,7 +93,7 @@ test('update bill', () => {
             text: 'baz',
             currency: '$',
             client: {
-                id: 1
+                id: 0
             },
             total: 70000,
         };
@@ -141,7 +140,7 @@ test('update bill', () => {
 test('addNewActivityToClient', () => {
     return loadApp().then((app) => {
         const prevApp = app.exportForClient();
-        const updatedApp = app.addNewActivityToClient(2)
+        const updatedApp = app.addNewActivityToClient(1)
 
         expect(updatedApp.activities.length).toBe(prevApp.activities.length + 1);
         expect(updatedApp.clients[1].activities.length).toBe(prevApp.clients[1].activities.length + 1);
@@ -151,25 +150,25 @@ test('addNewActivityToClient', () => {
 test('remove activity from client', () => {
     return loadApp().then((app) => {
         const prevApp = app.exportForClient();
-        const updatedApp = app.addNewActivityToClient(2);
-        const activityId = updatedApp.clients.filter((client) => client.id === 2)[0].activities[0].id;
+        const updatedApp = app.addNewActivityToClient(1);
+        const activityId = updatedApp.clients.filter((client) => client.id === 1)[0].activities[0].id;
         const updatedApp2 = app.removeActivityFromClient({
             activityId,
-            clientId: 2
+            clientId: 1
         })
 
-        expect(updatedApp2.clients.filter((client) => client.id === 2)[0].activities.length).toBe(prevApp.clients.filter((client) => client.id === 2)[0].activities.length);
+        expect(updatedApp2.clients.filter((client) => client.id === 1)[0].activities.length).toBe(prevApp.clients.filter((client) => client.id === 1)[0].activities.length);
     });
 });
 
 test('remove activity from client and delete it', () => {
     return loadApp().then((app) => {
         const prevApp = app.exportForClient();
-        const updatedApp = app.addNewActivityToClient(2);
-        const activityId = updatedApp.clients.filter((client) => client.id === 2)[0].activities[0].id;
+        const updatedApp = app.addNewActivityToClient(1);
+        const activityId = updatedApp.clients.filter((client) => client.id === 1)[0].activities[0].id;
         const updatedApp2 = app.removeActivityFromClient({
             activityId,
-            clientId: 2,
+            clientId: 1,
             deleteActivity: true
         })
 
@@ -180,11 +179,11 @@ test('remove activity from client and delete it', () => {
 test('remove activity from non existing client', () => {
     return loadApp().then((app) => {
         const prevApp = app.exportForClient();
-        const updatedApp = app.addNewActivityToClient(2);
-        const activityId = updatedApp.clients.filter((client) => client.id === 2)[0].activities[0].id;
+        const updatedApp = app.addNewActivityToClient(1);
+        const activityId = updatedApp.clients.filter((client) => client.id === 1)[0].activities[0].id;
         const updatedApp2 = app.removeActivityFromClient({
             activityId,
-            clientId: 3,
+            clientId: 2,
             deleteActivity: true
         })
 
@@ -209,7 +208,7 @@ test('Create activity', () => {
 
 test('deleteActivity', () => {
     return loadApp().then((app) => {
-        app.deleteActivity(2);
+        app.deleteActivity(1);
         expect(app.activities.length).toBe(1);
     });
 });
@@ -217,7 +216,7 @@ test('deleteActivity', () => {
 test('update activity', () => {
     return loadApp().then((app) => {
        app.updateActivity({
-           id: 1,
+           id: 0,
            name: 'update activity name'
        });
        expect(app.activities[0].name).toBe('update activity name');
@@ -226,16 +225,16 @@ test('update activity', () => {
 
 test('start activity', () => {
     return loadApp().then((app) => {
-        app.startActivity(1);
+        app.startActivity(0);
         expect(app.activities[0].timeEntries[0].startTime > 0).toBe(true);
     });
 });
 
 test('stop activity', () => {
     return loadApp().then((app) => {
-        app.startActivity(2);
+        app.startActivity(1);
         Date.now = () => 1000000000000000000000;
-        app.stopActivity(2);
+        app.stopActivity(1);
         expect(app.activities[1].timeEntries[0].endTime > 0).toBe(true);
         expect(app.activities[1].timeEntries[0].duration > 0).toBe(true);
     });
@@ -243,17 +242,17 @@ test('stop activity', () => {
 
 test('delete timeEntry', () => {
     return loadApp().then((app) => {
-        app.startActivity(2);
-        const timeEntryId = app._getActivity(2).timeEntries[0].id;
-        app.stopActivity(2);
-        app.deleteTimeEntry(2, timeEntryId);
+        app.startActivity(1);
+        const timeEntryId = app._getActivity(1).timeEntries[0].id;
+        app.stopActivity(1);
+        app.deleteTimeEntry(1, timeEntryId);
         expect(app.activities[1].timeEntries.length).toBe(0);
     });
 });
 
 test('update timeEntry', () => {
     return loadApp().then((app) => {
-        app.updateTimeEntry(1, {id: 1, startTime: 1000, endTime: 2500});
+        app.updateTimeEntry(0, {id: 0, startTime: 1000, endTime: 2500});
         expect(app.activities[0].timeEntries[0].endTime).toBe(2500);
     });
 })
@@ -261,10 +260,10 @@ test('update timeEntry', () => {
 test('add subactivity', () => {
     return loadApp().then((app) => {
         app.activities[0].client = {
-            id: 1,
+            id: 0,
             name: 'client 1'
         };
-        app.addSubactivity(1, {name: 'new task'});
+        app.addSubactivity(0, {name: 'new task'});
         const activity = app.activities[0];
         const subactivity = app.activities[2];
 

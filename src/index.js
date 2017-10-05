@@ -23,9 +23,7 @@ function run() {
     ReactDOM.render(
         <Provider store={store}>
             <BrowserRouter>
-                <MuiThemeProvider>
-                    <App />
-                </MuiThemeProvider>
+                <App />
             </BrowserRouter>
         </Provider>, document.getElementById('root'));
 }

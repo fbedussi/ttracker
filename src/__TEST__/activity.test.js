@@ -163,10 +163,10 @@ test('activity.removeSubactivity()', () => {
 test('activity.removeSubactivity(id, true) delete subactivity', () => {
     const deleteSubactivity = jest.fn();
     const activity = createActivity({
-        subactivities: [{id: 1}, {id: 2, delete: deleteSubactivity}]
+        subactivities: [{id: 0}, {id: 1, delete: deleteSubactivity}]
     });
 
-    const updatedActivity = activity.removeSubactivity(2, true);
+    const updatedActivity = activity.removeSubactivity(1, true);
     expect(updatedActivity.subactivities.length).toBe(1);
     expect(deleteSubactivity).toBeCalled();
     expect(db.update).toBeCalled();    
@@ -174,12 +174,12 @@ test('activity.removeSubactivity(id, true) delete subactivity', () => {
 
 test('activity.start()', () => {
     const activity = createActivity({
-        timeEntries: [{id: 1}]
+        timeEntries: [{id: 0}]
     });
 
     const updatedActivity = activity.start();
     expect(updatedActivity.timeEntries.length).toBe(2);
-    expect(updatedActivity.timeEntries[1].id).toBe(2);
+    expect(updatedActivity.timeEntries[1].id).toBe(1);
     expect(db.update).toBeCalled();    
 });
 

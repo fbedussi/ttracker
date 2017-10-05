@@ -1,18 +1,31 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {App} from './components/App';
+import { Provider } from 'react-redux';
+import { BrowserRouter } from 'react-router-dom'
+
+import { App } from './components/App';
 
 jest.mock('./db/dbFacade');
 jest.mock('./helpers/idMaker');
-jest.mock('./components/Home', () => () => null) 
+jest.mock('./components/Home', () => () => null)
 
 const store = {
-  clients: [],
-  activities: [],
-  activeTab: 'clients'
+  subscribe: () => { },
+  dispatch: () => { },
+  getState: () => ({
+    clients: [],
+    activities: [],
+    activeTab: 'clients',
+    options: {},
+  })
 };
 
 it('renders without crashing', () => {
   const div = document.createElement('div');
-  ReactDOM.render(<App store={store}/>, div);
+  ReactDOM.render(<Provider store={store}>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  </Provider>
+    , div);
 });

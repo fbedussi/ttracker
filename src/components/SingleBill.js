@@ -7,6 +7,8 @@ import {
     refreshBillText,
 } from '../actions';
 
+import { objHasDeepProp } from '../helpers/helpers';
+
 import DeleteIcon from 'material-ui/svg-icons/action/delete';
 import PrintIcon from 'material-ui/svg-icons/action/print';
 import RefreshIcon from 'material-ui/svg-icons/navigation/refresh';
@@ -68,7 +70,7 @@ class SingleBill extends Component {
                 />
 
                 <div className="chipWrapper row hideInPrint">
-                    {bill.client && bill.client.id ?
+                    {objHasDeepProp(bill, 'client.id') ?
                         <Chip className="chip"
                             backgroundColor={blue300}
                             onClick={() => history.push(`/client/${bill.client.id}`)}
