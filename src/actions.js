@@ -1,34 +1,59 @@
-import startBackend from './backend/app';
+import StartAppAndLogin, { StartAppAndLoadData } from './backend/app';
 import { getOnlyOwnProperies } from './helpers/helpers';
 
 var backend;
 
-export function load(loginData) {
+export function login(loginData) {    
     return function (dispatch) {
-        startBackend(loginData)
-            .then((app) => {
-                backend = app;
+        const loadAppData = loadData(dispatch);
 
-                const data = app.exportForClient();
+        StartAppAndLogin(loginData)
+            .then(loadAppData)
+            .catch(err => dispatch(showError(err)))
+            ;
+    };
+}
 
-                dispatch({
-                    type: 'UPDATE_DATA',
-                    data
-                });
+export function load() {
+    return function (dispatch) {
+        const loadAppData = loadData(dispatch);
 
-                dispatch({
-                    type: 'UPDATE_OPTIONS',
-                    options: Object.assign({}, app.options, {logged: true})
-                });
-            })
-            .catch((error) => {
-                dispatch({
-                    type: 'SHOW_ERROR',
-                    permanent: true,
-                    error
-                });
-            })
-        ;
+        StartAppAndLoadData()
+            .then(loadAppData)
+            .catch(err => dispatch(showError(err)))
+            ;
+    };
+}
+
+function loadData(dispatch) {
+    return (app) => {
+        backend = app;
+
+        const data = app.exportForClient();
+
+        dispatch({
+            type: 'UPDATE_DATA',
+            data
+        });
+
+        dispatch({
+            type: 'UPDATE_OPTIONS',
+            options: Object.assign({}, app.options, { logged: true })
+        });
+    }
+}
+
+export function showError(error) {
+    return {
+        type: 'SHOW_ERROR',
+        permanent: true,
+        error
+    };
+}
+
+export function hideError(error) {
+    return {
+        type: 'HIDE_ERROR',
     };
 }
 
@@ -38,7 +63,7 @@ export function createNewClient() {
     return {
         type: 'UPDATE_DATA',
         data,
-        lastCreatedClientId: data.clients[data.clients.length - 1].id                
+        lastCreatedClientId: data.clients[data.clients.length - 1].id
     };
 }
 
@@ -67,17 +92,17 @@ export function addNewActivityToClient(clientId) {
     return {
         type: 'UPDATE_DATA',
         data,
-        lastCreatedActivityId: data.activities[data.activities.length - 1].id        
+        lastCreatedActivityId: data.activities[data.activities.length - 1].id
     };
 }
 
 export function addSubactivity(activity) {
-    const data = backend.addSubactivity(activity.id, {name: 'new task'});
+    const data = backend.addSubactivity(activity.id, { name: 'new task' });
 
     return {
         type: 'UPDATE_DATA',
         data,
-        lastCreatedActivityId: data.activities[data.activities.length - 1].id        
+        lastCreatedActivityId: data.activities[data.activities.length - 1].id
     };
 }
 
@@ -136,7 +161,7 @@ export function deleteTimeEntry(activity, timeEntry) {
 }
 
 export function updateActivity(activity, newProps) { //TODO: pass newprops only
-    const data = backend.updateActivity(Object.assign(activity, newProps)); 
+    const data = backend.updateActivity(Object.assign(activity, newProps));
 
     return {
         type: 'UPDATE_DATA',
@@ -209,8 +234,4 @@ export function updateOptions(options) {
         type: 'UPDATE_OPTIONS',
         options
     }
-}
-
-export function login(loginData) {
-    return load(loginData);
 }

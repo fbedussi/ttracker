@@ -13,6 +13,8 @@ import { load } from './actions';
 import App from './components/App';
 //import registerServiceWorker from './registerServiceWorker';
 
+import {config} from '../package.json';
+
 const store = createStore(combineReducers({
     data: dataReducer,
     ui: uiReducer,
@@ -29,5 +31,8 @@ function run() {
 }
 
 store.subscribe(run);
-run();
-//store.dispatch(login());
+if (config.authentication) {
+    run();
+} else {
+    store.dispatch(load());
+}

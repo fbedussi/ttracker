@@ -1,4 +1,4 @@
-import firebase from '../../db/services/firebaseInit-secret';
+import firebase from '../../db/services/firebaseInit';
 import { objHasDeepProp } from '../../helpers/helpers';
 
 const auth = firebase.auth();

@@ -19,7 +19,7 @@ const App = {
         defaultHourlyRate: 0,
         allowZeroTotalBill: false,
     },
-    auth: function(loginData) {
+    login: function(loginData) {
         return auth
             .logIn(Object.assign({method: 'email'}, loginData))
             .then(() => this.load())
@@ -264,8 +264,12 @@ const App = {
     }
 }
 
-const start = (loginData) => {
-    return Object.create(App).auth(loginData);
+const startAppAndLogin = (loginData) => {
+    return Object.create(App).login(loginData);
 }
 
-export default start;
+export const StartAppAndLoadData = () => {
+    return Object.create(App).load();
+}
+
+export default startAppAndLogin;

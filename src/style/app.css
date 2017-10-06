@@ -142,6 +142,21 @@ input.editable {
     width: calc(100% - var(--currency-width));
 }
 
+.loginForm {
+    max-width: 40em;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2em;
+    margin-top: 41vh;
+    transform: translateY(-49%);
+}
+
+.loginForm > *:not(:last-child) {
+    margin-bottom: 1em;
+}
+
 @media screen and (min-width: 30em) {
     .cardsWrapper {
         display: flex;
@@ -177,3 +192,4 @@ input.editable {
         height: calc(100vh - 9cm) !important;
     }
 }
+

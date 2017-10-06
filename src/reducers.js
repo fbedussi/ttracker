@@ -47,6 +47,8 @@ export function uiReducer(state = {
     selectNewEndTimeForTimeEntry: null,
     timeEntriesRegistryAsTable: false,
     lastCreatedActivityId: undefined,
+    errorOn: false,
+    errorMessage: '',
 }, action) {
 	switch (action.type) {
         case 'UPDATE_DATA':
@@ -79,6 +81,12 @@ export function uiReducer(state = {
             return Object.assign({}, state, {
                 drawerOpen: !state.drawerOpen
             });
+
+        case 'SHOW_ERROR':
+            return Object.assign({}, {errorOn: true, errorMessage: action.error.message});
+
+        case 'HIDE_ERROR':
+            return Object.assign({}, {errorOn: false, errorMessage: ''});
 
 		default:
 			return state;

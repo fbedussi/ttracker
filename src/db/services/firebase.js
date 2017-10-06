@@ -1,4 +1,4 @@
-import firebase from './firebaseInit-secret';
+import firebase from './firebaseInit';
 
 const db = firebase.database();
 
