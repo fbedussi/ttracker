@@ -5,12 +5,12 @@ const auth = firebase.auth();
 
 const logIn = (data) => new Promise((resolve, reject) => {
     if (!objHasDeepProp(data, 'method')) {
-        reject('Login method missing');
+        reject('Login failed: login method missing');
     }
 
     switch (data.method) {
         case 'email':
-            logInMail(data)
+            return logInMail(data)
                 .then((data) => resolve(data))
                 .catch((e) => reject(e))
             break;
@@ -19,7 +19,7 @@ const logIn = (data) => new Promise((resolve, reject) => {
 
 const logInMail = (data) => {
     if (!objHasDeepProp(data, 'email') || !objHasDeepProp(data, 'password')) {
-        return Promise.reject('Email or password missing');
+        return Promise.reject('Login failed: email or password missing');
     }
 
     return auth.signInWithEmailAndPassword(data.email, data.password);

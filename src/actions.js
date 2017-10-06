@@ -1,11 +1,11 @@
-import loadBackend from './backend/app';
+import startBackend from './backend/app';
 import { getOnlyOwnProperies } from './helpers/helpers';
 
 var backend;
 
-export function load() {
+export function load(loginData) {
     return function (dispatch) {
-        loadBackend({email: 'francesco@francescobedussi.it', password: 'FBfirC916'})
+        startBackend(loginData)
             .then((app) => {
                 backend = app;
 
@@ -18,11 +18,15 @@ export function load() {
 
                 dispatch({
                     type: 'UPDATE_OPTIONS',
-                    options: app.options
+                    options: Object.assign({}, app.options, {logged: true})
                 });
             })
-            .catch((err) => {
-                console.log(err);
+            .catch((error) => {
+                dispatch({
+                    type: 'SHOW_ERROR',
+                    permanent: true,
+                    error
+                });
             })
         ;
     };
@@ -205,4 +209,8 @@ export function updateOptions(options) {
         type: 'UPDATE_OPTIONS',
         options
     }
+}
+
+export function login(loginData) {
+    return load(loginData);
 }

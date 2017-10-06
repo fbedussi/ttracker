@@ -19,10 +19,11 @@ const App = {
         defaultHourlyRate: 0,
         allowZeroTotalBill: false,
     },
-    auth: function(data) {
-        return auth.logIn(Object.assign({method: 'email'}, data))
-            .then(() => App.load())
-            .catch((e) => e)
+    auth: function(loginData) {
+        return auth
+            .logIn(Object.assign({method: 'email'}, loginData))
+            .then(() => this.load())
+            //in case of error let it bubble up to the caller
         ;
     },
     load: function() {
@@ -263,8 +264,8 @@ const App = {
     }
 }
 
-const loadApp = (loginData) => {
+const start = (loginData) => {
     return Object.create(App).auth(loginData);
 }
 
-export default loadApp;
+export default start;

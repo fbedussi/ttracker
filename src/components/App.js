@@ -35,9 +35,8 @@ export class App extends Component {
       drawerOpen,
       toggleDrawer,
     } = this.props;
-    return (
-      
-        <MuiThemeProvider>
+    console.log('App')
+    return (<MuiThemeProvider>
           <div className="App">
             <AppBar
               className="hideInPrint appbar"
@@ -59,9 +58,7 @@ export class App extends Component {
             <Route path="/client/:clientId" component={SingleClient} />
             <Route path="/bill/:billId" component={SingleBill} />
           </div>
-        </MuiThemeProvider>
-
-    );
+        </MuiThemeProvider>);
   }
 }
 

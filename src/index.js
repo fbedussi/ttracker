@@ -29,4 +29,5 @@ function run() {
 }
 
 store.subscribe(run);
-store.dispatch(load());
+run();
+//store.dispatch(login());

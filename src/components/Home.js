@@ -8,9 +8,11 @@ import { setActiveTab } from '../actions';
 import ClientTab from './ClientTab';
 import ActivityTab from './ActivityTab';
 import BillTab from './BillTab';
+import LoginForm from './LoginForm';
 
 const mapStateToProps = (state) => ({
-  activeTab: state.ui.activeTab
+  activeTab: state.ui.activeTab,
+  logged: state.options.logged,
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -19,9 +21,9 @@ const mapDispatchToProps = (dispatch) => ({
 
 class App extends Component {
   render() {
-    const { history, activeTab, setActiveTab } = this.props;
+    const { history, activeTab, setActiveTab, logged } = this.props;
 
-    return (
+    return logged ? 
       <Tabs
         value={activeTab}
         onChange={(selectedTab) => setActiveTab(selectedTab)}
@@ -36,7 +38,7 @@ class App extends Component {
           <BillTab history={history}/>
         </Tab>
       </Tabs>
-    );
+    : <LoginForm />;
   }
 }
 

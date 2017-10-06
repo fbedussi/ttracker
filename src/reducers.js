@@ -12,6 +12,7 @@ function removeActivityFromClient(client, activityId) {
 
 export function dataReducer(state = {
     clients: [],
+    bills: [],
     activities: [],
 }, action) {
 	switch (action.type) {
@@ -85,6 +86,7 @@ export function uiReducer(state = {
 }
 
 export function optionsReducer(state = {
+    logged: false,
     currency: '€',
     billTextTemplate: '${clientName}\n${clientAddress}\n${clientVatNumber}\n\ndate: ${date}\n\nthe invoice total is ${currency}${total}.\nfor the following activities: ${activities}.',
     defaultHourlyRate: 0,
