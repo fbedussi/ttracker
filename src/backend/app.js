@@ -22,16 +22,15 @@ const App = {
     login: function(loginData) {
         return auth
             .logIn(Object.assign({method: 'email'}, loginData))
-            .then((user) => {
-                initClientIdMaker(user);
-                initActivityIdMaker(user);
-                initBillIdMaker(user);
-                return this.load(user);
-            })
+            .then((user) => this.load(user))
             //in case of error let it bubble up to the caller
         ;
     },
     load: function(user) {
+        initClientIdMaker(user);
+        initActivityIdMaker(user);
+        initBillIdMaker(user);
+
         return db
             .openDb('ttracker', user)
             .then((db) => Promise //read data

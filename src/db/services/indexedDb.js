@@ -4,7 +4,7 @@ if (!('indexedDB' in window)) {
 
 var db;
 
-const openDb = (dbName) => new Promise((resolve, reject) => {
+const openDb = (dbName, user) => new Promise((resolve, reject) => {
     const request = indexedDB.open(dbName);
     var newDb = false;
 
