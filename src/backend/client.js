@@ -8,7 +8,6 @@ import {deepCloneDataObject} from '../helpers/helpers';
 import {loadActivity} from './activity';
 
 var clientIdMaker = null;
-initIdMaker('client').then((idMaker) => clientIdMaker = idMaker);
 
 const DBCOLLECTION = 'client';
 
@@ -184,7 +183,12 @@ const createClient = (props) => Object.create(Client).create(props);
 
 const loadClient = (props) => Object.assign(Object.create(Client), deepCloneDataObject(defaultClientProps)).load(props);
 
+const initClientIdMaker = (user) => {
+    initIdMaker('client', user).then((idMaker) => clientIdMaker = idMaker); 
+}
+
 export {
     createClient,
-    loadClient
+    loadClient,
+    initClientIdMaker
 };

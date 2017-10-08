@@ -1,8 +1,8 @@
 // @ts-check
 
-import {createClient, loadClient} from '../backend/client';
-import {createActivity, loadActivity} from './activity';
-import {createBill, loadBill} from './bill';
+import {createClient, loadClient, initClientIdMaker} from '../backend/client';
+import {createActivity, loadActivity, initActivityIdMaker} from './activity';
+import {createBill, loadBill, initBillIdMaker} from './bill';
 
 import db from '../db/dbFacade';
 import auth from '../auth/authFacade';
@@ -22,13 +22,18 @@ const App = {
     login: function(loginData) {
         return auth
             .logIn(Object.assign({method: 'email'}, loginData))
-            .then(() => this.load())
+            .then((user) => {
+                initClientIdMaker(user);
+                initActivityIdMaker(user);
+                initBillIdMaker(user);
+                return this.load(user);
+            })
             //in case of error let it bubble up to the caller
         ;
     },
-    load: function() {
+    load: function(user) {
         return db
-            .openDb('ttracker')
+            .openDb('ttracker', user)
             .then((db) => Promise //read data
                 .all([
                     db

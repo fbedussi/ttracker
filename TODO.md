@@ -1,7 +1,11 @@
+- setting for default time sheet view (table/card)
 - confirmation box for deleting
+- import/export data
 - dialog box for deep deleting client/activity/subactivity
 - MarkDown in bills text
 - add searchbox for client/projects panels
 - rework methods contract to include error objects
 - notification for db success/fail
 - responsive ui
+- multilanguage
+- insert grand total of all clients

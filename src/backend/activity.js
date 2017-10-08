@@ -4,7 +4,6 @@ import db from '../db/dbFacade';
 import {convertMsToH, deepCloneDataObject, objHasDeepProp} from '../helpers/helpers';
 
 var activityIdMaker = null;
-initIdMaker('activity').then((idMaker) => activityIdMaker = idMaker);
 
 const DBCOLLECTION = 'activity';
 const CLIENT_DBCOLLECTION = 'client';
@@ -194,7 +193,7 @@ var Activity = {
     },
     exportForDb: function() {
         var objToSave = Object.assign({},this);
-        objToSave.parentActivity = objToSave.parentActivity && objToSave.parentActivity.id? {id: objToSave.parentActivity.id} : {};
+        objToSave.parentActivity = objHasDeepProp(objToSave, 'parentActivity.id') ? {id: objToSave.parentActivity.id} : {};
         objToSave.client = objToSave.client.hasOwnProperty('id') ? {id: objToSave.client.id} : {};
         objToSave.subactivities = objToSave.subactivities.map((subactivity) => ({id: subactivity.id}));
 
@@ -237,7 +236,12 @@ const createActivity = (props) => Object.create(Activity).create(props);
 
 const loadActivity = (props) => Object.assign(Object.create(Activity), deepCloneDataObject(defaultProps)).load(props);
 
+const initActivityIdMaker = (user) => {
+    initIdMaker('activity', user).then((idMaker) => activityIdMaker = idMaker);
+}
+
 export {
     createActivity,
-    loadActivity
+    loadActivity,
+    initActivityIdMaker,
 };

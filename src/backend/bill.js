@@ -6,7 +6,6 @@ import {deepCloneDataObject, objHasDeepProp} from '../helpers/helpers';
 import {loadClient} from './client';
 
 var billIdMaker = null;
-initIdMaker('bill').then((idMaker) => billIdMaker = idMaker);
 
 const DBCOLLECTION = 'bill';
 
@@ -111,7 +110,12 @@ const createBill = (props, options) => Object.create(Bill).create(props, options
 
 const loadBill = (props) => Object.assign(Object.create(Bill), deepCloneDataObject(defaultBillProps)).load(props);
 
+const initBillIdMaker = (user) => {
+    initIdMaker('bill', user).then((idMaker) => billIdMaker = idMaker);
+}
+
 export {
     createBill,
-    loadBill
+    loadBill,
+    initBillIdMaker
 };

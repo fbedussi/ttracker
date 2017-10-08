@@ -11,7 +11,7 @@ const logIn = (data) => new Promise((resolve, reject) => {
     switch (data.method) {
         case 'email':
             return logInMail(data)
-                .then((data) => resolve(data))
+                .then((user) => resolve(user))
                 .catch((e) => reject(e))
             break;
     }

@@ -6,9 +6,9 @@ function* idMaker(maxId) {
     }
 }
 
-function initIdMaker(collection) {
+function initIdMaker(collection, user) {
     return dbService
-        .openDb('ttracker')
+        .openDb('ttracker', user)
         .then((db) => db.readAll(collection))
         .then((collection) => {
             var maxId = collection.reduce((max, curr) => Math.max(max, curr.id), 0);

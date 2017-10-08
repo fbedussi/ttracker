@@ -1,20 +1,22 @@
 import firebase from './firebaseInit';
 
 const db = firebase.database();
+var user;
 
-const openDb = (dbName) => new Promise((resolve, reject) => {
+const openDb = (dbName, loggedUser) => new Promise((resolve, reject) => {
+  user = loggedUser
   resolve(dbInterface);
 });
 
 const createInStore = (storeName, content) => new Promise((resolve, reject) => {  
-    db.ref(storeName + '/' + content.id).set(content);
+    db.ref(`users/${user.uid}/${storeName}/${content.id}`).set(content);
 
     resolve(content.id);
 });
 
 const readInStore = (storeName, contentId) => new Promise((resolve, reject) => {
   db
-    .ref(`/${storeName}/${contentId}`)
+    .ref(`users/${user.uid}/${storeName}/${contentId}`)
     .once('value')
     .then((snapshot) => snapshot.val())
     .catch((error) => reject(error))
@@ -23,7 +25,7 @@ const readInStore = (storeName, contentId) => new Promise((resolve, reject) => {
 
 const readAllInStore = (storeName) => new Promise((resolve, reject) => {
   db
-    .ref(`/${storeName}`)
+    .ref(`users/${user.uid}/${storeName}`)
     .once('value')
     .then((snapshot) => resolve(
       [].concat(snapshot.val()).filter((i) => i)) //convert everything into an array
@@ -33,13 +35,13 @@ const readAllInStore = (storeName) => new Promise((resolve, reject) => {
 });
 
 const updateInStore = (storeName, content) => new Promise((resolve, reject) => {
-  db.ref(`/${storeName}/${content.id}`).update(content);
+  db.ref(`users/${user.uid}/${storeName}/${content.id}`).update(content);
   
   resolve(content);
 });
 
 const deleteInStore = (storeName, contentId) => new Promise((resolve, reject) => {
-  db.ref(`/${storeName}/${contentId}`).remove();
+  db.ref(`users/${user.uid}/${storeName}/${contentId}`).remove();
   
   resolve(contentId);
 });

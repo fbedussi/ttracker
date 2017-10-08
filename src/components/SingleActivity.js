@@ -82,8 +82,8 @@ class SingleActivity extends Component {
 
         var parentActivities = [];
         var parentActivity = activity.parentActivity;
-        while (parentActivity && parentActivity.id) {
-            parentActivities = [parentActivity].concat(parentActivities);
+        while (objHasDeepProp(parentActivity, 'id')) {
+            parentActivities = parentActivities.concat(parentActivity);
             parentActivity = parentActivity.parentActivity;
         }
 
