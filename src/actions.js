@@ -57,6 +57,19 @@ export function hideError(error) {
     };
 }
 
+export function resetDialog(error) {
+    return {
+        type: 'RESET_DIALOG',
+    };
+}
+
+export function requestConfirmation(request) {
+    return {
+        type: 'REQUEST_CONFIRMATION',
+        request
+    }
+}
+
 export function createNewClient() {
     const data = backend.createClient();
 

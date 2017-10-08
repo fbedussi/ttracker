@@ -5,6 +5,9 @@ import {
     deleteClient,
     addNewActivityToClient,
     updateClient,
+    requestConfirmation,
+    resetDialog,
+    
 } from '../actions';
 
 import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
@@ -39,6 +42,8 @@ const mapDispatchToProps = (dispatch) => ({
     deleteClient: (client) => dispatch(deleteClient(client)),
     addNewActivityToClient: (clientId) => dispatch(addNewActivityToClient(clientId)),
     updateClient: (client, newName) => dispatch(updateClient(client, newName)),
+    requestConfirmation: (request) => dispatch(requestConfirmation(request)),
+    resetDialog: () => dispatch(resetDialog()),    
 });
 
 class ClientTab extends Component {
@@ -53,6 +58,9 @@ class ClientTab extends Component {
             updateClient,
             currency,
             lastCreatedClientId,
+            requestConfirmation,
+            resetDialog,
+            
         } = this.props;
         styles.fab.display = activeTab === 'clients' ? 'block' : 'none';
 
@@ -88,7 +96,14 @@ class ClientTab extends Component {
                         <FlatButton
                             label="Delete"
                             icon={<DeleteIcon />}
-                            onClick={() => deleteClient(client)}
+                            onClick={() => requestConfirmation({
+                                title: 'Delete confrmation',
+                                text: `Are you sure to delete client ${client.name}?`,
+                                action: () => {
+                                    deleteClient(client);
+                                    resetDialog();
+                                }
+                            })}
                         />
                     </CardActions>
                     <CardText expandable={true}>

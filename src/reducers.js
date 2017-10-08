@@ -49,6 +49,10 @@ export function uiReducer(state = {
     lastCreatedActivityId: undefined,
     errorOn: false,
     errorMessage: '',
+    dialogTitle: '',
+    dialogMessage: '',
+    dialogOk: null,
+    dialogOn: false,
 }, action) {
 	switch (action.type) {
         case 'UPDATE_DATA':
@@ -83,10 +87,16 @@ export function uiReducer(state = {
             });
 
         case 'SHOW_ERROR':
-            return Object.assign({}, {errorOn: true, errorMessage: action.error.message});
+            return Object.assign({}, state, {errorOn: true, errorMessage: action.error.message});
 
         case 'HIDE_ERROR':
-            return Object.assign({}, {errorOn: false, errorMessage: ''});
+            return Object.assign({}, state, {errorOn: false, errorMessage: ''});
+
+        case 'REQUEST_CONFIRMATION':
+            return Object.assign({}, state, {dialogOn: true, dialogTitle: action.request.title, dialogMessage: action.request.text, dialogOk: action.request.action});
+
+        case 'RESET_DIALOG':
+            return Object.assign({}, state, {dialogOn: false, dialogTitle: '', dialogMessage: '', dialogOk: null});
 
 		default:
 			return state;

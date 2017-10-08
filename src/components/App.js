@@ -2,7 +2,11 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { BrowserRouter, Route, withRouter } from 'react-router-dom'
 
-import { toggleDrawer, hideError } from '../actions';
+import { 
+  toggleDrawer, 
+  hideError,
+  resetDialog,
+ } from '../actions';
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import AppBar from 'material-ui/AppBar';
@@ -27,11 +31,16 @@ const mapStateToProps = (state) => ({
   drawerOpen: state.ui.drawerOpen,
   errorOn: state.ui.errorOn,
   errorMessage: state.ui.errorMessage,
+  dialogMessage: state.ui.dialogMessage,
+  dialogTitle: state.ui.dialogTitle,
+  dialogOk: state.ui.dialogOk,
+  dialogOn: state.ui.dialogOn,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   toggleDrawer: () => dispatch(toggleDrawer()),
   hideError: () => dispatch(hideError()),
+  resetDialog: () => dispatch(resetDialog()),
 });
 
 export class App extends Component {
@@ -42,6 +51,11 @@ export class App extends Component {
       errorOn,
       errorMessage,
       hideError,
+      dialogMessage,
+      dialogTitle,
+      resetDialog,
+      dialogOk,
+      dialogOn,
     } = this.props;
     return (<MuiThemeProvider>
           <div className="App">
@@ -68,6 +82,25 @@ export class App extends Component {
               actions={<RaisedButton label="Close" onClick={() => hideError()} />}
             >
               {errorMessage}
+            </Dialog>
+            <Dialog
+              title={dialogTitle}
+              modal={true}
+              open={dialogOn}
+              actions={[
+                <RaisedButton 
+                  label="Ok" 
+                  primary="true"
+                  onClick={() => dialogOk()}
+                  style={{marginRight: '1em'}} 
+                />,
+                <RaisedButton 
+                  label="cancel"
+                  onClick={() => resetDialog()} 
+                />
+              ]}
+            >
+              {dialogMessage}
             </Dialog>
             <Route path="/" exact component={Home} />
             <Route path="/activity/:activityId" component={SingleActivity} />
