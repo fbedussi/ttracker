@@ -88,6 +88,8 @@ class SingleClient extends Component {
                         onClick={() => requestConfirmation({
                             title: 'Delete confrmation',
                             text: `Are you sure to delete client ${client.name}?`,
+                            optionText: 'Delete all related activities',
+                            optionDefaultValue: true,
                             action: () => {
                                 deleteClient(client);
                                 resetDialog();

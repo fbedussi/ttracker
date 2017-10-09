@@ -14,6 +14,7 @@ import IconButton from 'material-ui/IconButton';
 import SettingsIcon from 'material-ui/svg-icons/action/settings';
 import Drawer from 'material-ui/Drawer';
 import RaisedButton from 'material-ui/RaisedButton';
+import Checkbox from 'material-ui/Checkbox';
 
 import Home from './Home';
 import SingleActivity from './SingleActivity';
@@ -31,10 +32,12 @@ const mapStateToProps = (state) => ({
   drawerOpen: state.ui.drawerOpen,
   errorOn: state.ui.errorOn,
   errorMessage: state.ui.errorMessage,
-  dialogMessage: state.ui.dialogMessage,
-  dialogTitle: state.ui.dialogTitle,
-  dialogOk: state.ui.dialogOk,
-  dialogOn: state.ui.dialogOn,
+  dialogMessage: state.dialog.dialogMessage,
+  dialogTitle: state.dialog.dialogTitle,
+  dialogOk: state.dialog.dialogOk,
+  dialogOn: state.dialog.dialogOn,
+  dialogOptionText: state.dialog.optionText,
+  dialogDefaultOptionValue: state.dialog.defaultOptionValue,
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -44,6 +47,12 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 export class App extends Component {
+  componentWillReceiveProps(newProps) {
+    this.setState({
+      dialogOptionValue: this.props.dialogDefaultOptionValue
+    })
+  }
+
   render() {
     const {
       drawerOpen,
@@ -56,6 +65,8 @@ export class App extends Component {
       resetDialog,
       dialogOk,
       dialogOn,
+      dialogOptionText,
+      dialogDefaultOptionValue
     } = this.props;
     return (<MuiThemeProvider>
           <div className="App">
@@ -91,7 +102,7 @@ export class App extends Component {
                 <RaisedButton 
                   label="Ok" 
                   primary={true}
-                  onClick={() => dialogOk()}
+                  onClick={() => dialogOk(this.state.optionValue)}
                   style={{marginRight: '1em'}} 
                 />,
                 <RaisedButton 
@@ -101,6 +112,16 @@ export class App extends Component {
               ]}
             >
               {dialogMessage}
+              {dialogOptionText.length? <div>
+                  <Checkbox
+                  label={dialogOptionText}
+                  checked={dialogDefaultOptionValue}
+                  onCheck={(e, optionValue) => this.setState({
+                    dialogOptionValue: optionValue
+                  })}
+                />
+                </div>
+                : null }
             </Dialog>
             <Route path="/" exact component={Home} />
             <Route path="/activity/:activityId" component={SingleActivity} />
