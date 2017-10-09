@@ -90,7 +90,7 @@ export class App extends Component {
               actions={[
                 <RaisedButton 
                   label="Ok" 
-                  primary="true"
+                  primary={true}
                   onClick={() => dialogOk()}
                   style={{marginRight: '1em'}} 
                 />,

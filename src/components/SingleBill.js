@@ -5,6 +5,8 @@ import {
     deleteBill,
     updateBill,
     refreshBillText,
+    requestConfirmation,
+    resetDialog,
 } from '../actions';
 
 import { objHasDeepProp } from '../helpers/helpers';
@@ -34,6 +36,8 @@ const mapDispatchToProps = (dispatch) => ({
     deleteBill: (billId) => dispatch(deleteBill(billId)),
     updateBill: (bill) => dispatch(updateBill(bill)),
     refreshBillText: (billId) => dispatch(refreshBillText(billId)),
+    requestConfirmation: (request) => dispatch(requestConfirmation(request)),
+    resetDialog: () => dispatch(resetDialog()),  
 });
 
 
@@ -46,6 +50,8 @@ class SingleBill extends Component {
             updateBill,
             refreshBillText,
             lastUpdatedBillId,
+            requestConfirmation,
+            resetDialog,
         } = this.props;
         const billId = Number(this.props.match.params.billId);
         const bill = bills
@@ -87,7 +93,15 @@ class SingleBill extends Component {
                     {bill.client.bills[bill.client.bills.length - 1].id === bill.id ?
                         <span>
                             <FlatButton
-                                onClick={() => deleteBill(bill.id)}
+                                onClick={() => requestConfirmation({
+                                    title: 'Delete confrmation',
+                                    text: `Are you sure to delete bill n.${bill.id} dated ${new Date(bill.date).toLocaleDateString()} for the client ${bill.client.name}?`,
+                                    action: () => {
+                                        deleteBill(bill.id);
+                                        resetDialog();
+                                        history.push('/');
+                                    }
+                                })}
                                 fullWidth={true}
                                 label="delete"
                                 icon={<DeleteIcon />}

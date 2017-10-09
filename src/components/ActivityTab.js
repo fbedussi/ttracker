@@ -9,6 +9,8 @@ import {
     stopActivity,
     updateActivity,
     addSubactivity,
+    requestConfirmation,
+    resetDialog,
 } from '../actions';
 
 import { formatTime, objHasDeepProp } from '../helpers/helpers';
@@ -42,7 +44,7 @@ const mapStateToProps = (state) => ({
     activeTab: state.ui.activeTab,
     currency: state.options.currency,
     ongoingActivities: state.ui.ongoingActivities,
-    lastCreatedActivityId: state.ui.lastCreatedActivityId,    
+    lastCreatedActivityId: state.ui.lastCreatedActivityId,
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -50,8 +52,10 @@ const mapDispatchToProps = (dispatch) => ({
     deleteActivity: (activity) => dispatch(deleteActivity(activity)),
     startActivity: (activity) => dispatch(startActivity(activity)),
     stopActivity: (activityId) => dispatch(stopActivity(activityId)),
-    changeActivityName: (activity, newName) => dispatch(updateActivity(activity, {name: newName})),
-    addSubactivity: (activity) => dispatch(addSubactivity(activity))
+    changeActivityName: (activity, newName) => dispatch(updateActivity(activity, { name: newName })),
+    addSubactivity: (activity) => dispatch(addSubactivity(activity)),
+    requestConfirmation: (request) => dispatch(requestConfirmation(request)),
+    resetDialog: () => dispatch(resetDialog()),    
 });
 
 
@@ -70,7 +74,9 @@ class ActivityTab extends Component {
             changeActivityName,
             ongoingActivities,
             lastCreatedActivityId,
-            addSubactivity,    
+            addSubactivity,
+            requestConfirmation,
+            resetDialog,
         } = this.props;
         styles.fab.display = activeTab === 'activities' ? 'block' : 'none';
 
@@ -79,91 +85,98 @@ class ActivityTab extends Component {
                 {activities
                     .filter((activity) => !activity.parentActivity || !activity.parentActivity.id)
                     .map((activity) => {
-                    return <Card
-                        className="card"
-                        key={'activity_' + activity.id}
-                        style={{ position: 'relative' }}
-                        expandable={false}
-                        expanded={true}
-                        
-                    >
-                        <CardHeader
-                            actAsExpander={false}
-                            showExpandableButton={false}
-                            textStyle={{ paddingRight: '0' }}
+                        return <Card
+                            className="card"
+                            key={'activity_' + activity.id}
+                            style={{ position: 'relative' }}
+                            expandable={false}
+                            expanded={true}
+
                         >
-                            <EditableText
-                                className="cardTitle"
-                                editable={activeTab === 'projects' && lastCreatedActivityId === activity.id}
-                                text={activity.name}
-                                handleChange={(text) => changeActivityName(activity, text)}
-                            />
-                            <div className="cardClientName" style={objHasDeepProp(activity, 'client.name') ? {display: 'block'} : {display: 'none'}}>
-                                <span>Client: </span>
-                                <Link to={`/client/${activity.client.id}`}>
-                                   {activity.client.name}
-                                </Link>
-                            </div>
-                        </CardHeader>
-                        <CardActions>
-                            <FlatButton
-                                label="Details"
-                                icon={<DetailsIcon />}
-                                onClick={() => history.push(`/activity/${activity.id}`)}
-                            />
-                            <FlatButton
-                                label="Delete"
-                                icon={<DeleteIcon />}
-                                onClick={() => deleteActivity(activity)}
-                            />
-                            <TimerBox 
-                                activity={activity}
-                                isOngoing={ongoingActivities.includes(activity.id)}
-                                startActivity={startActivity}
-                                stopActivity={stopActivity}
-                            />
-
-                        </CardActions>
-                        <CardText expandable={true}>
-                            <div className="row">
-                                <span className="label">Total time: </span>
-                                <span className="totaleTime">{formatTime(activity.totalTime)}</span>
-                            </div>
-                            <div className="totalCostWrapper row">
-                                <span className="totalCostLabel">{`Total cost: ${currency}`} </span>
-                                <span className="totalCost">{Math.round(activity.totalCost)}</span>
-                            </div>
-
-                            <div className="row">
-                                <span className="label">Total time to bill: </span>
-                                <span className="totalTimeToBill">{formatTime(activity.totalTimeToBill)}</span>
-                            </div>
-
-                            <div className="totalCostWrapper row">
-                                <span className="label">{`Total cost: ${currency}`} </span>
-                                <span className="totalCostToBill">{Math.round(activity.totalCostToBill)}</span>
-                            </div>
-                            
-                            <h2 className="sectionSubtitle">Tasks 
-                                <FlatButton
-                                    icon={<ContentAdd />}
-                                    onClick={() => {
-                                        addSubactivity(activity);
-                                    }}
+                            <CardHeader
+                                actAsExpander={false}
+                                showExpandableButton={false}
+                                textStyle={{ paddingRight: '0' }}
+                            >
+                                <EditableText
+                                    className="cardTitle"
+                                    editable={activeTab === 'projects' && lastCreatedActivityId === activity.id}
+                                    text={activity.name}
+                                    handleChange={(text) => changeActivityName(activity, text)}
                                 />
-                            </h2>
-                            
-                            <div className="chipWrapper">
-                            {activity.subactivities.map((activity) => <ActivityChip
-                                key={activity.id}
-                                activity={activity}
-                            />)}
-                        </div>
+                                <div className="cardClientName" style={objHasDeepProp(activity, 'client.name') ? { display: 'block' } : { display: 'none' }}>
+                                    <span>Client: </span>
+                                    <Link to={`/client/${activity.client.id}`}>
+                                        {activity.client.name}
+                                    </Link>
+                                </div>
+                            </CardHeader>
+                            <CardActions>
+                                <FlatButton
+                                    label="Details"
+                                    icon={<DetailsIcon />}
+                                    onClick={() => history.push(`/activity/${activity.id}`)}
+                                />
+                                <FlatButton
+                                    label="Delete"
+                                    icon={<DeleteIcon />}
+                                    onClick={() => requestConfirmation({
+                                        title: 'Delete confrmation',
+                                        text: `Are you sure to delete activity ${activity.name}?`,
+                                        action: () => {
+                                            deleteActivity(activity);
+                                            resetDialog();
+                                        }
+                                    })}
+                                />
+                                <TimerBox
+                                    activity={activity}
+                                    isOngoing={ongoingActivities.includes(activity.id)}
+                                    startActivity={startActivity}
+                                    stopActivity={stopActivity}
+                                />
 
-                        </CardText>
-                    </Card>
-                }
-                )}
+                            </CardActions>
+                            <CardText expandable={true}>
+                                <div className="row">
+                                    <span className="label">Total time: </span>
+                                    <span className="totaleTime">{formatTime(activity.totalTime)}</span>
+                                </div>
+                                <div className="totalCostWrapper row">
+                                    <span className="totalCostLabel">{`Total cost: ${currency}`} </span>
+                                    <span className="totalCost">{Math.round(activity.totalCost)}</span>
+                                </div>
+
+                                <div className="row">
+                                    <span className="label">Total time to bill: </span>
+                                    <span className="totalTimeToBill">{formatTime(activity.totalTimeToBill)}</span>
+                                </div>
+
+                                <div className="totalCostWrapper row">
+                                    <span className="label">{`Total cost: ${currency}`} </span>
+                                    <span className="totalCostToBill">{Math.round(activity.totalCostToBill)}</span>
+                                </div>
+
+                                <h2 className="sectionSubtitle">Tasks
+                                <FlatButton
+                                        icon={<ContentAdd />}
+                                        onClick={() => {
+                                            addSubactivity(activity);
+                                        }}
+                                    />
+                                </h2>
+
+                                <div className="chipWrapper">
+                                    {activity.subactivities.map((activity) => <ActivityChip
+                                        key={activity.id}
+                                        activity={activity}
+                                    />)}
+                                </div>
+
+                            </CardText>
+                        </Card>
+                    }
+                    )}
 
                 <FloatingActionButton
                     style={styles.fab}

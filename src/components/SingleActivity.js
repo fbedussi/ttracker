@@ -9,6 +9,8 @@ import {
     startActivity,
     stopActivity,
     addSubactivity,
+    requestConfirmation,
+    resetDialog,
 } from '../actions';
 
 import { formatTime, objHasDeepProp } from '../helpers/helpers';
@@ -46,6 +48,8 @@ const mapDispatchToProps = (dispatch) => ({
     changeActivityHourlyRate: (activity, hourlyRate) => dispatch(updateActivity(activity, { hourlyRate: Number(hourlyRate) })),
     updateTimeEntry: (props) => dispatch(updateTimeEntry(props)),
     addSubactivity: (activity) => dispatch(addSubactivity(activity)),
+    requestConfirmation: (request) => dispatch(requestConfirmation(request)),
+    resetDialog: () => dispatch(resetDialog()),    
 });
 
 
@@ -65,6 +69,8 @@ class SingleActivity extends Component {
             ongoingActivities,
             lastCreatedActivityId,
             addSubactivity,
+            requestConfirmation,
+            resetDialog,
         } = this.props;
         const activityId = Number(this.props.match.params.activityId);
         const activity = activities
@@ -127,10 +133,15 @@ class SingleActivity extends Component {
                     <FlatButton
                         label="Delete"
                         icon={<DeleteIcon />}
-                        onClick={() => {
-                            deleteActivity(activity);
-                            history.push('/');
-                        }}
+                        onClick={() => requestConfirmation({
+                            title: 'Delete confrmation',
+                            text: `Are you sure to delete activity ${activity.name}?`,
+                            action: () => {
+                                deleteActivity(activity);
+                                resetDialog();
+                                history.push('/');
+                            }
+                        })}
                     />
                 </h1>
 

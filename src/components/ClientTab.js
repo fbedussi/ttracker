@@ -7,7 +7,6 @@ import {
     updateClient,
     requestConfirmation,
     resetDialog,
-    
 } from '../actions';
 
 import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';

@@ -5,6 +5,8 @@ import {
     updateClient,
     addNewActivityToClient,
     createNewBill,
+    requestConfirmation,
+    resetDialog,
 } from '../actions';
 
 import { formatTime } from '../helpers/helpers';
@@ -30,6 +32,8 @@ const mapDispatchToProps = (dispatch) => ({
     updateClient: (props) => dispatch(updateClient(props)),
     addNewActivityToClient: (clientId) => dispatch(addNewActivityToClient(clientId)),
     createNewBill: (clientId, billTextTemplate, currency) => dispatch(createNewBill(clientId, billTextTemplate, currency)),
+    requestConfirmation: (request) => dispatch(requestConfirmation(request)),
+    resetDialog: () => dispatch(resetDialog()),  
 });
 
 
@@ -44,6 +48,8 @@ class SingleClient extends Component {
             addNewActivityToClient,
             createNewBill,
             billTextTemplate,
+            requestConfirmation,
+            resetDialog,
         } = this.props;
         const clientId = Number(this.props.match.params.clientId);
         const client = clients
@@ -79,10 +85,15 @@ class SingleClient extends Component {
                     <FlatButton
                         label="Delete"
                         icon={<DeleteIcon />}
-                        onClick={() => {
-                            deleteClient(client);
-                            history.push('/');
-                        }}
+                        onClick={() => requestConfirmation({
+                            title: 'Delete confrmation',
+                            text: `Are you sure to delete client ${client.name}?`,
+                            action: () => {
+                                deleteClient(client);
+                                resetDialog();
+                                history.push('/');
+                            }
+                        })}
                     />
                 </h1>
                 <div className="hourlyRateWrapper row">

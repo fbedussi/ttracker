@@ -8,7 +8,9 @@ import { formatTime } from '../helpers/helpers';
 
 import {
     deleteBill,
-    updateBill
+    updateBill,
+    requestConfirmation,
+    resetDialog,
 } from '../actions';
 
 import DeleteIcon from 'material-ui/svg-icons/action/delete';
@@ -24,7 +26,9 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
     deleteBill: (billId) => dispatch(deleteBill(billId)),
-    updateBill: (bill) => dispatch(updateBill(bill))
+    updateBill: (bill) => dispatch(updateBill(bill)),
+    requestConfirmation: (request) => dispatch(requestConfirmation(request)),
+    resetDialog: () => dispatch(resetDialog()),  
 });
 
 class BillCard extends Component {
@@ -34,6 +38,8 @@ class BillCard extends Component {
             bill,
             deleteBill,
             updateBill,
+            requestConfirmation,
+            resetDialog,
         } = this.props;
 
         return (
@@ -61,7 +67,14 @@ class BillCard extends Component {
                 {bill.client.bills[bill.client.bills.length - 1].id === bill.id ? 
                 <CardActions>
                     <FlatButton
-                        onClick={() => deleteBill(bill.id)}
+                        onClick={() => requestConfirmation({
+                            title: 'Delete confrmation',
+                            text: `Are you sure to delete bill n.${bill.id} dated ${new Date(bill.date).toLocaleDateString()} for the client ${bill.client.name}?`,
+                            action: () => {
+                                deleteBill(bill.id);
+                                resetDialog();
+                            }
+                        })}
                         fullWidth={true}
                         label="delete"
                         icon={<DeleteIcon />}
