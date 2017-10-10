@@ -207,21 +207,17 @@ const App = {
         return this.exportForClient();
     },
     deleteActivity: function(activityId, deleteSubActivities = false) {
-        var activity = this._getActivity(activityId);
-        
+        const activity = this._getActivity(activityId);
         if (!activity) {
             return this.exportForClient();
+        }
+        if (objHasDeepProp(activity, 'client.id')) {
+            this.clients = this.clients.map((client) => client.id === activity.client.id ? client.removeActivity(activityId) : client); 
         }
 
         var removedActivityIds = activity.delete(deleteSubActivities);
         this.activities = this.activities.filter((activity) => removedActivityIds.every((removedActivityId) => activity.id !== removedActivityId));
-        this.clients = this.clients.map((client) => {
-            //TODO: check first if client has activity?
-            removedActivityIds.forEach((removedActivityId) => client.removeActivity(removedActivityId));
-
-            return client;
-        });
-
+        
         return this.exportForClient();
     },
     updateActivity: function(props) {
