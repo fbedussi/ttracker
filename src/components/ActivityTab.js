@@ -9,24 +9,20 @@ import {
     stopActivity,
     updateActivity,
     addSubactivity,
-    requestConfirmation,
-    resetDialog,
 } from '../actions';
 
 import { formatTime, objHasDeepProp } from '../helpers/helpers';
 
-import Subheader from 'material-ui/Subheader';
 import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
-import DeleteIcon from 'material-ui/svg-icons/action/delete';
 import DetailsIcon from 'material-ui/svg-icons/action/pageview';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import FlatButton from 'material-ui/FlatButton';
-import Chip from 'material-ui/Chip';
 
 import EditableText from './EditableText';
 import TimerBox from './TimerBox';
 import ActivityChip from './ActivityChip';
+import DeleteButton from './DeleteButton';
 
 const styles = {
     fab: {
@@ -49,13 +45,11 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
     createNewActivity: () => dispatch(createNewActivity()),
-    deleteActivity: (activity) => dispatch(deleteActivity(activity)),
+    deleteActivity: (activity, deleteSubactivities) => dispatch(deleteActivity(activity, deleteSubactivities)),
     startActivity: (activity) => dispatch(startActivity(activity)),
     stopActivity: (activityId) => dispatch(stopActivity(activityId)),
     changeActivityName: (activity, newName) => dispatch(updateActivity(activity, { name: newName })),
-    addSubactivity: (activity) => dispatch(addSubactivity(activity)),
-    requestConfirmation: (request) => dispatch(requestConfirmation(request)),
-    resetDialog: () => dispatch(resetDialog()),    
+    addSubactivity: (activity) => dispatch(addSubactivity(activity)),   
 });
 
 
@@ -75,8 +69,6 @@ class ActivityTab extends Component {
             ongoingActivities,
             lastCreatedActivityId,
             addSubactivity,
-            requestConfirmation,
-            resetDialog,
         } = this.props;
         styles.fab.display = activeTab === 'activities' ? 'block' : 'none';
 
@@ -117,17 +109,11 @@ class ActivityTab extends Component {
                                     icon={<DetailsIcon />}
                                     onClick={() => history.push(`/activity/${activity.id}`)}
                                 />
-                                <FlatButton
-                                    label="Delete"
-                                    icon={<DeleteIcon />}
-                                    onClick={() => requestConfirmation({
-                                        title: 'Delete confrmation',
-                                        text: `Are you sure to delete activity ${activity.name}?`,
-                                        action: () => {
-                                            deleteActivity(activity);
-                                            resetDialog();
-                                        }
-                                    })}
+                                <DeleteButton
+                                    buttonLabel="Delete"
+                                    dialogMessage={`Are you sure to delete activity ${activity.name}?`}
+                                    dialogOptionText="delete project's tasks"
+                                    deleteAction={(deleteSubactivities) => deleteActivity(activity, deleteSubactivities)}
                                 />
                                 <TimerBox
                                     activity={activity}

@@ -7,7 +7,7 @@ import { BrowserRouter } from 'react-router-dom'
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
-import { dataReducer, uiReducer, dialogReducer, optionsReducer } from './reducers';
+import { dataReducer, uiReducer, optionsReducer } from './reducers';
 import { load } from './actions';
 
 import App from './components/App';
@@ -18,7 +18,6 @@ import {config} from '../package.json';
 const store = createStore(combineReducers({
     data: dataReducer,
     ui: uiReducer,
-    dialog: dialogReducer,
     options: optionsReducer
 }), applyMiddleware(thunkMiddleware));
 

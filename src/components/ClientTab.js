@@ -5,12 +5,9 @@ import {
     deleteClient,
     addNewActivityToClient,
     updateClient,
-    requestConfirmation,
-    resetDialog,
 } from '../actions';
 
 import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
-import DeleteIcon from 'material-ui/svg-icons/action/delete';
 import DetailsIcon from 'material-ui/svg-icons/action/pageview';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import ContentAdd from 'material-ui/svg-icons/content/add';
@@ -18,6 +15,7 @@ import FlatButton from 'material-ui/FlatButton';
 
 import EditableText from './EditableText';
 import ActivityChip from './ActivityChip';
+import DeleteButton from './DeleteButton';
 
 const styles = {
     fab: {
@@ -38,11 +36,9 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
     createNewClient: () => dispatch(createNewClient()),
-    deleteClient: (client) => dispatch(deleteClient(client)),
+    deleteClient: (client, deleteActivities) => dispatch(deleteClient(client, deleteActivities)),
     addNewActivityToClient: (clientId) => dispatch(addNewActivityToClient(clientId)),
-    updateClient: (client, newName) => dispatch(updateClient(client, newName)),
-    requestConfirmation: (request) => dispatch(requestConfirmation(request)),
-    resetDialog: () => dispatch(resetDialog()),    
+    updateClient: (client, newName) => dispatch(updateClient(client, newName)),   
 });
 
 class ClientTab extends Component {
@@ -56,10 +52,7 @@ class ClientTab extends Component {
             addNewActivityToClient,
             updateClient,
             currency,
-            lastCreatedClientId,
-            requestConfirmation,
-            resetDialog,
-            
+            lastCreatedClientId,  
         } = this.props;
         styles.fab.display = activeTab === 'clients' ? 'block' : 'none';
 
@@ -92,17 +85,11 @@ class ClientTab extends Component {
                                 icon={<DetailsIcon />}
                                 onClick={() => history.push(`/client/${client.id}`)}
                         />
-                        <FlatButton
-                            label="Delete"
-                            icon={<DeleteIcon />}
-                            onClick={() => requestConfirmation({
-                                title: 'Delete confrmation',
-                                text: `Are you sure to delete client ${client.name}?`,
-                                action: () => {
-                                    deleteClient(client);
-                                    resetDialog();
-                                }
-                            })}
+                        <DeleteButton
+                            buttonLabel="Delete"
+                            dialogMessage={`Are you sure to delete client ${client.name}?`}
+                            dialogOptionText="delete client's projects"
+                            deleteAction={(deleteActivities) => deleteClient(client, deleteActivities)}
                         />
                     </CardActions>
                     <CardText expandable={true}>

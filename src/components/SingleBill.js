@@ -4,18 +4,14 @@ import { connect } from 'react-redux';
 import {
     deleteBill,
     updateBill,
-    refreshBillText,
-    requestConfirmation,
-    resetDialog,
+    refreshBillText,    
 } from '../actions';
 
 import { objHasDeepProp } from '../helpers/helpers';
 
-import DeleteIcon from 'material-ui/svg-icons/action/delete';
 import PrintIcon from 'material-ui/svg-icons/action/print';
 import RefreshIcon from 'material-ui/svg-icons/navigation/refresh';
 import RaisedButton from 'material-ui/RaisedButton';
-import FlatButton from 'material-ui/FlatButton';
 import SvgIconFace from 'material-ui/svg-icons/action/face';
 import Avatar from 'material-ui/Avatar';
 import Chip from 'material-ui/Chip';
@@ -25,6 +21,7 @@ import EditableText from './EditableText';
 import BackTo from './BackTo';
 import DateBox from './DateBox';
 import EditableTextArea from './EditableTextArea';
+import DeleteButton from './DeleteButton';
 
 
 const mapStateToProps = (state) => ({
@@ -36,8 +33,6 @@ const mapDispatchToProps = (dispatch) => ({
     deleteBill: (billId) => dispatch(deleteBill(billId)),
     updateBill: (bill) => dispatch(updateBill(bill)),
     refreshBillText: (billId) => dispatch(refreshBillText(billId)),
-    requestConfirmation: (request) => dispatch(requestConfirmation(request)),
-    resetDialog: () => dispatch(resetDialog()),  
 });
 
 
@@ -50,8 +45,6 @@ class SingleBill extends Component {
             updateBill,
             refreshBillText,
             lastUpdatedBillId,
-            requestConfirmation,
-            resetDialog,
         } = this.props;
         const billId = Number(this.props.match.params.billId);
         const bill = bills
@@ -92,21 +85,14 @@ class SingleBill extends Component {
                     <span className="row">Invoice</span>
                     {bill.client.bills[bill.client.bills.length - 1].id === bill.id ?
                         <span>
-                            <FlatButton
-                                onClick={() => requestConfirmation({
-                                    title: 'Delete confrmation',
-                                    text: `Are you sure to delete bill n.${bill.id} dated ${new Date(bill.date).toLocaleDateString()} for the client ${bill.client.name}?`,
-                                    action: () => {
-                                        deleteBill(bill.id);
-                                        resetDialog();
-                                        history.push('/');
-                                    }
-                                })}
-                                fullWidth={true}
-                                label="delete"
-                                icon={<DeleteIcon />}
-                            >
-                            </FlatButton>
+                            <DeleteButton
+                                buttonLabel="Delete"
+                                dialogMessage={`Are you sure to delete bill n.${bill.id} dated ${new Date(bill.date).toLocaleDateString()} for the client ${bill.client.name}?`}
+                                deleteAction={() => {
+                                    deleteBill(bill.id);
+                                    history.push('/');
+                                }}
+                            />
                         </span>
                         : null
                     }

@@ -1,15 +1,3 @@
-function removeTimeEntryFromActivity(activity, timeEntryId) {
-    activity.timeEntries = activity.timeEntries.filter((timeEntry) => timeEntry.id !== timeEntryId);
-
-    return activity;
-}
-
-function removeActivityFromClient(client, activityId) {
-    client.activities = client.activities.filter((id) => id !== activityId);
-
-    return client;
-}
-
 export function dataReducer(state = {
     clients: [],
     bills: [],
@@ -91,40 +79,6 @@ export function uiReducer(state = {
 
         case 'HIDE_ERROR':
             return Object.assign({}, state, {errorOn: false, errorMessage: ''});
-
-		default:
-			return state;
-	}
-}
-
-export function dialogReducer(state = {
-    dialogTitle: '',
-    dialogMessage: '',
-    dialogOk: null,
-    dialogOn: false,
-    optionText: '',
-    optionDefaultValue: true,
-}, action) {
-	switch (action.type) {
-        case 'REQUEST_CONFIRMATION':
-            return Object.assign({}, state, {
-                dialogOn: true,
-                dialogTitle: action.request.title,
-                dialogMessage: action.request.text,
-                dialogOk: action.request.action,
-                optionText: action.request.optionText,
-                optionDefaultValue: action.request.optionDefaultValue,
-            });
-
-        case 'RESET_DIALOG':
-            return Object.assign({}, state, {
-                dialogOn: false,
-                dialogTitle: '',
-                dialogMessage: '',
-                dialogOk: null,
-                optionText: '',
-                optionDefaultValue: true,
-            });
 
 		default:
 			return state;

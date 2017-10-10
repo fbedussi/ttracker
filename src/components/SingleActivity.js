@@ -9,13 +9,10 @@ import {
     startActivity,
     stopActivity,
     addSubactivity,
-    requestConfirmation,
-    resetDialog,
 } from '../actions';
 
 import { formatTime, objHasDeepProp } from '../helpers/helpers';
 
-import DeleteIcon from 'material-ui/svg-icons/action/delete';
 import FlatButton from 'material-ui/FlatButton';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import SvgIconFace from 'material-ui/svg-icons/action/face';
@@ -30,6 +27,7 @@ import BackToHome from './BackToHome';
 import BackTo from './BackTo';
 import TimeEntriesRegistry from './TimeEntriesRegistry';
 import ActivityChip from './ActivityChip';
+import DeleteButton from './DeleteButton';
 
 const mapStateToProps = (state) => ({
     clients: state.data.clients,
@@ -42,14 +40,12 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
     deleteTimeEntry: (activity, timeEntry) => dispatch(deleteTimeEntry(activity, timeEntry)),
     changeActivityName: (activity, newName) => dispatch(updateActivity(activity, { name: newName })),
-    deleteActivity: (activity) => dispatch(deleteActivity(activity)),
+    deleteActivity: (activity, deleteSubactivities) => dispatch(deleteActivity(activity, deleteSubactivities)),
     startActivity: (activity) => dispatch(startActivity(activity)),
     stopActivity: (activity) => dispatch(stopActivity(activity)),
     changeActivityHourlyRate: (activity, hourlyRate) => dispatch(updateActivity(activity, { hourlyRate: Number(hourlyRate) })),
     updateTimeEntry: (props) => dispatch(updateTimeEntry(props)),
     addSubactivity: (activity) => dispatch(addSubactivity(activity)),
-    requestConfirmation: (request) => dispatch(requestConfirmation(request)),
-    resetDialog: () => dispatch(resetDialog()),    
 });
 
 
@@ -69,8 +65,6 @@ class SingleActivity extends Component {
             ongoingActivities,
             lastCreatedActivityId,
             addSubactivity,
-            requestConfirmation,
-            resetDialog,
         } = this.props;
         const activityId = Number(this.props.match.params.activityId);
         const activity = activities
@@ -130,18 +124,14 @@ class SingleActivity extends Component {
                         text={activity.name}
                         handleChange={(text) => changeActivityName(activity, text)}
                     />
-                    <FlatButton
-                        label="Delete"
-                        icon={<DeleteIcon />}
-                        onClick={() => requestConfirmation({
-                            title: 'Delete confrmation',
-                            text: `Are you sure to delete activity ${activity.name}?`,
-                            action: () => {
-                                deleteActivity(activity);
-                                resetDialog();
-                                history.push('/');
-                            }
-                        })}
+                    <DeleteButton
+                        buttonLabel="Delete"
+                        dialogMessage={`Are you sure to delete activity ${activity.name}?`}
+                        dialogOptionText="delete project's tasks"
+                        deleteAction={(deleteSubactivities) => {
+                            deleteActivity(activity, deleteSubactivities);
+                            history.push('/');
+                        }}
                     />
                 </h1>
 

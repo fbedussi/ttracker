@@ -5,13 +5,10 @@ import {
     updateClient,
     addNewActivityToClient,
     createNewBill,
-    requestConfirmation,
-    resetDialog,
 } from '../actions';
 
 import { formatTime } from '../helpers/helpers';
 
-import DeleteIcon from 'material-ui/svg-icons/action/delete';
 import FlatButton from 'material-ui/FlatButton';
 import ActivityChip from './ActivityChip';
 import ContentAdd from 'material-ui/svg-icons/content/add';
@@ -19,6 +16,7 @@ import ContentAdd from 'material-ui/svg-icons/content/add';
 import EditableText from './EditableText';
 import BackTo from './BackTo';
 import BillCard from './BillCard';
+import DeleteButton from './DeleteButton';
 
 const mapStateToProps = (state) => ({
     clients: state.data.clients,
@@ -28,12 +26,10 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-    deleteClient: (client) => dispatch(deleteClient(client)),
+    deleteClient: (client, deleteActivities) => dispatch(deleteClient(client, deleteActivities)),
     updateClient: (props) => dispatch(updateClient(props)),
     addNewActivityToClient: (clientId) => dispatch(addNewActivityToClient(clientId)),
-    createNewBill: (clientId, billTextTemplate, currency) => dispatch(createNewBill(clientId, billTextTemplate, currency)),
-    requestConfirmation: (request) => dispatch(requestConfirmation(request)),
-    resetDialog: () => dispatch(resetDialog()),  
+    createNewBill: (clientId, billTextTemplate, currency) => dispatch(createNewBill(clientId, billTextTemplate, currency)), 
 });
 
 
@@ -48,8 +44,6 @@ class SingleClient extends Component {
             addNewActivityToClient,
             createNewBill,
             billTextTemplate,
-            requestConfirmation,
-            resetDialog,
         } = this.props;
         const clientId = Number(this.props.match.params.clientId);
         const client = clients
@@ -82,20 +76,14 @@ class SingleClient extends Component {
                             name: text
                         })}
                     />
-                    <FlatButton
-                        label="Delete"
-                        icon={<DeleteIcon />}
-                        onClick={() => requestConfirmation({
-                            title: 'Delete confrmation',
-                            text: `Are you sure to delete client ${client.name}?`,
-                            optionText: 'Delete all related activities',
-                            optionDefaultValue: true,
-                            action: () => {
-                                deleteClient(client);
-                                resetDialog();
-                                history.push('/');
-                            }
-                        })}
+                    <DeleteButton
+                        buttonLabel="Delete"
+                        dialogMessage={`Are you sure to delete client ${client.name}?`}
+                        dialogOptionText="delete client's projects"
+                        deleteAction={(deleteActivities) => {
+                            deleteClient(client, deleteActivities);
+                            history.push('/');
+                        }}
                     />
                 </h1>
                 <div className="hourlyRateWrapper row">

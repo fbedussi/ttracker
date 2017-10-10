@@ -91,16 +91,17 @@ const App = {
     },
     deleteClient: function(id, deleteActivities = false) {
         const clientToDelete = this._getClient(id);
-        clientToDelete.delete(deleteActivities);
-        this.clients = this.clients.filter((client) => client.id !== id);
-
         if (deleteActivities) {
+            const clientActivitiesIds = clientToDelete.activities.map((activity) => activity.id);
             this.activities = this.activities
-                .filter((activity) => clientToDelete.activities
-                    .every((clientActivity) => clientActivity.id !== activity.id)
+                .filter((activity) => clientActivitiesIds
+                    .every((clientActivityId) => clientActivityId !== activity.id)
                 )
             ;
         }
+        clientToDelete.delete(deleteActivities);
+        this.clients = this.clients.filter((client) => client.id !== id);
+
         return this.exportForClient();
     },
     updateClient: function(props) {

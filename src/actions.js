@@ -57,19 +57,6 @@ export function hideError(error) {
     };
 }
 
-export function resetDialog(error) {
-    return {
-        type: 'RESET_DIALOG',
-    };
-}
-
-export function requestConfirmation(request) {
-    return {
-        type: 'REQUEST_CONFIRMATION',
-        request
-    }
-}
-
 export function createNewClient() {
     const data = backend.createClient();
 
@@ -80,8 +67,8 @@ export function createNewClient() {
     };
 }
 
-export function deleteClient(client) {
-    const data = backend.deleteClient(client.id);
+export function deleteClient(client, deleteActvities) {
+    const data = backend.deleteClient(client.id, deleteActvities);
 
     return {
         type: 'UPDATE_DATA',
@@ -119,8 +106,8 @@ export function addSubactivity(activity) {
     };
 }
 
-export function deleteActivity(activity) {
-    const data = backend.deleteActivity(activity.id);
+export function deleteActivity(activity, deleteSubactivities = false) {
+    const data = backend.deleteActivity(activity.id, deleteSubactivities);
 
     return {
         type: 'UPDATE_DATA',
