@@ -126,7 +126,7 @@ class SingleActivity extends Component {
                     />
                     <DeleteButton
                         buttonLabel="Delete"
-                        dialogMessage={`Are you sure to delete activity ${activity.name}?`}
+                        dialogMessage={`Are you sure to delete activity "${activity.name}"?`}
                         dialogOptionText="delete project's tasks"
                         deleteAction={(deleteSubactivities) => {
                             deleteActivity(activity, deleteSubactivities);

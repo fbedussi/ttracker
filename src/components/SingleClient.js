@@ -78,7 +78,7 @@ class SingleClient extends Component {
                     />
                     <DeleteButton
                         buttonLabel="Delete"
-                        dialogMessage={`Are you sure to delete client ${client.name}?`}
+                        dialogMessage={`Are you sure to delete client "${client.name}"?`}
                         dialogOptionText="delete client's projects"
                         deleteAction={(deleteActivities) => {
                             deleteClient(client, deleteActivities);

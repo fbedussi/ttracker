@@ -12,7 +12,7 @@ class DeleteButton extends Component {
 
         this.state = {
             dialogOpen: false,
-            dialogOptionValue: this.props.dialogDefaultOptionValue
+            dialogOptionValue: this.props.dialogDefaultOptionValue !== undefined ? this.props.dialogDefaultOptionValue : true
         }
     }
 
@@ -47,7 +47,7 @@ class DeleteButton extends Component {
         } = this.props;
 
         return (
-            <div>
+            <span>
                 <FlatButton
                     label={buttonLabel}
                     icon={<DeleteIcon />}
@@ -70,17 +70,17 @@ class DeleteButton extends Component {
                         />
                     ]}
                 >
-                    {dialogMessage}
-                    {dialogOptionText && dialogOptionText.length ? <div>
+                    <p className="deleteConfirmationMessage">{dialogMessage}</p>
+                    {dialogOptionText && dialogOptionText.length ? <p>
                         <Checkbox
                             label={dialogOptionText}
                             checked={this.state.dialogOptionValue}
                             onCheck={(e, optionValue) => this.setOption(optionValue)}
                         />
-                    </div>
+                    </p>
                         : null}
                 </Dialog>
-            </div>
+            </span>
         )
     }
 }

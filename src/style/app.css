@@ -157,6 +157,10 @@ input.editable {
     margin-bottom: 1em;
 }
 
+.deleteConfirmationMessage {
+    margin-bottom: 1em;
+}
+
 @media screen and (min-width: 30em) {
     .cardsWrapper {
         display: flex;
