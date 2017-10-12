@@ -12,7 +12,9 @@ const logIn = (data) => new Promise((resolve, reject) => {
         case 'email':
             return logInMail(data)
                 .then((user) => resolve(user))
-                .catch((e) => reject(e))
+                .catch((e) => reject(e));
+            break;
+        default:
             break;
     }
 });

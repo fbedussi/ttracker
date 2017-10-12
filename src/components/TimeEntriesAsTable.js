@@ -5,8 +5,6 @@ import {
     deleteTimeEntry
 } from '../actions';
 
-import { convertMsToH } from '../helpers/helpers';
-
 import { formatTime } from '../helpers/helpers';
 
 import {

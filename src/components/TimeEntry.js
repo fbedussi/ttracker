@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import { convertMsToH } from '../helpers/helpers';
-
 import { formatTime } from '../helpers/helpers';
 
 import {
