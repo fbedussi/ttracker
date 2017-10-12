@@ -1,9 +1,9 @@
 - import/export data
-- MarkDown in bills text
+- insert grand total of all clients
 - add searchbox for client/projects panels
+- undo/redo
+- MarkDown in bills text
 - rework methods contract to include error objects
 - notification for db success/fail
 - responsive ui
 - multilanguage
-- insert grand total of all clients
-- undo/redo
