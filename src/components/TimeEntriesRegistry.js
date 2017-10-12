@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
 import {
-    toggleTimeEntriesRegistryAsTable
+    updateOptions
 } from '../actions';
 
 import Toggle from 'material-ui/Toggle';
@@ -11,12 +11,12 @@ import TimeEntriesAsTable from './TimeEntriesAsTable';
 import TimeEntriesAsCards from './TimeEntriesAsCards';
 
 const mapStateToProps = (state) => ({
-    timeEntriesRegistryAsTable: state.ui.timeEntriesRegistryAsTable,
+    timeEntriesRegistryAsTable: state.options.timeEntriesRegistryAsTable,
     activities: state.data.activities
 });
 
 const mapDispatchToProps = (dispatch) => ({
-    toggleTimeEntriesRegistryAsTable: () => dispatch(toggleTimeEntriesRegistryAsTable())
+    toggleTimeEntriesRegistryAsTable: (timeEntriesRegistryAsTable) => dispatch(updateOptions({timeEntriesRegistryAsTable: !timeEntriesRegistryAsTable}))
 });
 
 class TimeEntriesRegistry extends Component {
@@ -28,26 +28,26 @@ class TimeEntriesRegistry extends Component {
         } = this.props;
 
         return (
-            <div className="timeEntriesRegistry">
-                {activity.timeEntries.length ?
-                    <div className="row">
-                        <h2 className="sectionTitle">Timesheet</h2>
-                        <Toggle
-                            label="view as table"
-                            labelPosition="right"
-                            onToggle={toggleTimeEntriesRegistryAsTable}
-                        />
-                    </div>
-                    : null}
-                {!timeEntriesRegistryAsTable ?
-                    <TimeEntriesAsCards
+            activity.timeEntries.length ? <div className="timeEntriesRegistry">
+                <div className="row">
+                    <h2 className="sectionTitle">Timesheet</h2>
+                    <Toggle
+                        label="view as table"
+                        labelPosition="right"
+                        toggled={timeEntriesRegistryAsTable}
+                        onToggle={() => toggleTimeEntriesRegistryAsTable(timeEntriesRegistryAsTable)}
+                    />
+                </div>
+                {timeEntriesRegistryAsTable ?
+                    <TimeEntriesAsTable
                         activity={activity}
                     />
-                    : <TimeEntriesAsTable
+                    : <TimeEntriesAsCards
                         activity={activity}
                     />
                 }
             </div>
+            : null
         )
     }
 }

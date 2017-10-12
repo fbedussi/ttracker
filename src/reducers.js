@@ -55,11 +55,6 @@ export function uiReducer(state = {
                 activeTab: action.activeTab
             });
         
-        case 'TOGGLE_TIMEENTRIES_REGISTRY_AS_TABLE':
-            return Object.assign({}, state, {
-                timeEntriesRegistryAsTable: !state.timeEntriesRegistryAsTable
-            });
-        
         case 'START_ACTIVITY':
             return Object.assign({}, state, {
                 ongoingActivities: state.ongoingActivities.concat(action.activityId)
@@ -91,12 +86,13 @@ export function optionsReducer(state = {
     billTextTemplate: '${clientName}\n${clientAddress}\n${clientVatNumber}\n\ndate: ${date}\n\nthe invoice total is ${currency}${total}.\nfor the following activities: ${activities}.',
     defaultHourlyRate: 0,
     allowZeroTotalBill: false,
+    timeEntriesRegistryAsTable: false,
 }, action) {
 	switch (action.type) {
         case 'UPDATE_OPTIONS':
             return Object.assign({}, state, action.options);
-            
-		default:
+
+        default:
 			return state;
 	}
 }

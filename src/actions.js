@@ -215,12 +215,6 @@ export function deleteBill(billId) {
     };
 }
 
-export function toggleTimeEntriesRegistryAsTable() {
-    return {
-        type: 'TOGGLE_TIMEENTRIES_REGISTRY_AS_TABLE',
-    };
-}
-
 export function toggleDrawer() {
     return {
         type: 'TOGGLE_DRAWER'
