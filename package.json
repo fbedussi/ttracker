@@ -24,6 +24,6 @@
   },
   "config": {
     "db": "indexedDb",
-    "authentication": false
+    "authentication": true
   }
 }
