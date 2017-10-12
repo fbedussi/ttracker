@@ -70,14 +70,14 @@ class DeleteButton extends Component {
                         />
                     ]}
                 >
-                    <p className="deleteConfirmationMessage">{dialogMessage}</p>
-                    {dialogOptionText && dialogOptionText.length ? <p>
+                    <div className="deleteConfirmationMessage">{dialogMessage}</div>
+                    {dialogOptionText && dialogOptionText.length ? <div>
                         <Checkbox
                             label={dialogOptionText}
                             checked={this.state.dialogOptionValue}
                             onCheck={(e, optionValue) => this.setOption(optionValue)}
                         />
-                    </p>
+                    </div>
                         : null}
                 </Dialog>
             </span>

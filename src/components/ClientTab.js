@@ -15,7 +15,7 @@ import FlatButton from 'material-ui/FlatButton';
 
 import EditableText from './EditableText';
 import ActivityChip from './ActivityChip';
-import DeleteButton from './DeleteButton';
+import DeleteClientButton from './DeleteClientButton';
 
 const styles = {
     fab: {
@@ -85,11 +85,9 @@ class ClientTab extends Component {
                                 icon={<DetailsIcon />}
                                 onClick={() => history.push(`/client/${client.id}`)}
                         />
-                        <DeleteButton
-                            buttonLabel="Delete"
-                            dialogMessage={`Are you sure to delete client "${client.name}?"`}
-                            dialogOptionText="delete client's projects"
-                            deleteAction={(deleteActivities) => deleteClient(client, deleteActivities)}
+                        <DeleteClientButton
+                            deleteClient={deleteClient}
+                            client={client}
                         />
                     </CardActions>
                     <CardText expandable={true}>

@@ -1,26 +1,24 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import {
-    deleteClient,
-} from '../actions';
+import React from 'react';
 
 import DeleteButton from './DeleteButton';
 
-class DeleteClientButton extends Component {
-    render() {
-        const {
+const DeleteClientButton = ({
+            history,
+            client,
             deleteClient,
-        } = this.props;
-
-        return (
+            redirectToHome = false
+        }) => (
             <DeleteButton
                 buttonLabel="Delete"
                 dialogMessage={`Are you sure to delete client "${client.name}?"`}
                 dialogOptionText="delete client's projects"
-                deleteAction={(deleteActivities) => deleteClient(client, deleteActivities)}
+                deleteAction={(deleteActivities) => {
+                    deleteClient(client, deleteActivities);
+                    if (redirectToHome) {
+                        history.push('/');
+                    }
+                }}
             />
         )
-    }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(DeleteClientButton);
+    
+export default DeleteClientButton;

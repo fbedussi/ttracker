@@ -21,7 +21,7 @@ import EditableText from './EditableText';
 import BackTo from './BackTo';
 import DateBox from './DateBox';
 import EditableTextArea from './EditableTextArea';
-import DeleteButton from './DeleteButton';
+import DeleteBillButton from './DeleteBillButton';
 
 
 const mapStateToProps = (state) => ({
@@ -85,13 +85,11 @@ class SingleBill extends Component {
                     <span className="row">Invoice</span>
                     {bill.client.bills[bill.client.bills.length - 1].id === bill.id ?
                         <span>
-                            <DeleteButton
-                                buttonLabel="Delete"
-                                dialogMessage={`Are you sure to delete bill n.${bill.id} dated ${new Date(bill.date).toLocaleDateString()} for the client "${bill.client.name}"?`}
-                                deleteAction={() => {
-                                    deleteBill(bill.id);
-                                    history.push('/');
-                                }}
+                            <DeleteBillButton
+                                history={history}
+                                bill={bill}
+                                deleteBill={deleteBill}
+                                redirectToHome={true}
                             />
                         </span>
                         : null

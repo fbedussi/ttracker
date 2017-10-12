@@ -16,7 +16,7 @@ import ContentAdd from 'material-ui/svg-icons/content/add';
 import EditableText from './EditableText';
 import BackTo from './BackTo';
 import BillCard from './BillCard';
-import DeleteButton from './DeleteButton';
+import DeleteClientButton from './DeleteClientButton';
 
 const mapStateToProps = (state) => ({
     clients: state.data.clients,
@@ -76,14 +76,11 @@ class SingleClient extends Component {
                             name: text
                         })}
                     />
-                    <DeleteButton
-                        buttonLabel="Delete"
-                        dialogMessage={`Are you sure to delete client "${client.name}"?`}
-                        dialogOptionText="delete client's projects"
-                        deleteAction={(deleteActivities) => {
-                            deleteClient(client, deleteActivities);
-                            history.push('/');
-                        }}
+                    <DeleteClientButton
+                        history={history}
+                        deleteClient={deleteClient}
+                        client={client}
+                        redirectToHome={true}
                     />
                 </h1>
                 <div className="hourlyRateWrapper row">

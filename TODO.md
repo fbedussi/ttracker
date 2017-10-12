@@ -1,5 +1,4 @@
 - setting for default time sheet view (table/card)
-- dialog box for deep deleting client/activity/subactivity
 - import/export data
 - MarkDown in bills text
 - add searchbox for client/projects panels

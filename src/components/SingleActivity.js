@@ -27,7 +27,7 @@ import BackToHome from './BackToHome';
 import BackTo from './BackTo';
 import TimeEntriesRegistry from './TimeEntriesRegistry';
 import ActivityChip from './ActivityChip';
-import DeleteButton from './DeleteButton';
+import DeleteActivityButton from './DeleteActivityButton';
 
 const mapStateToProps = (state) => ({
     clients: state.data.clients,
@@ -124,14 +124,11 @@ class SingleActivity extends Component {
                         text={activity.name}
                         handleChange={(text) => changeActivityName(activity, text)}
                     />
-                    <DeleteButton
-                        buttonLabel="Delete"
-                        dialogMessage={`Are you sure to delete activity "${activity.name}"?`}
-                        dialogOptionText="delete project's tasks"
-                        deleteAction={(deleteSubactivities) => {
-                            deleteActivity(activity, deleteSubactivities);
-                            history.push('/');
-                        }}
+                    <DeleteActivityButton
+                        history={history}
+                        deleteActivity={deleteActivity}
+                        activity={activity}
+                        redirectToHome={true}
                     />
                 </h1>
 

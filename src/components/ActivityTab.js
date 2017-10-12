@@ -22,7 +22,7 @@ import FlatButton from 'material-ui/FlatButton';
 import EditableText from './EditableText';
 import TimerBox from './TimerBox';
 import ActivityChip from './ActivityChip';
-import DeleteButton from './DeleteButton';
+import DeleteActivityButton from './DeleteActivityButton';
 
 const styles = {
     fab: {
@@ -109,11 +109,9 @@ class ActivityTab extends Component {
                                     icon={<DetailsIcon />}
                                     onClick={() => history.push(`/activity/${activity.id}`)}
                                 />
-                                <DeleteButton
-                                    buttonLabel="Delete"
-                                    dialogMessage={`Are you sure to delete activity "${activity.name}?"`}
-                                    dialogOptionText="delete project's tasks"
-                                    deleteAction={(deleteSubactivities) => deleteActivity(activity, deleteSubactivities)}
+                                <DeleteActivityButton
+                                    deleteActivity={deleteActivity}
+                                    activity={activity}
                                 />
                                 <TimerBox
                                     activity={activity}

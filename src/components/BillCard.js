@@ -16,7 +16,7 @@ import { Card, CardActions, CardText } from 'material-ui/Card';
 import DetailsIcon from 'material-ui/svg-icons/action/pageview';
 
 import DateBox from './DateBox';
-import DeleteButton from './DeleteButton';
+import DeleteBillButton from './DeleteBillButton';
 
 const mapStateToProps = (state) => ({
     currency: state.options.currency
@@ -60,10 +60,9 @@ class BillCard extends Component {
                 </CardText>
                 {bill.client.bills[bill.client.bills.length - 1].id === bill.id ? 
                 <CardActions>
-                    <DeleteButton
-                        buttonLabel="Delete"
-                        dialogMessage={`Are you sure to delete bill n.${bill.id} dated ${new Date(bill.date).toLocaleDateString()} for the client "${bill.client.name}"?`}
-                        deleteAction={() => deleteBill(bill.id)}
+                    <DeleteBillButton
+                        bill={bill}
+                        deleteBill={deleteBill}
                     />
                 </CardActions>
                 : null }
