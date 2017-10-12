@@ -1,4 +1,3 @@
-- setting for default time sheet view (table/card)
 - import/export data
 - MarkDown in bills text
 - add searchbox for client/projects panels
