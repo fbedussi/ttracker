@@ -215,9 +215,17 @@ export function deleteBill(billId) {
     };
 }
 
-export function toggleDrawer() {
-    return {
-        type: 'TOGGLE_DRAWER'
+export function toggleUiElement(element) {
+    switch (element) {
+        case 'drawer':
+            return {
+                type: 'TOGGLE_DRAWER'
+            }
+        
+        case 'toolbar':
+            return {
+                type: 'TOGGLE_TOOLBAR'
+            }
     }
 }
 
@@ -227,5 +235,12 @@ export function updateOptions(options) {
     return {
         type: 'UPDATE_OPTIONS',
         options
+    }
+}
+
+export function updateSearch(searchText) {
+    return {
+        type: 'UPDATE_SEARCH',
+        searchText,
     }
 }

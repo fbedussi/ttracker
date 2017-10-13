@@ -20,12 +20,6 @@ input {
     background: none;
 }
 
-input:focus,
-input.editable {
-    outline: none;
-    border-bottom: solid 2px black;
-}
-
 :root {
     --currency-width: 3em;
 }
@@ -122,10 +116,6 @@ input.editable {
     align-items: center;
 }
 
-.editableText {
-    border-bottom: solid 1px lightgray;
-}
-
 .appbar h1 {
     cursor: pointer;
 }
@@ -165,14 +155,11 @@ input.editable {
     .cardsWrapper {
         display: flex;
         flex-wrap: wrap;
+        padding: 1em;
     }
     
     .card {
         margin: 0 1em 1em 0;
-    }
-
-    .tabContent {
-        padding: 1em;
     }
 }
 

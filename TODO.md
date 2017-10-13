@@ -1,6 +1,5 @@
-- import/export data
 - insert grand total of all clients
-- add searchbox for client/projects panels
+- import/export data
 - undo/redo
 - MarkDown in bills text
 - rework methods contract to include error objects
