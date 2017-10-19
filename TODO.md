@@ -1,4 +1,3 @@
-- insert grand total of all clients
 - import/export data
 - undo/redo
 - MarkDown in bills text
