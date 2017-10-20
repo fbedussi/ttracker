@@ -24,6 +24,7 @@ class App extends Component {
     const { history, activeTab, setActiveTab, logged } = this.props;
 
     return logged ? 
+    <div>
       <Tabs
         value={activeTab}
         onChange={(selectedTab) => setActiveTab(selectedTab)}
@@ -38,6 +39,7 @@ class App extends Component {
           <BillTab history={history}/>
         </Tab>
       </Tabs>
+    </div>
     : <LoginForm />;
   }
 }

@@ -41,6 +41,8 @@ export function uiReducer(state = {
     dialogMessage: '',
     dialogOk: null,
     dialogOn: false,
+    searchText: '',
+    toolbarOpen: false,
 }, action) {
 	switch (action.type) {
         case 'UPDATE_DATA':
@@ -52,7 +54,8 @@ export function uiReducer(state = {
 
         case 'SET_ACTIVE_TAB':
             return Object.assign({}, state, {
-                activeTab: action.activeTab
+                activeTab: action.activeTab,
+                searchText: '',
             });
         
         case 'START_ACTIVITY':
@@ -64,9 +67,15 @@ export function uiReducer(state = {
             return Object.assign({}, state, {
                 ongoingActivities: state.ongoingActivities.filter((ongoingActivityId) => ongoingActivityId !== action.activityId)
             });
+
         case 'TOGGLE_DRAWER':
             return Object.assign({}, state, {
                 drawerOpen: !state.drawerOpen
+            });
+
+        case 'TOGGLE_TOOLBAR':
+            return Object.assign({}, state, {
+                toolbarOpen: !state.toolbarOpen
             });
 
         case 'SHOW_ERROR':
@@ -74,6 +83,9 @@ export function uiReducer(state = {
 
         case 'HIDE_ERROR':
             return Object.assign({}, state, {errorOn: false, errorMessage: ''});
+
+        case 'UPDATE_SEARCH':
+            return Object.assign({}, state, {searchText: action.searchText});
 
 		default:
 			return state;

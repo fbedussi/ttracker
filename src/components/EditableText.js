@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 
+import TextField from 'material-ui/TextField';
+
 const selectText = (inputEl) => {
     inputEl.focus();
     inputEl.select();
@@ -67,8 +69,9 @@ class EditableText extends Component {
         } = this.props;
 
         return (
-            <input
+            <TextField
                 ref={(input) => { this.input = input; }}
+                name={className}
                 className={className + ' editableText'}
                 value={this.state.text}
                 onChange={(e) => this.handleLocalChange(e.target.value)}
