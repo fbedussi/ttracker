@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 
 import {
@@ -49,9 +49,7 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 
-class SingleActivity extends Component {
-    render() {
-        const {
+const SingleActivity = ({
             history,
             activities,
             currency,
@@ -65,7 +63,7 @@ class SingleActivity extends Component {
             ongoingActivities,
             lastCreatedActivityId,
             addSubactivity,
-        } = this.props;
+        }) => {
         const activityId = Number(this.props.match.params.activityId);
         const activity = activities
             .filter((activity) => activity.id === activityId)
@@ -183,6 +181,5 @@ class SingleActivity extends Component {
             </div>
         )
     }
-}
 
 export default connect(mapStateToProps, mapDispatchToProps)(SingleActivity);

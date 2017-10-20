@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
-import { BrowserRouter, Route, withRouter } from 'react-router-dom'
+import { Route, withRouter } from 'react-router-dom'
 
 import {
   toggleUiElement,
@@ -16,7 +16,6 @@ import ExpandLessIcon from 'material-ui/svg-icons/navigation/expand-less';
 import Drawer from 'material-ui/Drawer';
 import RaisedButton from 'material-ui/RaisedButton';
 import Dialog from 'material-ui/Dialog';
-import TextField from 'material-ui/TextField';
 
 import Home from './Home';
 import SingleActivity from './SingleActivity';
@@ -25,7 +24,6 @@ import SingleBill from './SingleBill';
 import OptionsPane from './OptionsPane';
 
 import '../style/app.css';
-import Style from '../style/Style.js';
 
 const mapStateToProps = (state) => ({
   clients: state.data.clients,
@@ -41,17 +39,14 @@ const mapDispatchToProps = (dispatch) => ({
   hideError: () => dispatch(hideError()),
 });
 
-export class App extends Component {
-  render() {
-    const {
+const App = ({
       drawerOpen,
       toggleUiElement,
       errorOn,
       errorMessage,
       hideError,
       toolbarOpen,
-    } = this.props;
-    return (<MuiThemeProvider>
+    }) => (<MuiThemeProvider>
       <div className="App">
         <AppBar
           className="hideInPrint appbar"
@@ -85,7 +80,5 @@ export class App extends Component {
         <Route path="/bill/:billId" component={SingleBill} />
       </div>
     </MuiThemeProvider>);
-  }
-}
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(App));

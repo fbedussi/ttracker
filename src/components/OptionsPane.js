@@ -1,12 +1,10 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 
 import {
-    toggleTimeEntriesRegistryAsTable,
     updateOptions,
 } from '../actions';
 
-import Toggle from 'material-ui/Toggle';
 import Checkbox from 'material-ui/Checkbox';
 
 import EditableText from './EditableText';
@@ -23,17 +21,13 @@ const mapDispatchToProps = (dispatch) => ({
     updateOptions: (newOption) => dispatch(updateOptions(newOption)),
 });
 
-class OptionsPane extends Component {
-    render() {
-        const {
+const OptionsPane = ({
             currency,
             defaultHourlyRate,
             allowZeroTotalBill,
             billTextTemplate,
             updateOptions,
-        } = this.props;
-
-        return (
+        }) => (
             <div className="optionsWrapper">
                 <h2 className="sectionSubtitle">Options</h2>
                 <div className="row">
@@ -84,7 +78,5 @@ class OptionsPane extends Component {
                 </div>
             </div>
         )
-    }
-}
 
 export default connect(mapStateToProps, mapDispatchToProps)(OptionsPane);

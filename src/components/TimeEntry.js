@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 
 import { formatTime } from '../helpers/helpers';
@@ -23,17 +23,13 @@ const mapDispatchToProps = (dispatch) => ({
     updateTimeEntry: (activity, props) => dispatch(updateTimeEntry(activity, props))
 });
 
-class TimeEntry extends Component {
-    render() {
-        const { 
+const TimeEntry = ({ 
             activity,
             timeEntry,
             currency,
             updateTimeEntry,
             deleteTimeEntry,
-        } = this.props;
-
-        return (
+        }) => (
             <Card
                 className="timeEntry card"
                 expandable={false}
@@ -76,7 +72,5 @@ class TimeEntry extends Component {
                 </CardActions>
             </Card>
         )
-    }
-}
 
 export default connect(mapStateToProps, mapDispatchToProps)(TimeEntry);

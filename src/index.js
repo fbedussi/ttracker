@@ -5,8 +5,6 @@ import thunkMiddleware from 'redux-thunk';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom'
 
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-
 import { dataReducer, uiReducer, optionsReducer } from './reducers';
 import { load } from './actions';
 

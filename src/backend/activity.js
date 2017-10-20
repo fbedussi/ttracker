@@ -6,7 +6,6 @@ import {convertMsToH, deepCloneDataObject, objHasDeepProp} from '../helpers/help
 var activityIdMaker = null;
 
 const DBCOLLECTION = 'activity';
-const CLIENT_DBCOLLECTION = 'client';
 
 const defaultProps = {
     id: 0,
@@ -61,7 +60,7 @@ var Activity = {
         }
 
         if (this.client.removeActivity) {
-            const updatedClient = this.client.removeActivity(this.id);
+            this.client.removeActivity(this.id);
         }
 
         if (objHasDeepProp(this, 'parentActivity.id')) {

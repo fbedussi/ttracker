@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React  from 'react';
 import { connect } from 'react-redux';
 import {
     createNewClient,
@@ -18,15 +18,6 @@ import ActivityChip from './ActivityChip';
 import DeleteClientButton from './DeleteClientButton';
 import AppToolbar from './AppToolbar';
 
-const styles = {
-    fab: {
-        display: 'none',
-        position: 'fixed',
-        right: '2em',
-        bottom: '2em'
-    }
-};
-
 const mapStateToProps = (state) => ({
     clients: state.data.clients,
     activities: state.data.activities,
@@ -43,9 +34,7 @@ const mapDispatchToProps = (dispatch) => ({
     updateClient: (client, newName) => dispatch(updateClient(client, newName)),
 });
 
-class ClientTab extends Component {
-    render() {
-        const {
+const ClientTab = ({
             history,
             activeTab,
             clients,
@@ -56,10 +45,7 @@ class ClientTab extends Component {
             currency,
             lastCreatedClientId,
             searchText,
-        } = this.props;
-        styles.fab.display = activeTab === 'clients' ? 'block' : 'none';
-
-        return (
+        }) =>(
             <div className="tabContent">
                 <AppToolbar />
                 <div className="cardsWrapper">
@@ -127,7 +113,8 @@ class ClientTab extends Component {
                         )}
 
                     <FloatingActionButton
-                        style={styles.fab}
+                        className="fab"
+                        style={{display: activeTab === 'clients' ? 'block' : 'none'}}
                         onClick={() => createNewClient()}
                     >
                         <ContentAdd />
@@ -135,7 +122,5 @@ class ClientTab extends Component {
                 </div>
             </div>
         )
-    }
-}
 
 export default connect(mapStateToProps, mapDispatchToProps)(ClientTab);

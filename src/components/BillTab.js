@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 
 import BillCard from './BillCard';
@@ -11,14 +11,10 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
 });
 
-class BillTab extends Component {
-    render() {
-        const {
+const BillTab = ({
             history,
             bills,
-        } = this.props;
-
-        return (
+        }) => (
             <div className="tabContent">
                 <AppToolbar />
                 <div className="cardsWrapper">
@@ -29,7 +25,5 @@ class BillTab extends Component {
                 </div>
             </div>
         )
-    }
-}
-
+    
 export default connect(mapStateToProps, mapDispatchToProps)(BillTab);

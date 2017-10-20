@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 
 import {
@@ -17,13 +17,10 @@ const mapDispatchToProps = (dispatch) => ({
   updateSearch: (text) => dispatch(updateSearch(text)),
 });
 
-export class SearchBox extends Component {
-  render() {
-    const {
+const SearchBox = ({
       searchText,
       updateSearch,
-    } = this.props;
-    return (<div>
+    }) => (<div>
       <TextField
         value={searchText}
         floatingLabelText="Search by name"
@@ -35,7 +32,5 @@ export class SearchBox extends Component {
         <ContentClear/>
       </IconButton>
     </div>);
-  }
-}
 
 export default connect(mapStateToProps, mapDispatchToProps)(SearchBox);

@@ -1,5 +1,4 @@
 import StartAppAndLogin, { StartAppAndLoadData } from './backend/app';
-import { getOnlyOwnProperies } from './helpers/helpers';
 
 var backend;
 
@@ -226,6 +225,8 @@ export function toggleUiElement(element) {
             return {
                 type: 'TOGGLE_TOOLBAR'
             }
+
+        default:
     }
 }
 

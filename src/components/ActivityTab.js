@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom'
 
@@ -25,16 +25,6 @@ import ActivityChip from './ActivityChip';
 import DeleteActivityButton from './DeleteActivityButton';
 import AppToolbar from './AppToolbar';
 
-const styles = {
-    fab: {
-        display: 'none',
-        position: 'fixed',
-        right: '2em',
-        bottom: '2em',
-        zIndex: '1'
-    }
-};
-
 const mapStateToProps = (state) => ({
     clients: state.data.clients,
     activities: state.data.activities,
@@ -55,9 +45,7 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 
-class ActivityTab extends Component {
-    render() {
-        const {
+const ActivityTab = ({
             currency,
             history,
             activeTab,
@@ -72,10 +60,7 @@ class ActivityTab extends Component {
             lastCreatedActivityId,
             addSubactivity,
             searchText,
-        } = this.props;
-        styles.fab.display = activeTab === 'activities' ? 'block' : 'none';
-
-        return (
+        }) => (
             <div className="tabContent">
                 <AppToolbar />
                 <div className="cardsWrapper">
@@ -169,7 +154,8 @@ class ActivityTab extends Component {
                         )}
 
                     <FloatingActionButton
-                        style={styles.fab}
+                        className="fab"
+                        style={{display: activeTab === 'activities' ? 'block' : 'none'}}
                         onClick={() => createNewActivity()}
                     >
                         <ContentAdd />
@@ -177,7 +163,5 @@ class ActivityTab extends Component {
                 </div>
             </div>
         )
-    }
-}
 
 export default connect(mapStateToProps, mapDispatchToProps)(ActivityTab);

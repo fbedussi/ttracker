@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 
 import {
@@ -19,15 +19,11 @@ const mapDispatchToProps = (dispatch) => ({
     toggleTimeEntriesRegistryAsTable: (timeEntriesRegistryAsTable) => dispatch(updateOptions({timeEntriesRegistryAsTable: !timeEntriesRegistryAsTable}))
 });
 
-class TimeEntriesRegistry extends Component {
-    render() {
-        const {
+const TimeEntriesRegistry = ({
             activity,
             timeEntriesRegistryAsTable,
             toggleTimeEntriesRegistryAsTable
-        } = this.props;
-
-        return (
+        }) => (
             activity.timeEntries.length ? <div className="timeEntriesRegistry">
                 <div className="row">
                     <h2 className="sectionTitle">Timesheet</h2>
@@ -49,7 +45,5 @@ class TimeEntriesRegistry extends Component {
             </div>
             : null
         )
-    }
-}
 
 export default connect(mapStateToProps, mapDispatchToProps)(TimeEntriesRegistry);

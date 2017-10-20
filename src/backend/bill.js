@@ -3,8 +3,6 @@ import merge from '../helpers/merge';
 import db from '../db/dbFacade';
 import {deepCloneDataObject, objHasDeepProp} from '../helpers/helpers';
 
-import {loadClient} from './client';
-
 var billIdMaker = null;
 
 const DBCOLLECTION = 'bill';
@@ -21,7 +19,7 @@ const defaultBillProps = {
 
 var Bill = {
     _createText: function() {
-        const templateWithThisKeyword = this.textTemplate.replace(/(\${)([^}]*})/g, '$1' + 'this.' + '$2');
+        const templateWithThisKeyword = this.textTemplate.replace(/(\${)([^}]*})/g, '$1this.$2');
         const textTemplate = new Function(`return \`${templateWithThisKeyword}\`;`);
         const textTemplateVariables = {
             clientName: this.client.name,

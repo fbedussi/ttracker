@@ -10,6 +10,7 @@ switch (config.db.toLowerCase()) {
 
     case 'firebase':
         db = firebase;
+        break;
 
     default:
         throw new Error('There is no service for db: ' + config.db);

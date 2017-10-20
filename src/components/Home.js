@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 
 import { Tabs, Tab } from 'material-ui/Tabs';
@@ -19,11 +19,7 @@ const mapDispatchToProps = (dispatch) => ({
   setActiveTab: (activeTab) => dispatch(setActiveTab(activeTab))
 });
 
-class App extends Component {
-  render() {
-    const { history, activeTab, setActiveTab, logged } = this.props;
-
-    return logged ? 
+const App = ({ history, activeTab, setActiveTab, logged }) => (logged ? 
     <div>
       <Tabs
         value={activeTab}
@@ -40,8 +36,6 @@ class App extends Component {
         </Tab>
       </Tabs>
     </div>
-    : <LoginForm />;
-  }
-}
-
+    : <LoginForm />)
+  
 export default connect(mapStateToProps, mapDispatchToProps)(App);

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import {
     deleteClient,
@@ -33,9 +33,7 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 
-class SingleClient extends Component {
-    render() {
-        const {
+const SingleClient = ({
             history,
             clients,
             currency,
@@ -44,7 +42,7 @@ class SingleClient extends Component {
             addNewActivityToClient,
             createNewBill,
             billTextTemplate,
-        } = this.props;
+        }) => {
         const clientId = Number(this.props.match.params.clientId);
         const client = clients
             .filter((client) => client.id === clientId)
@@ -193,6 +191,5 @@ class SingleClient extends Component {
             </div>
         )
     }
-}
 
 export default connect(mapStateToProps, mapDispatchToProps)(SingleClient);

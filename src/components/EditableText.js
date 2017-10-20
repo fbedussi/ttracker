@@ -64,8 +64,6 @@ class EditableText extends Component {
     render() {
         var {
             className,
-            text,
-            handleChange
         } = this.props;
 
         return (

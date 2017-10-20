@@ -5,8 +5,6 @@ import merge from '../helpers/merge';
 import db from '../db/dbFacade';
 import {deepCloneDataObject} from '../helpers/helpers';
 
-import {loadActivity} from './activity';
-
 var clientIdMaker = null;
 
 const DBCOLLECTION = 'client';

@@ -1,10 +1,6 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom'
-
-import { convertMsToH } from '../helpers/helpers';
-
-import { formatTime } from '../helpers/helpers';
 
 import {
     deleteBill,
@@ -15,7 +11,6 @@ import FlatButton from 'material-ui/FlatButton';
 import { Card, CardActions, CardText } from 'material-ui/Card';
 import DetailsIcon from 'material-ui/svg-icons/action/pageview';
 
-import DateBox from './DateBox';
 import DeleteBillButton from './DeleteBillButton';
 
 const mapStateToProps = (state) => ({
@@ -27,16 +22,10 @@ const mapDispatchToProps = (dispatch) => ({
     updateBill: (bill) => dispatch(updateBill(bill)), 
 });
 
-class BillCard extends Component {
-    render() {
-        const { 
-            history,
+const BillCard = ({ 
             bill,
             deleteBill,
-            updateBill,
-        } = this.props;
-
-        return (
+        }) => (
             <Card
                 className="bill card"
                 expandable={false}
@@ -68,7 +57,5 @@ class BillCard extends Component {
                 : null }
             </Card>
         )
-    }
-}
 
 export default connect(mapStateToProps, mapDispatchToProps)(BillCard);

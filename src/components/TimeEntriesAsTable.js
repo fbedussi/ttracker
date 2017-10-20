@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 
 import {
@@ -28,15 +28,11 @@ const mapDispatchToProps = (dispatch) => ({
     deleteTimeEntry: (activity, timeEntry) => dispatch(deleteTimeEntry(activity, timeEntry))
 });
 
-class TimeEntriesAsTable extends Component {
-    render() {
-        const {
+const TimeEntriesAsTable = ({
             activity,
             currency,
             deleteTimeEntry
-        } = this.props;
-
-        return (
+        }) => (
             <Table
                 selectable={false}
             >
@@ -78,7 +74,5 @@ class TimeEntriesAsTable extends Component {
                 </TableBody>
             </Table>
         )
-    }
-}
 
 export default connect(mapStateToProps, mapDispatchToProps)(TimeEntriesAsTable);

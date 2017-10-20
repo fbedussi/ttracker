@@ -151,6 +151,14 @@ input {
     margin-bottom: 1em;
 }
 
+.fab {
+    display: none;
+    position: fixed;
+    right: 2em;
+    bottom: 2em;
+    z-index: 1;
+}
+
 @media screen and (min-width: 30em) {
     .cardsWrapper {
         display: flex;

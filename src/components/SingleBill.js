@@ -1,4 +1,4 @@
-    import React, { Component } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 
 import {
@@ -36,16 +36,14 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 
-class SingleBill extends Component {
-    render() {
-        const {
+const SingleBill = ({
             history,
             bills,
             deleteBill,
             updateBill,
             refreshBillText,
             lastUpdatedBillId,
-        } = this.props;
+        }) => {
         const billId = Number(this.props.match.params.billId);
         const bill = bills
             .filter((bill) => bill.id === billId)
@@ -149,6 +147,5 @@ class SingleBill extends Component {
             </div >
         )
     }
-}
 
 export default connect(mapStateToProps, mapDispatchToProps)(SingleBill);
