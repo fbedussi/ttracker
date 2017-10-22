@@ -46,12 +46,13 @@ const App = ({
       errorMessage,
       hideError,
       toolbarOpen,
+      history,
     }) => (<MuiThemeProvider>
       <div className="App">
         <AppBar
           className="hideInPrint appbar"
           title="tTracker"
-          onTitleTouchTap={() => this.props.history.push('/')}
+          onTitleTouchTap={() => history.push('/')}
           iconElementLeft={<IconButton><SettingsIcon /></IconButton>}
           onLeftIconButtonTouchTap={() => toggleUiElement('drawer')}
           iconElementRight={<IconButton>{toolbarOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}</IconButton>}
