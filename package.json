@@ -23,7 +23,7 @@
     "eject": "react-scripts eject"
   },
   "config": {
-    "db": "indexedDb",
-    "authentication": false
+    "db": "firebase",
+    "authentication": true
   }
 }
