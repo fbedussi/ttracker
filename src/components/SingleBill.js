@@ -43,8 +43,9 @@ const SingleBill = ({
             updateBill,
             refreshBillText,
             lastUpdatedBillId,
+            match,
         }) => {
-        const billId = Number(this.props.match.params.billId);
+        const billId = Number(match.params.billId);
         const bill = bills
             .filter((bill) => bill.id === billId)
             .reduce((acc, i) => i, null)

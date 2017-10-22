@@ -42,8 +42,9 @@ const SingleClient = ({
             addNewActivityToClient,
             createNewBill,
             billTextTemplate,
+            match,
         }) => {
-        const clientId = Number(this.props.match.params.clientId);
+        const clientId = Number(match.params.clientId);
         const client = clients
             .filter((client) => client.id === clientId)
             .reduce((acc, i) => i, null)

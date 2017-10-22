@@ -63,8 +63,9 @@ const SingleActivity = ({
             ongoingActivities,
             lastCreatedActivityId,
             addSubactivity,
+            match
         }) => {
-        const activityId = Number(this.props.match.params.activityId);
+        const activityId = Number(match.params.activityId);
         const activity = activities
             .filter((activity) => activity.id === activityId)
             .reduce((acc, i) => i, null)
