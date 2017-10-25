@@ -3,12 +3,16 @@ import { connect } from 'react-redux';
 
 import {
     updateOptions,
+    exportData,
+    importData,
 } from '../actions';
 
 import Checkbox from 'material-ui/Checkbox';
+import RaisedButton from 'material-ui/RaisedButton';
 
 import EditableText from './EditableText';
 import EditableTextArea from './EditableTextArea';
+import ImportDataWidget from './ImportDataWidget'
 
 const mapStateToProps = (state) => ({
     currency: state.options.currency,
@@ -19,6 +23,8 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
     updateOptions: (newOption) => dispatch(updateOptions(newOption)),
+    exportData: () => dispatch(exportData()),
+    importData: (jsonData) => dispatch(importData(jsonData)),
 });
 
 const OptionsPane = ({
@@ -27,6 +33,8 @@ const OptionsPane = ({
             allowZeroTotalBill,
             billTextTemplate,
             updateOptions,
+            exportData,
+            importData,
         }) => (
             <div className="optionsWrapper">
                 <h2 className="sectionSubtitle">Options</h2>
@@ -74,6 +82,19 @@ const OptionsPane = ({
                     <EditableTextArea 
                             text={billTextTemplate}
                             handleChange={(billTextTemplate) => updateOptions({billTextTemplate})}
+                    />
+                </div>
+
+                <div className="row">
+                    <RaisedButton
+                            label="export data"
+                            onClick={exportData}
+                    />
+                </div>
+
+                <div className="row">
+                    <ImportDataWidget 
+                        onSave={importData}
                     />
                 </div>
             </div>

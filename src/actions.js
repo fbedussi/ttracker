@@ -1,4 +1,5 @@
 import StartAppAndLogin, { StartAppAndLoadData } from './backend/app';
+const fileSaver = require('file-saver');
 
 var backend;
 
@@ -21,6 +22,14 @@ export function load() {
             .then(loadAppData)
             .catch(err => dispatch(showError(err)))
             ;
+    };
+}
+
+export function importData(jsonData) {
+    return function (dispatch) {
+        const data = backend.loadApp(JSON.parse(jsonData));
+        
+        loadData(dispatch)(data);
     };
 }
 
@@ -243,5 +252,15 @@ export function updateSearch(searchText) {
     return {
         type: 'UPDATE_SEARCH',
         searchText,
+    }
+}
+
+export function exportData() {
+    const jsonData = backend.exportData();
+    const file = new File([jsonData], "tTrackerExport.json", {type: "text/plain;charset=utf-8"});
+    fileSaver.saveAs(file);
+
+    return {
+        type: 'DATA_EXPORTED'
     }
 }

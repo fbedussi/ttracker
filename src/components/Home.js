@@ -19,7 +19,7 @@ const mapDispatchToProps = (dispatch) => ({
   setActiveTab: (activeTab) => dispatch(setActiveTab(activeTab))
 });
 
-const App = ({ history, activeTab, setActiveTab, logged }) => (logged ? 
+const Home = ({ history, activeTab, setActiveTab, logged }) => (logged ? 
     <div>
       <Tabs
         value={activeTab}
@@ -38,4 +38,4 @@ const App = ({ history, activeTab, setActiveTab, logged }) => (logged ?
     </div>
     : <LoginForm />)
   
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(Home);

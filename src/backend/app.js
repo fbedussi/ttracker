@@ -22,11 +22,11 @@ const App = {
     login: function(loginData) {
         return auth
             .logIn(Object.assign({method: 'email'}, loginData))
-            .then((user) => this.load(user))
+            .then((user) => this.loadData(user))
             //in case of error let it bubble up to the caller
         ;
     },
-    load: function(user) {
+    loadData: function(user) {
         initClientIdMaker(user);
         initActivityIdMaker(user);
         initBillIdMaker(user);
@@ -37,35 +37,48 @@ const App = {
                 .all([
                     db
                         .readAll('client')
-                        .then((clientsData) => clientsData
-                            .map((clientData) => loadClient(clientData))
-                        )
+                        // .then((clientsData) => clientsData
+                        //     .map((clientData) => loadClient(clientData))
+                        // )
                     ,
                     db
                         .readAll('activity')
-                        .then((activitiesData) => activitiesData
-                            .map((activityData) => loadActivity(activityData))
-                        )
+                        // .then((activitiesData) => activitiesData
+                        //     .map((activityData) => loadActivity(activityData))
+                        // )
                     ,
                     db
                         .readAll('bill')
-                        .then((billsData) =>billsData
-                            .map((billData) => loadBill(billData))
-                        )
+                        // .then((billsData) =>billsData
+                        //     .map((billData) => loadBill(billData))
+                        // )
                     ,
                     db
                         .readAll('option')
-                        .then((options) => options && options.length ? options[0]: {})
+                        //.then((options) => options && options.length ? options[0]: {})
                 ])
             )
-            .then(([clients, activities, bills, options]) => { //resolve cross dependencies
-                this.activities = activities.map((activity) => activity.resolveDependencies(clients, activities));
-                this.clients = clients.map((client) => client.resolveDependencies(activities, bills));
-                this.bills = bills.map((bill) => bill.resolveDependencies(clients));
-                this.options = options;
-                return this;
-            })
+            .then(([clients, activities, bills, options]) => this.loadApp({clients, activities, bills, options}))
         ;
+    },
+    loadApp: function(data) {
+        const {clients, activities, bills, options} = data;
+        const loadedData = {};
+        loadedData.clients = clients.map((clientData) => loadClient(clientData));
+        loadedData.activities =  activities.map((activityData) => loadActivity(activityData));
+        loadedData.bills = bills.map((billData) => loadBill(billData));
+        loadedData.options = options && options.length ? options[0]: {};
+
+        return this._resolveDependencies(loadedData);
+    },
+    _resolveDependencies: function(data) {
+        const {clients, activities, bills, options} = data;
+        this.activities = activities.map((activity) => activity.resolveDependencies(clients, activities));
+        this.clients = clients.map((client) => client.resolveDependencies(activities, bills));
+        this.bills = bills.map((bill) => bill.resolveDependencies(clients));
+        this.options = options;
+
+        return this;
     },
     saveOptions: function(options) {
         this.options = Object.assign({}, this.options, options);
@@ -262,6 +275,15 @@ const App = {
             clients: this.clients.map((client) => client.exportForClient()),
             bills: this.bills.map((bill) => bill.exportForClient()),
         }
+    },
+    exportData: function() {
+        var objToSave = Object.assign({},this);
+        objToSave.clients = this.clients.map((client) => client.exportForDb());
+        objToSave.activities = this.activities.map((activity) => activity.exportForDb());
+        objToSave.bills = this.bills.map((bill) => bill.exportForDb());
+        objToSave.options = Object.assign({}, this.options);
+    
+        return JSON.stringify(objToSave);
     }
 }
 
@@ -270,7 +292,7 @@ const startAppAndLogin = (loginData) => {
 }
 
 export const StartAppAndLoadData = () => {
-    return Object.create(App).load();
+    return Object.create(App).loadData();
 }
 
 export default startAppAndLogin;
