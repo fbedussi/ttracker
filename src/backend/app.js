@@ -35,31 +35,17 @@ const App = {
             .openDb('ttracker', user)
             .then((db) => Promise //read data
                 .all([
-                    db
-                        .readAll('client')
-                        // .then((clientsData) => clientsData
-                        //     .map((clientData) => loadClient(clientData))
-                        // )
-                    ,
-                    db
-                        .readAll('activity')
-                        // .then((activitiesData) => activitiesData
-                        //     .map((activityData) => loadActivity(activityData))
-                        // )
-                    ,
-                    db
-                        .readAll('bill')
-                        // .then((billsData) =>billsData
-                        //     .map((billData) => loadBill(billData))
-                        // )
-                    ,
-                    db
-                        .readAll('option')
-                        //.then((options) => options && options.length ? options[0]: {})
+                    db.readAll('client'),
+                    db.readAll('activity'),
+                    db.readAll('bill'),
+                    db.readAll('option'),
                 ])
             )
-            .then(([clients, activities, bills, options]) => this.loadApp({clients, activities, bills, options}))
+            .then(([clients, activities, bills, options]) => this.verifyData({clients, activities, bills, options}))
         ;
+    },
+    verifyData: function(data) {
+        return this.loadApp(data);
     },
     loadApp: function(data) {
         const {clients, activities, bills, options} = data;
