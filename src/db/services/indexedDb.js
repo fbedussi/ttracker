@@ -106,6 +106,26 @@ const deleteInStore = (storeName, contentId) => new Promise((resolve, reject) =>
     request.onerror = (event) => reject(`Error deleting ID ${contentId} in ${storeName}: ${request.error}`);
 });
 
+const replaceAllInStore = (storeName, data) => new Promise((resolve, reject) => {
+    const transaction = db.transaction([storeName], 'readwrite');
+    const request = transaction
+        .objectStore(storeName)
+        .clear()
+        ;
+    
+    transaction.oncomplete = (event) => resolve(transaction.error);
+
+    transaction.onerror = () => reject(`Error opening ${storeName}: ${transaction.error}`); // error handling????
+
+    request.onerror = (event) => reject(`Error clearing ID ${content.id} to ${storeName}: ${request.error}`); // error handling????
+
+    request.onsuccess = (event) => {
+        const writeDataPromises = data.map((record) => {
+            
+        })
+    }
+});
+
 const dbInterface = {
     openDb,
 
@@ -114,6 +134,7 @@ const dbInterface = {
     readAll: readAllInStore,
     update: updateInStore,
     delete: deleteInStore,
+    replaceAll: replaceAllInStore,
 };
 
 export default dbInterface;

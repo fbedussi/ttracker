@@ -27,4 +27,5 @@ export default {
     readAll: db.read,
     update: db.update,
     delete: db.delete,
+    replaceAll: db.replaceAll
 };
