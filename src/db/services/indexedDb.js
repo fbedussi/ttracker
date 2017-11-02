@@ -108,21 +108,31 @@ const deleteInStore = (storeName, contentId) => new Promise((resolve, reject) =>
 
 const replaceAllInStore = (storeName, data) => new Promise((resolve, reject) => {
     const transaction = db.transaction([storeName], 'readwrite');
-    const request = transaction
+    const clearRequest = transaction
         .objectStore(storeName)
         .clear()
-        ;
+    ;
     
-    transaction.oncomplete = (event) => resolve(transaction.error);
-
     transaction.onerror = () => reject(`Error opening ${storeName}: ${transaction.error}`); // error handling????
 
-    request.onerror = (event) => reject(`Error clearing ID ${content.id} to ${storeName}: ${request.error}`); // error handling????
+    clearRequest.onerror = (event) => reject(`Error clearing ID ${content.id} to ${storeName}: ${clearRequest.error}`); // error handling????
 
-    request.onsuccess = (event) => {
-        const writeDataPromises = data.map((record) => {
-            
-        })
+    clearRequest.onsuccess = (event) => {
+        const writeDataPromises = data.map((record) => new Promise((resolve, reject) => {
+            const addRequest = transaction
+                .objectStore(storeName)
+                .add(record)
+            ;
+    
+            addRequest.onerror = (event) => reject(`Error writing ID ${content.id} to ${storeName}: ${addRequest.error}`); // error handling????
+    
+            addRequest.onsuccess = (event) => resolve(addRequest.result); //key
+        }));
+
+        Promise.all(writeDataPromises)
+            .then((data) => resolve(data))
+            .catch((e) => reject(e))
+        ;
     }
 });
 
