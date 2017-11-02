@@ -27,7 +27,10 @@ export function load() {
 
 export function importData(jsonData) {
     return function (dispatch) {
-        const app = backend.verifyData(JSON.parse(jsonData));
+        const app = backend
+            .verifyData(JSON.parse(jsonData))
+            .saveAllDataToDb()
+        ;
         
         loadData(dispatch)(app);
     };

@@ -115,7 +115,7 @@ const replaceAllInStore = (storeName, data) => new Promise((resolve, reject) => 
     
     transaction.onerror = () => reject(`Error opening ${storeName}: ${transaction.error}`); // error handling????
 
-    clearRequest.onerror = (event) => reject(`Error clearing ID ${content.id} to ${storeName}: ${clearRequest.error}`); // error handling????
+    clearRequest.onerror = (event) => reject(`Error clearing ${storeName}: ${clearRequest.error}`); // error handling????
 
     clearRequest.onsuccess = (event) => {
         const writeDataPromises = data.map((record) => new Promise((resolve, reject) => {
@@ -124,7 +124,7 @@ const replaceAllInStore = (storeName, data) => new Promise((resolve, reject) => 
                 .add(record)
             ;
     
-            addRequest.onerror = (event) => reject(`Error writing ID ${content.id} to ${storeName}: ${addRequest.error}`); // error handling????
+            addRequest.onerror = (event) => reject(`Error writing ID ${record.id} to ${storeName}: ${addRequest.error}`); // error handling????
     
             addRequest.onsuccess = (event) => resolve(addRequest.result); //key
         }));

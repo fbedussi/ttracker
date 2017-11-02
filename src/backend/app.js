@@ -267,9 +267,17 @@ const App = {
         objToSave.clients = this.clients.map((client) => client.exportForDb());
         objToSave.activities = this.activities.map((activity) => activity.exportForDb());
         objToSave.bills = this.bills.map((bill) => bill.exportForDb());
-        objToSave.options = Object.assign({}, this.options);
+        objToSave.options = [Object.assign({}, this.options)];
     
         return JSON.stringify(objToSave);
+    },
+    saveAllDataToDb: function() {
+        db.replaceAll('activity', this.activities);
+        db.replaceAll('client', this.clients);
+        db.replaceAll('bill', this.bills);
+        db.replaceAll('option', [this.options]);
+        
+        return this;
     }
 }
 
