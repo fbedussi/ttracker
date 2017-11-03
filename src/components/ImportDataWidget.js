@@ -13,14 +13,15 @@ class ImportDataWidget extends Component {
 
     render() {
         return (
-            <div>
+            <div className={`importJsonPanel ${this.state.panelOpen ? 'is-open' : 'is-closed'}`}>
                 <RaisedButton
                     className={this.state.panelOpen ? 'hide' : 'show'}
                     label="Import data"
                     onClick={() => this.setState({panelOpen: !this.state.panelOpen})}
                 />
             
-                <div className={`importJsonPanel ${this.state.panelOpen ? 'is-closed' : 'is-open'}`}>
+                <div className="importJsonArea">
+                    <p>Paste JSON to import here:</p>
                     <textarea
                         ref={(textarea) => { this.textarea = textarea; }}
                         className="jsonPanelTextArea"

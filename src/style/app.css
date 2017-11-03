@@ -24,6 +24,10 @@ input {
     --currency-width: 3em;
 }
 
+.hide {
+    display: none !important;
+}
+
 .sectionTitle {
     margin: 2em 0 1em;
 }
@@ -104,6 +108,10 @@ input {
     align-items: center;
 }
 
+.editableText {
+    flex: 1;
+}
+
 .editableTextArea {
     width: 100%;
     max-width: 70em;
@@ -158,6 +166,25 @@ input {
     bottom: 2em;
     z-index: 1;
 }
+
+.billTextTemplate {
+    border: solid 1px lightgray;
+}
+
+.jsonPanelTextArea {
+    width: 99%;
+    height: 5em;
+}
+
+.importJsonArea {
+    height: 0;
+    transition: height 0.5s;
+    overflow: hidden;
+}
+
+.importJsonPanel.is-open .importJsonArea {
+    height: 8em;
+} 
 
 @media screen and (min-width: 30em) {
     .cardsWrapper {

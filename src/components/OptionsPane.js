@@ -80,6 +80,7 @@ const OptionsPane = ({
                 <div className="row">
                     <div className="label">{`Bill text template: `} </div>
                     <EditableTextArea 
+                            className="billTextTemplate"
                             text={billTextTemplate}
                             handleChange={(billTextTemplate) => updateOptions({billTextTemplate})}
                     />

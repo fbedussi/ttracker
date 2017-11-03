@@ -41,11 +41,8 @@ const App = {
                     db.readAll('option'),
                 ])
             )
-            .then(([clients, activities, bills, options]) => this.verifyData({clients, activities, bills, options}))
+            .then(([clients, activities, bills, options]) => this.loadApp({clients, activities, bills, options}))
         ;
-    },
-    verifyData: function(data) {
-        return this.loadApp(data);
     },
     loadApp: function(data) {
         const {clients, activities, bills, options} = data;
@@ -53,6 +50,8 @@ const App = {
         loadedData.clients = clients.map((clientData) => loadClient(clientData));
         loadedData.activities =  activities.map((activityData) => loadActivity(activityData));
         loadedData.bills = bills.map((billData) => loadBill(billData));
+
+        //the common db interface provides everyting as an array, options must be converted to an object
         loadedData.options = options && options.length ? options[0]: {};
 
         return this._resolveDependencies(loadedData);
@@ -267,14 +266,18 @@ const App = {
         objToSave.clients = this.clients.map((client) => client.exportForDb());
         objToSave.activities = this.activities.map((activity) => activity.exportForDb());
         objToSave.bills = this.bills.map((bill) => bill.exportForDb());
+
+        //Convert option to an array in order to conform to the common db interface
         objToSave.options = [Object.assign({}, this.options)];
     
         return JSON.stringify(objToSave);
     },
     saveAllDataToDb: function() {
-        db.replaceAll('activity', this.activities);
-        db.replaceAll('client', this.clients);
-        db.replaceAll('bill', this.bills);
+        db.replaceAll('activity', this.activities.map((activity) => activity.exportForDb()));
+        db.replaceAll('client', this.clients.map((client) => client.exportForDb()));
+        db.replaceAll('bill', this.bills.map((bill) => bill.exportForDb()));
+
+        //Convert option to an array in order to conform to the common db interface        
         db.replaceAll('option', [this.options]);
         
         return this;

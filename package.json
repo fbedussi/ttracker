@@ -24,7 +24,15 @@
     "eject": "react-scripts eject"
   },
   "config": {
-    "db": "indexedDb",
+    "firebase": {
+      "apiKey": "AIzaSyC-AYMWnFxz2Os2bXqcRjnvAcG4O3JD-xw",
+      "authDomain": "prova-28269.firebaseapp.com",
+      "databaseURL": "https://prova-28269.firebaseio.com",
+      "storageBucket": "prova-28269.appspot.com",
+      "projectId": "prova-28269",
+      "messagingSenderId": "821594512081"
+    },
+    "db": "indexedDB",
     "authentication": false
   }
 }

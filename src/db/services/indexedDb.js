@@ -106,32 +106,32 @@ const deleteInStore = (storeName, contentId) => new Promise((resolve, reject) =>
     request.onerror = (event) => reject(`Error deleting ID ${contentId} in ${storeName}: ${request.error}`);
 });
 
-const replaceAllInStore = (storeName, data) => new Promise((resolve, reject) => {
+const replaceAllInStore = (storeName, data) => new Promise((resolveReplaceAll, rejectReplaceAll) => {
     const transaction = db.transaction([storeName], 'readwrite');
     const clearRequest = transaction
         .objectStore(storeName)
         .clear()
     ;
     
-    transaction.onerror = () => reject(`Error opening ${storeName}: ${transaction.error}`); // error handling????
+    transaction.onerror = () => rejectReplaceAll(`Error opening ${storeName}: ${transaction.error}`); // error handling????
 
-    clearRequest.onerror = (event) => reject(`Error clearing ${storeName}: ${clearRequest.error}`); // error handling????
+    clearRequest.onerror = (event) => rejectReplaceAll(`Error clearing ${storeName}: ${clearRequest.error}`); // error handling????
 
     clearRequest.onsuccess = (event) => {
-        const writeDataPromises = data.map((record) => new Promise((resolve, reject) => {
+        const writeDataPromises = data.map((record) => new Promise((resolveSingleRecord, rejectSingleRecord) => {
             const addRequest = transaction
                 .objectStore(storeName)
                 .add(record)
             ;
     
-            addRequest.onerror = (event) => reject(`Error writing ID ${record.id} to ${storeName}: ${addRequest.error}`); // error handling????
+            addRequest.onerror = (event) => rejectSingleRecord(`Error writing ID ${record.id} to ${storeName}: ${addRequest.error}`); // error handling????
     
-            addRequest.onsuccess = (event) => resolve(addRequest.result); //key
+            addRequest.onsuccess = (event) => resolveSingleRecord(addRequest.result); //key
         }));
 
         Promise.all(writeDataPromises)
-            .then((data) => resolve(data))
-            .catch((e) => reject(e))
+            .then((data) => resolveReplaceAll(data))
+            .catch((e) => rejectReplaceAll(e))
         ;
     }
 });
