@@ -8,49 +8,39 @@ const openDb = (dbName, loggedUser) => new Promise((resolve, reject) => {
   resolve(dbInterface);
 });
 
-const createInStore = (storeName, content) => new Promise((resolve, reject) => {  
-    db.ref(`users/${user.uid}/${storeName}/${content.id}`).set(content);
+const createInStore = (storeName, content) => db
+    .ref(`users/${user.uid}/${storeName}/${content.id}`)
+    .set(content)
+;
 
-    resolve(content.id);
-});
+const readInStore = (storeName, contentId) => db
+  .ref(`users/${user.uid}/${storeName}/${contentId}`)
+  .once('value')
+  .then((snapshot) => snapshot.val())
+;
 
-const readInStore = (storeName, contentId) => new Promise((resolve, reject) => {
-  db
-    .ref(`users/${user.uid}/${storeName}/${contentId}`)
-    .once('value')
-    .then((snapshot) => snapshot.val())
-    .catch((error) => reject(error))
-  ;
-});
+const readAllInStore = (storeName) => db
+  .ref(`users/${user.uid}/${storeName}`)
+  .once('value')
+  .then((snapshot) => [].concat(snapshot.val()).filter((i) => i)) //convert everything into an array
+;
 
-const readAllInStore = (storeName) => new Promise((resolve, reject) => {
-  db
-    .ref(`users/${user.uid}/${storeName}`)
-    .once('value')
-    .then((snapshot) => resolve(
-      [].concat(snapshot.val()).filter((i) => i)) //convert everything into an array
-    )
-    .catch((error) => reject(error))
-  ;
-});
+const updateInStore = (storeName, content) => db
+  .ref(`users/${user.uid}/${storeName}/${content.id}`)
+  .update(content)
+;
 
-const updateInStore = (storeName, content) => new Promise((resolve, reject) => {
-  db.ref(`users/${user.uid}/${storeName}/${content.id}`).update(content);
+const deleteInStore = (storeName, contentId) => db
+  .ref(`users/${user.uid}/${storeName}/${contentId}`)
+  .remove()
+;
   
-  resolve(content);
-});
-
-const deleteInStore = (storeName, contentId) => new Promise((resolve, reject) => {
-  db.ref(`users/${user.uid}/${storeName}/${contentId}`).remove();
-  
-  resolve(contentId);
-});
-
 const replaceAllInStore = (storeName, data) => {
   const writeAllRecords = data.map((record) => createInStore(storeName, record));
   
   return Promise.all(writeAllRecords);
 }
+
 
 const dbInterface = {
   openDb,
