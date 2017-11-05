@@ -1,7 +1,7 @@
 - import/export data
+- notification for db success/fail
+- rework methods contract to include error objects
 - undo/redo
 - MarkDown in bills text
-- rework methods contract to include error objects
-- notification for db success/fail
 - responsive ui
 - multilanguage

@@ -47,7 +47,8 @@ const App = ({
       hideError,
       toolbarOpen,
       history,
-    }) => (<MuiThemeProvider>
+    }) => (
+    <MuiThemeProvider>
       <div className="App">
         <AppBar
           className="hideInPrint appbar"

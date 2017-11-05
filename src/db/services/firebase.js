@@ -46,6 +46,12 @@ const deleteInStore = (storeName, contentId) => new Promise((resolve, reject) =>
   resolve(contentId);
 });
 
+const replaceAllInStore = (storeName, data) => {
+  const writeAllRecords = data.map((record) => createInStore(storeName, record));
+  
+  return Promise.all(writeAllRecords);
+}
+
 const dbInterface = {
   openDb,
 
@@ -54,6 +60,7 @@ const dbInterface = {
   readAll: readAllInStore,
   update: updateInStore,
   delete: deleteInStore,
+  replaceAll: replaceAllInStore,
 };
 
 export default dbInterface;
