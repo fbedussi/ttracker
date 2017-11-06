@@ -1,4 +1,5 @@
 import StartAppAndLogin, { StartAppAndLoadData } from './backend/app';
+import {onErrorReport} from './backend/errorReporter';
 const fileSaver = require('file-saver');
 
 var backend;
@@ -39,6 +40,8 @@ export function importData(jsonData) {
 function loadData(dispatch) {
     return (app) => {
         backend = app;
+
+        onErrorReport((error) => dispatch(showError(error)));
 
         const data = app.exportForClient();
 

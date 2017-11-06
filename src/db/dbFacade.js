@@ -1,6 +1,7 @@
 import {config} from '../../package.json';
 import indexedDb from './services/indexedDb';
 import firebase from './services/firebase';
+import {watchForError} from '../backend/errorReporter';
 var db;
 
 switch (config.db.toLowerCase()) {
@@ -20,12 +21,12 @@ switch (config.db.toLowerCase()) {
 
 //All methods return a promise
 export default {
-    openDb: db.openDb,
+    openDb: watchForError(db.openDb),
 
-    create: db.create,
-    read: db.read,
-    readAll: db.read,
-    update: db.update,
-    delete: db.delete,
-    replaceAll: db.replaceAll
+    create: watchForError(db.create),
+    read: watchForError(db.read),
+    readAll: watchForError(db.read),
+    update: watchForError(db.update),
+    delete: watchForError(db.delete),
+    replaceAll: watchForError(db.replaceAll)
 };

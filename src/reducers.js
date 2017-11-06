@@ -79,7 +79,7 @@ export function uiReducer(state = {
             });
 
         case 'SHOW_ERROR':
-            return Object.assign({}, state, {errorOn: true, errorMessage: action.error.message});
+            return Object.assign({}, state, {errorOn: true, errorMessage: action.error.message ? action.error.message : action.error});
 
         case 'HIDE_ERROR':
             return Object.assign({}, state, {errorOn: false, errorMessage: ''});
