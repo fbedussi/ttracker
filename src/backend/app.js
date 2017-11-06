@@ -288,7 +288,7 @@ const startAppAndLogin = (loginData) => {
     return Object.create(App).login(loginData);
 }
 
-export const StartAppAndLoadData = () => {
+export const startAppAndLoadData = () => {
     return Object.create(App).loadData();
 }
 

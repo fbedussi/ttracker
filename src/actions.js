@@ -1,4 +1,4 @@
-import StartAppAndLogin, { StartAppAndLoadData } from './backend/app';
+import startAppAndLogin, { startAppAndLoadData } from './backend/app';
 import {onErrorReport} from './backend/errorReporter';
 const fileSaver = require('file-saver');
 
@@ -8,7 +8,7 @@ export function login(loginData) {
     return function (dispatch) {
         const loadAppData = loadData(dispatch);
 
-        StartAppAndLogin(loginData)
+        startAppAndLogin(loginData)
             .then(loadAppData)
             .catch(err => dispatch(showError(err)))
             ;
@@ -19,7 +19,7 @@ export function load() {
     return function (dispatch) {
         const loadAppData = loadData(dispatch);
 
-        StartAppAndLoadData()
+        startAppAndLoadData()
             .then(loadAppData)
             .catch(err => dispatch(showError(err)))
             ;
