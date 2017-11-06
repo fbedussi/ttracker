@@ -4,16 +4,16 @@ jest.mock('../db/dbFacade');
 
 test('Error reporter', () => {
     var errorReported = false;
-    var errorText = '';
-
+    var errorDetails;
+    var error = new Error('fake error')
     onErrorReport((error) => {
         errorReported = true;
-        errorText = error.message;
+        errorDetails = error;
     })
 
-    watchForError(() => new Promise((resolve, reject) => reject(new Error('fake error'))))().then(() => {
+    watchForError(() => new Promise((resolve, reject) => reject(error)))().then(() => {
         expect(errorReported).toBe(true);
-        expect(errorMessage).toBe('fake error');
+        expect(errorDetails).toBe(error);
     });
 
 });
