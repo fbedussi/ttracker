@@ -1,4 +1,6 @@
-import {onErrorReport, watchForErrorReport} from '../backend/bill';
+import {onErrorReport, watchForError} from '../backend/errorReporter';
+
+jest.mock('../db/dbFacade');
 
 test('Error reporter', () => {
     var errorReported = false;
@@ -9,11 +11,10 @@ test('Error reporter', () => {
         errorText = error.message;
     })
 
-    const fakeDBCall = watchForErrorReport(() => Promise.reject(new Error('fake error')));
+    watchForError(() => new Promise((resolve, reject) => reject(new Error('fake error'))))().then(() => {
+        expect(errorReported).toBe(true);
+        expect(errorMessage).toBe('fake error');
+    });
 
-    fakeDbCall();
-
-    expect(errorReported).toBe(true);
-    expect(errorMessage).toBe('fake error');
 });
 

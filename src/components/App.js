@@ -39,7 +39,7 @@ const mapDispatchToProps = (dispatch) => ({
   hideError: () => dispatch(hideError()),
 });
 
-const App = ({
+export const App = ({
       drawerOpen,
       toggleUiElement,
       errorOn,
