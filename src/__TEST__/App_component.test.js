@@ -3,11 +3,11 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom'
 
-import { App } from './components/App';
+import { App } from '../components/App';
 
-jest.mock('./db/dbFacade');
-jest.mock('./helpers/idMaker');
-jest.mock('./components/Home', () => () => null)
+jest.mock('../db/dbFacade');
+jest.mock('../helpers/idMaker');
+jest.mock('../components/Home', () => () => null)
 
 const store = {
   subscribe: () => { },

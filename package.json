@@ -28,8 +28,8 @@
   },
   "homepage": "https://fbedussi.github.io/ttracker/",
   "config": {
-    "db": "firebase",
-    "authentication": true,
+    "db": "indexedDb",
+    "authentication": false,
     "firebase": {
       "apiKey": "AIzaSyD0KEukmxkpPdkwrEzIbmzJoczmhdTQFT0",
       "authDomain": "ttracker-18ad8.firebaseapp.com",

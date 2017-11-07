@@ -1,5 +1,5 @@
 if (!('indexedDB' in window)) {
-    //throw new Error('This browser doesn\'t support IndexedDB');
+    throw new Error('This browser doesn\'t support IndexedDB');
 }
 
 var db;
@@ -8,15 +8,35 @@ const openDb = (dbName, user) => new Promise((resolve, reject) => {
     const request = indexedDB.open(dbName);
     var newDb = false;
 
-    request.onerror = (event) => reject(`Error opening DB ${dbName}: : ${request.error}`);
+    request.onerror = (event) => reject(`Error opening DB ${dbName}: ${request.error}`);
 
     request.onupgradeneeded = (event) => {
         const db = event.target.result;
 
-        db.createObjectStore('activity', { keyPath: "id" });
-        db.createObjectStore('client', { keyPath: "id" });
-        db.createObjectStore('bill', { keyPath: "id" });
-        db.createObjectStore('option', { keyPath: "id" });
+        try {
+            db.createObjectStore('activity', { keyPath: "id" });
+        } catch(e) {
+            reject('Error creating Activity store');
+        }
+
+        try {
+            db.createObjectStore('client', { keyPath: "id" });
+        } catch(e) {
+            reject('Error creating Client store');
+        }
+
+        try {
+            db.createObjectStore('bill', { keyPath: "id" });
+        } catch(e) {
+            reject('Error creating Bill store');
+        }
+
+        try {
+            db.createObjectStore('option', { keyPath: "id" });
+        } catch(e) {
+            reject('Error creating Option store');
+        } 
+
         newDb = true;
     };
     
@@ -34,23 +54,23 @@ const createInStore = (storeName, content) => new Promise((resolve, reject) => {
     const request = transaction
         .objectStore(storeName)
         .add(content)
-        ;
+    ;
 
-    transaction.oncomplete = (event) => resolve(transaction.error);
+    transaction.onerror = () => reject(`Error writing to ${storeName}: ${transaction.error}`); 
 
-    transaction.onerror = () => reject(`Error writing ID ${content.id} to ${storeName}: ${transaction.error}`); // error handling????
-
-    request.onerror = (event) => reject(`Error writing ID ${content.id} to ${storeName}: ${request.error}`); // error handling????
+    request.onerror = (event) => reject(`Error writing ID ${content.id} to ${storeName}: ${request.error}`);
 
     request.onsuccess = (event) => resolve(request.result); //key
 });
 
 const readInStore = (storeName, contentId) => new Promise((resolve, reject) => {
-    const request = db
-        .transaction([storeName])
+    const transaction = db.transaction([storeName]);
+    const request = transaction
         .objectStore(storeName)
         .get(contentId)
-        ;
+    ;
+
+    transaction.onerror = () => reject(`Error reading from ${storeName}: ${transaction.error}`);    
 
     request.onerror = (event) => reject(`Error reading ID ${contentId} from ${storeName}: ${request.error}`);
 
@@ -58,11 +78,13 @@ const readInStore = (storeName, contentId) => new Promise((resolve, reject) => {
 });
 
 const readAllInStore = (storeName) => new Promise((resolve, reject) => {
-    const request = db
-        .transaction([storeName])
+    const transaction = db.transaction([storeName]) ;
+    const request = transaction
         .objectStore(storeName)
         .getAll()
-        ;
+    ;
+
+    transaction.onerror = () => reject(`Error reading from ${storeName}: ${transaction.error}`);        
 
     request.onerror = (event) => reject(`Error reading from ${storeName}: ${request.error}`);
 
@@ -70,13 +92,13 @@ const readAllInStore = (storeName) => new Promise((resolve, reject) => {
 });
 
 const updateInStore = (storeName, content) => new Promise((resolve, reject) => {
-    const objectStore = db
-        .transaction([storeName], "readwrite")
-        .objectStore(storeName)
-        ;
+    const transaction = db.transaction([storeName], "readwrite");
+    const objectStore = transaction.objectStore(storeName);
     const request = objectStore.get(content.id);
 
-    request.onerror = (event) => reject(`Error updating ID ${content.id} from ${storeName}: ${request.error}`);
+    transaction.onerror = () => reject(`Error writing to ${storeName}: ${transaction.error}`);        
+    
+    request.onerror = (event) => reject(`Error reading ID ${content.id} from ${storeName}: ${request.error}`);
 
     request.onsuccess = (event) => {
         // Get the old value that we want to update
@@ -95,11 +117,13 @@ const updateInStore = (storeName, content) => new Promise((resolve, reject) => {
 });
 
 const deleteInStore = (storeName, contentId) => new Promise((resolve, reject) => {
-    const request = db
-        .transaction([storeName], "readwrite")
+    const transaction = db.transaction([storeName], "readwrite");
+    const request = transaction
         .objectStore(storeName)
         .delete(contentId)
-        ;
+    ;
+
+    transaction.onerror = () => reject(`Error writing to ${storeName}: ${transaction.error}`);            
 
     request.onsuccess = (event) => resolve(request.result === undefined);
 
@@ -113,9 +137,9 @@ const replaceAllInStore = (storeName, data) => new Promise((resolveReplaceAll, r
         .clear()
     ;
     
-    transaction.onerror = () => rejectReplaceAll(`Error opening ${storeName}: ${transaction.error}`); // error handling????
+    transaction.onerror = () => rejectReplaceAll(`Error writing to ${storeName}: ${transaction.error}`);
 
-    clearRequest.onerror = (event) => rejectReplaceAll(`Error clearing ${storeName}: ${clearRequest.error}`); // error handling????
+    clearRequest.onerror = (event) => rejectReplaceAll(`Error clearing ${storeName}: ${clearRequest.error}`);
 
     clearRequest.onsuccess = (event) => {
         const writeDataPromises = data.map((record) => new Promise((resolveSingleRecord, rejectSingleRecord) => {
@@ -124,7 +148,7 @@ const replaceAllInStore = (storeName, data) => new Promise((resolveReplaceAll, r
                 .add(record)
             ;
     
-            addRequest.onerror = (event) => rejectSingleRecord(`Error writing ID ${record.id} to ${storeName}: ${addRequest.error}`); // error handling????
+            addRequest.onerror = (event) => rejectSingleRecord(`Error writing ID ${record.id} to ${storeName}: ${addRequest.error}`);
     
             addRequest.onsuccess = (event) => resolveSingleRecord(addRequest.result); //key
         }));
