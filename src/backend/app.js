@@ -89,6 +89,11 @@ const App = {
     },
     deleteClient: function(id, deleteActivities = false) {
         const clientToDelete = this._getClient(id);
+
+        if (!clientToDelete) {
+            throw new Error(`No client with ID ${id}`);
+        }
+
         if (deleteActivities) {
             const clientActivitiesIds = clientToDelete.activities.map((activity) => activity.id);
             this.activities = this.activities
@@ -104,8 +109,9 @@ const App = {
     },
     updateClient: function(props) {
         if (!objHasDeepProp(props, 'id')) {
-            return this.exportForClient();
+            throw new Error('Cannot update client, ID is missing');
         }
+
         this.clients = this.clients.map((client) => client.id === props.id ? client.update(props) : client);
 
         return this.exportForClient();
@@ -115,7 +121,7 @@ const App = {
         var bill;
 
         if (!client) {
-            return this.exportForClient();
+            throw new Error(`No client with ID ${clientId}`);
         }
 
         bill = createBill({
@@ -133,26 +139,25 @@ const App = {
     },
     deleteBill: function(id) {
         const bill = this._getBill(id);
+        
         if (!bill) {
-            return this.exportForClient();
-        }
-        const client = bill.client;
-        if (!client) {
-            return this.exportForClient();
+            throw new Error(`No bill with ID ${id}`);
         }
 
-        try {
+        const client = bill.client;
+        if (client) {
             client.deleteBill(id);
             this.bills = this.bills.filter((bill) => bill.id !== id);
-        } catch(e) {
-            throw e;
+        } else if (this.bills[this.bills.length - 1] === bill) {
+            bill.delete();
+            this.bills = this.bills.filter((bill) => bill.id !== id);
         }
         
         return this.exportForClient();        
     },
     updateBill: function(props) {
         if (!(props.hasOwnProperty('id') && objHasDeepProp(props, 'client.id'))) {
-            return this.exportForClient();
+            throw new Error(`Bill ID od client missing`);
         }
 
         this._getClient(props.client.id).updateBill(props);
@@ -169,7 +174,7 @@ const App = {
         var activity;
 
         if (!client) {
-            return this.exportForClient();
+            throw new Error(`No client with ID ${clientId}`);
         }
 
         activity = createActivity({
@@ -187,7 +192,7 @@ const App = {
         var client = this._getClient(options.clientId);
 
         if (!client) {
-            return this.exportForClient();
+            throw new Error(`No client with ID ${options.clientId}`);
         }
 
         client.removeActivity(options.activityId, options.deleteActivity);
@@ -207,7 +212,7 @@ const App = {
     deleteActivity: function(activityId, deleteSubActivities = false) {
         const activity = this._getActivity(activityId);
         if (!activity) {
-            return this.exportForClient();
+            throw new Error(`No activity with ID ${activityId}`);            
         }
         if (objHasDeepProp(activity, 'client.id')) {
             this.clients = this.clients.map((client) => client.id === activity.client.id ? client.removeActivity(activityId) : client); 
@@ -220,7 +225,7 @@ const App = {
     },
     updateActivity: function(props) {
         if (!objHasDeepProp(props, 'id')) {
-            return this.exportForClient();
+            throw new Error('Activity ID missing');
         }
 
         this._getActivity(props.id).update(props);

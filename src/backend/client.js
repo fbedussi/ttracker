@@ -130,7 +130,7 @@ var Client = {
         }, billsData);
 
         if (!billsData.billToUpdate) {
-            return this.exportForClient();
+            throw new Error('No bill to update');
         }
 
         if ((billsData.nextBill && props.date >= billsData.nextBill.date) || (billsData.prevBill && props.date <= billsData.prevBill.date)) {
