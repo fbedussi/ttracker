@@ -1,4 +1,3 @@
-- notification for db success/fail
 - rework methods contract to include error objects
 - undo/redo
 - MarkDown in bills text
