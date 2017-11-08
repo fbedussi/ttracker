@@ -72,61 +72,85 @@ export function hideError(error) {
 }
 
 export function createNewClient() {
-    const data = backend.createClient();
-
-    return {
-        type: 'UPDATE_DATA',
-        data,
-        lastCreatedClientId: data.clients[data.clients.length - 1].id
-    };
+    try {
+        const data = backend.createClient();
+    
+        return {
+            type: 'UPDATE_DATA',
+            data,
+            lastCreatedClientId: data.clients[data.clients.length - 1].id
+        };
+    } catch(e) {
+        return showError(e);
+    }
 }
 
 export function deleteClient(client, deleteActvities) {
-    const data = backend.deleteClient(client.id, deleteActvities);
-
-    return {
-        type: 'UPDATE_DATA',
-        data,
-    };
+    try {
+        const data = backend.deleteClient(client.id, deleteActvities);
+    
+        return {
+            type: 'UPDATE_DATA',
+            data,
+        };
+    } catch(e) {
+        return showError(e);        
+    }
 }
 
 export function createNewActivity() {
-    const data = backend.createActivity();
-
-    return {
-        type: 'UPDATE_DATA',
-        data,
-        lastCreatedActivityId: data.activities[data.activities.length - 1].id
-    };
+    try {
+        const data = backend.createActivity();
+    
+        return {
+            type: 'UPDATE_DATA',
+            data,
+            lastCreatedActivityId: data.activities[data.activities.length - 1].id
+        };
+    } catch(e) {
+        return showError(e);        
+    }
 }
 
 export function addNewActivityToClient(clientId) {
-    const data = backend.addNewActivityToClient(clientId);
-
-    return {
-        type: 'UPDATE_DATA',
-        data,
-        lastCreatedActivityId: data.activities[data.activities.length - 1].id
-    };
+    try {
+        const data = backend.addNewActivityToClient(clientId);
+    
+        return {
+            type: 'UPDATE_DATA',
+            data,
+            lastCreatedActivityId: data.activities[data.activities.length - 1].id
+        };
+    } catch(e) {
+        return showError(e);        
+    }
 }
 
 export function addSubactivity(activity) {
-    const data = backend.addSubactivity(activity.id, { name: 'new task' });
-
-    return {
-        type: 'UPDATE_DATA',
-        data,
-        lastCreatedActivityId: data.activities[data.activities.length - 1].id
-    };
+    try {
+        const data = backend.addSubactivity(activity.id, { name: 'new task' });
+    
+        return {
+            type: 'UPDATE_DATA',
+            data,
+            lastCreatedActivityId: data.activities[data.activities.length - 1].id
+        };
+    } catch(e) {
+        return showError(e);        
+    }
 }
 
 export function deleteActivity(activity, deleteSubactivities = false) {
-    const data = backend.deleteActivity(activity.id, deleteSubactivities);
-
-    return {
-        type: 'UPDATE_DATA',
-        data
-    };
+    try {
+        const data = backend.deleteActivity(activity.id, deleteSubactivities);
+    
+        return {
+            type: 'UPDATE_DATA',
+            data
+        };
+    } catch(e) {
+        return showError(e);        
+    }
 }
 
 export function setActiveTab(activeTab) {
@@ -137,96 +161,136 @@ export function setActiveTab(activeTab) {
 }
 
 export function updateClient(client) {
-    const data = backend.updateClient(client);
-
-    return {
-        type: 'UPDATE_DATA',
-        data
-    };
+    try {
+        const data = backend.updateClient(client);
+    
+        return {
+            type: 'UPDATE_DATA',
+            data
+        };
+    } catch(e) {
+        return showError(e);        
+    }
 }
 
 export function startActivity(activity) {
-    const data = backend.startActivity(activity.id);
-
-    return {
-        type: 'START_ACTIVITY',
-        activityId: activity.id,
-        data
-    };
+    try {
+        const data = backend.startActivity(activity.id);
+    
+        return {
+            type: 'START_ACTIVITY',
+            activityId: activity.id,
+            data
+        };
+    } catch(e) {
+        return showError(e);        
+    }
 }
 
 export function stopActivity(activity) {
-    const data = backend.stopActivity(activity.id);
-
-    return {
-        type: 'STOP_ACTIVITY',
-        activityId: activity.id,
-        data
-    };
+    try {
+        const data = backend.stopActivity(activity.id);
+    
+        return {
+            type: 'STOP_ACTIVITY',
+            activityId: activity.id,
+            data
+        };
+    } catch(e) {
+        return showError(e);        
+    }
 }
 
 export function deleteTimeEntry(activity, timeEntry) {
-    const data = backend.deleteTimeEntry(activity.id, timeEntry.id);
-
-    return {
-        type: 'UPDATE_DATA',
-        data
-    };
+    try {
+        const data = backend.deleteTimeEntry(activity.id, timeEntry.id);
+    
+        return {
+            type: 'UPDATE_DATA',
+            data
+        };
+    } catch(e) {
+        return showError(e);        
+    }
 }
 
 export function updateActivity(activity, newProps) { //TODO: pass newprops only
-    const data = backend.updateActivity(Object.assign(activity, newProps));
-
-    return {
-        type: 'UPDATE_DATA',
-        data
-    };
+    try {
+        const data = backend.updateActivity(Object.assign(activity, newProps));
+    
+        return {
+            type: 'UPDATE_DATA',
+            data
+        };
+    } catch(e) {
+        return showError(e);        
+    }
 }
 
 export function updateTimeEntry(activity, timeEntry) {
-    const data = backend.updateTimeEntry(activity.id, timeEntry);
-
-    return {
-        type: 'UPDATE_DATA',
-        data
-    };
+    try {
+        const data = backend.updateTimeEntry(activity.id, timeEntry);
+    
+        return {
+            type: 'UPDATE_DATA',
+            data
+        };
+    } catch(e) {
+        return showError(e);        
+    }
 }
 
 export function createNewBill(clientId, billTextTemplate, currency) {
-    const data = backend.billClient(clientId, billTextTemplate, currency);
-
-    return {
-        type: 'UPDATE_DATA',
-        data
-    };
+    try {
+        const data = backend.billClient(clientId, billTextTemplate, currency);
+    
+        return {
+            type: 'UPDATE_DATA',
+            data
+        };
+    } catch(e) {
+        return showError(e);        
+    }
 }
 
 export function updateBill(bill) {
-    const data = backend.updateBill(bill);
-
-    return {
-        type: 'UPDATE_DATA',
-        data,
-        lastUpdatedBillId: bill.id
-    };
+    try {
+        const data = backend.updateBill(bill);
+    
+        return {
+            type: 'UPDATE_DATA',
+            data,
+            lastUpdatedBillId: bill.id
+        };
+    } catch(e) {
+        return showError(e);        
+    }
 }
 
 export function refreshBillText(billId) {
-    const data = backend.refreshBillText(billId);
+    try {
+        const data = backend.refreshBillText(billId);
 
-    return {
-        type: 'UPDATE_DATA',
-        data,
-    };
+        return {
+            type: 'UPDATE_DATA',
+            data,
+        };
+    } catch(e) {
+        return showError(e);        
+    }
 }
 
 export function deleteBill(billId) {
-    const data = backend.deleteBill(billId);
-
-    return {
-        type: 'UPDATE_DATA',
-        data
-    };
+    try {
+        const data = backend.deleteBill(billId);
+    
+        return {
+            type: 'UPDATE_DATA',
+            data
+        };
+    } catch(e) {
+        return showError(e);        
+    }
 }
 
 export function toggleUiElement(element) {
@@ -246,11 +310,15 @@ export function toggleUiElement(element) {
 }
 
 export function updateOptions(options) {
-    backend.saveOptions(options);
-
-    return {
-        type: 'UPDATE_OPTIONS',
-        options
+    try {
+        backend.saveOptions(options);
+    
+        return {
+            type: 'UPDATE_OPTIONS',
+            options
+        }
+    } catch(e) {
+        return showError(e);        
     }
 }
 

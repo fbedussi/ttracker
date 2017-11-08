@@ -37,7 +37,7 @@ var Activity = {
     },
     load: function(props) {
         merge(this, props);
-        //this.subactivities = this.subactivities.map(activityProps => loadActivity(activityProps));
+
         if (props && props.client) {
             this.client = props.client;
         }
@@ -120,7 +120,7 @@ var Activity = {
         const removedSubactivity = this.subactivities.filter(subactivity => subactivity.id === id)[0];
 
         if (!removedSubactivity) {
-            return this;
+            throw new Error(`Activity ID ${this.id} has no subactivity with ID ${id}`);
         }
         
         this.subactivities = this.subactivities.filter(subactivity => subactivity.id !== id);
@@ -151,7 +151,7 @@ var Activity = {
         const lastTimeEntry = this.timeEntries[this.timeEntries.length - 1];
 
         if (!lastTimeEntry) {
-            return this;
+            throw new Error(`It appears this activity ID ${this.id} never started`);
         }
 
         lastTimeEntry.endTime = Date.now();
@@ -172,7 +172,7 @@ var Activity = {
     },
     updateTimeEntry: function(props) {
         if (!props.hasOwnProperty('id')) {
-            return this;
+            throw new Error('Activity ID missing, cannot update activity');
         }
 
         this.timeEntries = this.timeEntries
