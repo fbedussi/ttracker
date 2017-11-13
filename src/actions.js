@@ -1,7 +1,10 @@
 import startAppAndLogin, { startAppAndLoadData } from './backend/app';
 import {onErrorReport} from './backend/errorReporter';
+import createCommandManager from './backend/commandManager';
+
 const fileSaver = require('file-saver');
 
+var commandManager;
 var backend;
 
 export function login(loginData) {    
@@ -40,6 +43,7 @@ export function importData(jsonData) {
 function loadData(dispatch) {
     return (app) => {
         backend = app;
+        commandManager = createCommandManager(app);
 
         onErrorReport((error) => dispatch(showError(error)));
 
@@ -57,23 +61,23 @@ function loadData(dispatch) {
     }
 }
 
-export function showError(error) {
-    return {
-        type: 'SHOW_ERROR',
-        permanent: true,
-        error
-    };
-}
-
-export function hideError(error) {
-    return {
-        type: 'HIDE_ERROR',
-    };
+export function undoLastAction() {
+    try {
+        const data = commandManager.undo();
+    
+        return {
+            type: 'UPDATE_DATA',
+            data,
+        };
+    } catch(e) {
+        return showError(e);
+    }
 }
 
 export function createNewClient() {
     try {
-        const data = backend.createClient();
+        const createClientAction = commandManager.createAction(['createClient']);
+        const data = commandManager.execute(createClientAction);
     
         return {
             type: 'UPDATE_DATA',
@@ -87,11 +91,14 @@ export function createNewClient() {
 
 export function deleteClient(client, deleteActvities) {
     try {
-        const data = backend.deleteClient(client.id, deleteActvities);
+        const deleteClientAction = commandManager.createAction(['deleteClient', client], ['createClient', client]);        
+        const data = commandManager.execute(deleteClientAction);
     
         return {
             type: 'UPDATE_DATA',
             data,
+            undoable: true,
+            undoMessage: 'Client deleted'
         };
     } catch(e) {
         return showError(e);        
@@ -100,35 +107,8 @@ export function deleteClient(client, deleteActvities) {
 
 export function createNewActivity() {
     try {
-        const data = backend.createActivity();
-    
-        return {
-            type: 'UPDATE_DATA',
-            data,
-            lastCreatedActivityId: data.activities[data.activities.length - 1].id
-        };
-    } catch(e) {
-        return showError(e);        
-    }
-}
-
-export function addNewActivityToClient(clientId) {
-    try {
-        const data = backend.addNewActivityToClient(clientId);
-    
-        return {
-            type: 'UPDATE_DATA',
-            data,
-            lastCreatedActivityId: data.activities[data.activities.length - 1].id
-        };
-    } catch(e) {
-        return showError(e);        
-    }
-}
-
-export function addSubactivity(activity) {
-    try {
-        const data = backend.addSubactivity(activity.id, { name: 'new task' });
+        const createActivityAction = commandManager.createAction(['createActivity']);
+        const data = commandManager.execute(createActivityAction);
     
         return {
             type: 'UPDATE_DATA',
@@ -142,28 +122,55 @@ export function addSubactivity(activity) {
 
 export function deleteActivity(activity, deleteSubactivities = false) {
     try {
-        const data = backend.deleteActivity(activity.id, deleteSubactivities);
-    
+        const deleteActivityAction = commandManager.createAction(['deleteActivity', activity], ['createActivity', activity]);
+        const data = commandManager.execute(deleteActivityAction);
+
         return {
             type: 'UPDATE_DATA',
-            data
+            data,
+            undoable: true,
+            undoMessage: 'Activity deleted'
         };
     } catch(e) {
         return showError(e);        
     }
 }
 
-export function setActiveTab(activeTab) {
-    return {
-        type: 'SET_ACTIVE_TAB',
-        activeTab: activeTab
-    };
+export function addNewActivityToClient(clientId) {
+    try {
+        const addNewActivityToClientAction = commandManager.createAction(['addNewActivityToClient', clientId]);
+        const data = commandManager.execute(addNewActivityToClientAction);
+
+        return {
+            type: 'UPDATE_DATA',
+            data,
+            lastCreatedActivityId: data.activities[data.activities.length - 1].id
+        };
+    } catch(e) {
+        return showError(e);        
+    }
 }
 
-export function updateClient(client) {
+export function addSubactivity(activity) {
     try {
-        const data = backend.updateClient(client);
+        const addSubactivityAction = commandManager.createAction(['addSubactivity', activity.id, { name: 'new task' }]);
+        const data = commandManager.execute(addSubactivityAction);
     
+        return {
+            type: 'UPDATE_DATA',
+            data,
+            lastCreatedActivityId: data.activities[data.activities.length - 1].id
+        };
+    } catch(e) {
+        return showError(e);        
+    }
+}
+
+export function updateClient(updatedClient) {
+    try {
+        const updateClientAction = commandManager.createAction(['updateClient', updatedClient]);
+        const data = commandManager.execute(updateClientAction);
+
         return {
             type: 'UPDATE_DATA',
             data
@@ -175,8 +182,9 @@ export function updateClient(client) {
 
 export function startActivity(activity) {
     try {
-        const data = backend.startActivity(activity.id);
-    
+        const startActivityAction = commandManager.createAction(['startActivity', activity.id]);
+        const data = commandManager.execute(startActivityAction);
+
         return {
             type: 'START_ACTIVITY',
             activityId: activity.id,
@@ -189,8 +197,9 @@ export function startActivity(activity) {
 
 export function stopActivity(activity) {
     try {
-        const data = backend.stopActivity(activity.id);
-    
+        const stopActivityAction = commandManager.createAction(['stopActivity', activity.id]);
+        const data = commandManager.execute(stopActivityAction);
+
         return {
             type: 'STOP_ACTIVITY',
             activityId: activity.id,
@@ -203,11 +212,14 @@ export function stopActivity(activity) {
 
 export function deleteTimeEntry(activity, timeEntry) {
     try {
-        const data = backend.deleteTimeEntry(activity.id, timeEntry.id);
-    
+        const deleteTimeEntryAction = commandManager.createAction(['deleteTimeEntry', activity.id, timeEntry.id], ['addTimeEntry', activity.id, timeEntry]);
+        const data = commandManager.execute(deleteTimeEntryAction);
+
         return {
             type: 'UPDATE_DATA',
-            data
+            data,
+            undoable: true,
+            undoMessage: 'Time entry deleted'
         };
     } catch(e) {
         return showError(e);        
@@ -216,8 +228,9 @@ export function deleteTimeEntry(activity, timeEntry) {
 
 export function updateActivity(activity, newProps) { //TODO: pass newprops only
     try {
-        const data = backend.updateActivity(Object.assign(activity, newProps));
-    
+        const updateActivityAction = commandManager.createAction(['updateActivity', Object.assign(activity, newProps)], ['updateActivity', activity]);
+        const data = commandManager.execute(updateActivityAction);
+
         return {
             type: 'UPDATE_DATA',
             data
@@ -229,7 +242,8 @@ export function updateActivity(activity, newProps) { //TODO: pass newprops only
 
 export function updateTimeEntry(activity, timeEntry) {
     try {
-        const data = backend.updateTimeEntry(activity.id, timeEntry);
+        const updateTimeEntryAction = commandManager.createAction(['updateTimeEntry', activity.id, timeEntry]);
+        const data = commandManager.execute(updateTimeEntryAction);
     
         return {
             type: 'UPDATE_DATA',
@@ -242,8 +256,9 @@ export function updateTimeEntry(activity, timeEntry) {
 
 export function createNewBill(clientId, billTextTemplate, currency) {
     try {
-        const data = backend.billClient(clientId, billTextTemplate, currency);
-    
+        const createNewBillAction = commandManager.createAction(['billClient', clientId, billTextTemplate, currency]);
+        const data = commandManager.execute(createNewBillAction);
+
         return {
             type: 'UPDATE_DATA',
             data
@@ -255,8 +270,9 @@ export function createNewBill(clientId, billTextTemplate, currency) {
 
 export function updateBill(bill) {
     try {
-        const data = backend.updateBill(bill);
-    
+        const updateBillAction = commandManager.createAction(['updateBill', bill]);
+        const data = commandManager.execute(updateBillAction);
+
         return {
             type: 'UPDATE_DATA',
             data,
@@ -269,7 +285,8 @@ export function updateBill(bill) {
 
 export function refreshBillText(billId) {
     try {
-        const data = backend.refreshBillText(billId);
+        const refreshBillTextAction = commandManager.createAction(['refreshBillText', billId]);
+        const data = commandManager.execute(refreshBillTextAction);
 
         return {
             type: 'UPDATE_DATA',
@@ -280,17 +297,42 @@ export function refreshBillText(billId) {
     }
 }
 
-export function deleteBill(billId) {
+export function deleteBill(bill) {
     try {
-        const data = backend.deleteBill(billId);
-    
+        const deleteBillAction = commandManager.createAction(['deleteBill', bill], ['billClient', bill.client.id, bill.textTemplate, bill.currency]);
+        const data = commandManager.execute(deleteBillAction);
+
         return {
             type: 'UPDATE_DATA',
-            data
+            data,
+            undoable: true,
+            undoMessage: 'Bill deleted'
         };
     } catch(e) {
         return showError(e);        
     }
+}
+
+export function updateOptions(options) {
+    try {
+        const saveOptionsAction = commandManager.createAction(['saveOptions', options]);
+        commandManager.execute(saveOptionsAction);
+
+        return {
+            type: 'UPDATE_OPTIONS',
+            options
+        }
+    } catch(e) {
+        return showError(e);        
+    }
+}
+
+//UI
+export function setActiveTab(activeTab) {
+    return {
+        type: 'SET_ACTIVE_TAB',
+        activeTab: activeTab
+    };
 }
 
 export function toggleUiElement(element) {
@@ -309,19 +351,6 @@ export function toggleUiElement(element) {
     }
 }
 
-export function updateOptions(options) {
-    try {
-        backend.saveOptions(options);
-    
-        return {
-            type: 'UPDATE_OPTIONS',
-            options
-        }
-    } catch(e) {
-        return showError(e);        
-    }
-}
-
 export function updateSearch(searchText) {
     return {
         type: 'UPDATE_SEARCH',
@@ -337,4 +366,24 @@ export function exportData() {
     return {
         type: 'DATA_EXPORTED'
     }
+}
+
+export function showError(error) {
+    return {
+        type: 'SHOW_ERROR',
+        permanent: true,
+        error
+    };
+}
+
+export function hideError(error) {
+    return {
+        type: 'HIDE_ERROR',
+    };
+}
+
+export function closeUndoSnackbar() {
+    return {
+        type: 'CLOSE_UNDOSNACKBAR',
+    };
 }
