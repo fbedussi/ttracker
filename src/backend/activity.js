@@ -170,6 +170,13 @@ var Activity = {
 
         return this;
     },
+    addTimeEntry: function(timeEntry) {
+        this.timeEntries.push(deepCloneDataObject(timeEntry));
+        
+        db.update(DBCOLLECTION, this.exportForDb());
+        
+        return this;
+    },
     updateTimeEntry: function(props) {
         if (!props.hasOwnProperty('id')) {
             throw new Error('Activity ID missing, cannot update activity');
