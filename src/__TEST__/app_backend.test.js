@@ -32,7 +32,7 @@ test('Create client', () => {
 
 test('delete client', () => {
     return startAppAndLoadData().then((app) => {
-        app.deleteClient(1);
+        app.deleteClient({id: 1});
 
         expect(app.clients.length).toBe(1);
     });
@@ -75,7 +75,7 @@ test('delete bill only if it is the last bill for that client', () => {
         const clientLastBillId = client.bills[client.bills.length - 1].id;
         
         expect(() => app.deleteBill(0)).toThrow(); //not deleted
-        app.deleteBill(clientLastBillId)
+        app.deleteBill({id: clientLastBillId})
         expect(app.clients.filter((client) => client.id === 0)[0].bills.length).toBe(1); //deleted
         expect(app.bills.length).toBe(1);    
     });
@@ -181,13 +181,14 @@ test('remove activity from non existing client', () => {
         const prevApp = app.exportForClient();
         const updatedApp = app.addNewActivityToClient(1);
         const activityId = updatedApp.clients.filter((client) => client.id === 1)[0].activities[0].id;
-        const updatedApp2 = app.removeActivityFromClient({
-            activityId,
-            clientId: 2,
-            deleteActivity: true
-        })
 
-        expect(updatedApp2).toEqual(updatedApp);
+        expect(() => {
+            app.removeActivityFromClient({
+                activityId,
+                clientId: 2,
+                deleteActivity: true
+            })
+          }).toThrow();
     });
 });
 
@@ -208,7 +209,7 @@ test('Create activity', () => {
 
 test('deleteActivity', () => {
     return startAppAndLoadData().then((app) => {
-        app.deleteActivity(1);
+        app.deleteActivity({id: 1});
         expect(app.activities.length).toBe(1);
     });
 });
