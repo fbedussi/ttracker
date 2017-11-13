@@ -43,13 +43,17 @@ export function uiReducer(state = {
     dialogOn: false,
     searchText: '',
     toolbarOpen: false,
+    undoSnackbarOpen: false,
 }, action) {
 	switch (action.type) {
         case 'UPDATE_DATA':
             return Object.assign({}, state, {
                 lastCreatedActivityId: action.lastCreatedActivityId,
                 lastCreatedClientId: action.lastCreatedClientId,
-                lastUpdatedBillId: action.lastUpdatedBillId
+                lastUpdatedBillId: action.lastUpdatedBillId,
+                undoable: Boolean(action.undoable),
+                undoMessage: action.undoMessage ? action.undoMessage : '',
+                undoSnackbarOpen: action.undoable,
             });
 
         case 'SET_ACTIVE_TAB':
@@ -86,6 +90,9 @@ export function uiReducer(state = {
 
         case 'UPDATE_SEARCH':
             return Object.assign({}, state, {searchText: action.searchText});
+            
+        case 'CLOSE_UNDOSNACKBAR':
+        return Object.assign({}, state, {undoSnackbarOpen: false});
 
 		default:
 			return state;
@@ -99,6 +106,7 @@ export function optionsReducer(state = {
     defaultHourlyRate: 0,
     allowZeroTotalBill: false,
     timeEntriesRegistryAsTable: false,
+    undoSnackbarAutoHideDuration: 10000,
 }, action) {
 	switch (action.type) {
         case 'UPDATE_OPTIONS':

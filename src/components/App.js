@@ -22,6 +22,7 @@ import SingleActivity from './SingleActivity';
 import SingleClient from './SingleClient';
 import SingleBill from './SingleBill';
 import OptionsPane from './OptionsPane';
+import UndoSnackbar from './UndoSnackbar';
 
 import '../style/app.css';
 
@@ -80,6 +81,7 @@ export const App = ({
         <Route path="/activity/:activityId" component={SingleActivity} />
         <Route path="/client/:clientId" component={SingleClient} />
         <Route path="/bill/:billId" component={SingleBill} />
+        <UndoSnackbar/>
       </div>
     </MuiThemeProvider>);
 
