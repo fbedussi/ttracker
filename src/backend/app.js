@@ -87,7 +87,8 @@ const App = {
         
         return this.exportForClient();
     },
-    deleteClient: function(id, deleteActivities = false) {
+    deleteClient: function(client, deleteActivities = false) {
+        const id = client.id;
         const clientToDelete = this._getClient(id);
 
         if (!clientToDelete) {
@@ -137,19 +138,20 @@ const App = {
 
         return this.exportForClient();
     },
-    deleteBill: function(id) {
-        const bill = this._getBill(id);
+    deleteBill: function(bill) {
+        const id = bill.id;
+        const billToDelete = this._getBill(id);
         
-        if (!bill) {
+        if (!billToDelete) {
             throw new Error(`No bill with ID ${id}`);
         }
 
-        const client = bill.client;
+        const client = billToDelete.client;
         if (client) {
             client.deleteBill(id);
             this.bills = this.bills.filter((bill) => bill.id !== id);
-        } else if (this.bills[this.bills.length - 1] === bill) {
-            bill.delete();
+        } else if (this.bills[this.bills.length - 1] === billToDelete) {
+            billToDelete.delete();
             this.bills = this.bills.filter((bill) => bill.id !== id);
         }
         
@@ -209,16 +211,17 @@ const App = {
 
         return this.exportForClient();
     },
-    deleteActivity: function(activityId, deleteSubActivities = false) {
-        const activity = this._getActivity(activityId);
-        if (!activity) {
-            throw new Error(`No activity with ID ${activityId}`);            
+    deleteActivity: function(activity, deleteSubActivities = false) {
+        const id = activity.id;
+        const activityToDelete = this._getActivity(id);
+        if (!activityToDelete) {
+            throw new Error(`No activity with ID ${id}`);            
         }
-        if (objHasDeepProp(activity, 'client.id')) {
-            this.clients = this.clients.map((client) => client.id === activity.client.id ? client.removeActivity(activityId) : client); 
+        if (objHasDeepProp(activityToDelete, 'client.id')) {
+            this.clients = this.clients.map((client) => client.id === activityToDelete.client.id ? client.removeActivity(id) : client); 
         }
 
-        var removedActivityIds = activity.delete(deleteSubActivities);
+        var removedActivityIds = activityToDelete.delete(deleteSubActivities);
         this.activities = this.activities.filter((activity) => removedActivityIds.every((removedActivityId) => activity.id !== removedActivityId));
         
         return this.exportForClient();
@@ -244,6 +247,11 @@ const App = {
     },
     deleteTimeEntry: function(activityId, timeEntryId) {
         this._getActivity(activityId).deleteTimeEntry(timeEntryId);
+        
+        return this.exportForClient();        
+    },
+    addTimeEntry: function(activityId, timeEntry) {
+        this._getActivity(activityId).addTimeEntry(timeEntry);
         
         return this.exportForClient();        
     },
