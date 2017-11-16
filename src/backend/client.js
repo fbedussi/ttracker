@@ -2,7 +2,7 @@
 
 import initIdMaker from '../helpers/idMaker';
 import merge from '../helpers/merge';
-import db from '../db/dbFacade';
+import db from '../db/dbInterface';
 import {deepCloneDataObject} from '../helpers/helpers';
 
 var clientIdMaker = null;

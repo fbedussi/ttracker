@@ -1,6 +1,6 @@
 import {onErrorReport, watchForError} from '../backend/errorReporter';
 
-jest.mock('../db/dbFacade');
+jest.mock('../db/dbInterface');
 
 test('Error reporter', () => {
     var errorReported = false;

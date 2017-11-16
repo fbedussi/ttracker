@@ -4,7 +4,7 @@ import {createClient, loadClient, initClientIdMaker} from '../backend/client';
 import {createActivity, loadActivity, initActivityIdMaker} from './activity';
 import {createBill, loadBill, initBillIdMaker} from './bill';
 
-import db from '../db/dbFacade';
+import db from '../db/dbInterface';
 import auth from '../auth/authFacade';
 
 import {objHasDeepProp} from '../helpers/helpers';

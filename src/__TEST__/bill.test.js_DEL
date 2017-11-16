@@ -1,7 +1,7 @@
 import {createBill, loadBill} from '../backend/bill';
-import db from '../db/dbFacade';
+import db from '../db/dbInterface';
 
-jest.mock('../db/dbFacade');
+jest.mock('../db/dbInterface');
 jest.mock('../helpers/idMaker');
 
 beforeEach(() => {

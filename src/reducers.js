@@ -53,7 +53,7 @@ export function uiReducer(state = {
                 lastUpdatedBillId: action.lastUpdatedBillId,
                 undoable: Boolean(action.undoable),
                 undoMessage: action.undoMessage ? action.undoMessage : '',
-                undoSnackbarOpen: action.undoable,
+                undoSnackbarOpen: !!action.undoable,
             });
 
         case 'SET_ACTIVE_TAB':

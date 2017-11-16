@@ -5,7 +5,6 @@ import createCommandManager from './backend/commandManager';
 const fileSaver = require('file-saver');
 
 var commandManager;
-var backend;
 
 export function login(loginData) {    
     return function (dispatch) {
@@ -23,7 +22,9 @@ export function load() {
         const loadAppData = loadData(dispatch);
 
         startAppAndLoadData()
-            .then(loadAppData)
+            .then((app) => {
+                loadAppData(app);
+            })
             .catch(err => dispatch(showError(err)))
             ;
     };
@@ -31,6 +32,7 @@ export function load() {
 
 export function importData(jsonData) {
     return function (dispatch) {
+        const backend = commandManager.getApp();
         const app = backend
             .loadApp(JSON.parse(jsonData))
             .saveAllDataToDb()
@@ -42,7 +44,6 @@ export function importData(jsonData) {
 
 function loadData(dispatch) {
     return (app) => {
-        backend = app;
         commandManager = createCommandManager(app);
 
         onErrorReport((error) => dispatch(showError(error)));
@@ -359,7 +360,8 @@ export function updateSearch(searchText) {
 }
 
 export function exportData() {
-    const jsonData = backend.exportData();
+    const exportDataAction = commandManager.createAction(['exportData']);
+    const jsonData = commandManager.execute(exportDataAction);
     const file = new File([jsonData], "tTrackerExport.json", {type: "text/plain;charset=utf-8"});
     fileSaver.saveAs(file);
 

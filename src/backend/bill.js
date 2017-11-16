@@ -1,6 +1,6 @@
 import initIdMaker from '../helpers/idMaker';
 import merge from '../helpers/merge';
-import db from '../db/dbFacade';
+import db from '../db/dbInterface';
 import {deepCloneDataObject, objHasDeepProp} from '../helpers/helpers';
 
 var billIdMaker = null;

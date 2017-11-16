@@ -2,6 +2,9 @@ const commandManager = {
     _history: [],
     _currentActionIndex: -1,
     _app: null,
+    getApp: function() {
+        return this._app;
+    },
     createAction: function(doAction, undoAction, deferredUndoData = false) {
         const actionObj = {
             do: {
@@ -23,7 +26,7 @@ const commandManager = {
         return actionObj;
     },
     _execute: function(appMethodName, appMethodArgs) {
-        return this._app[appMethodName](...[].concat(appMethodArgs)); //concat is to ensure that ... operates on an array even if appMethodArgs is undefined
+        return this._app[appMethodName].apply(this._app, appMethodArgs); //concat is to ensure that ... operates on an array even if appMethodArgs is undefined
     }, 
     undo: function() {
         const lastAction = this._history[this._currentActionIndex];

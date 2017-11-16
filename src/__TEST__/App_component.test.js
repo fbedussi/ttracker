@@ -5,7 +5,7 @@ import { BrowserRouter } from 'react-router-dom'
 
 import { App } from '../components/App';
 
-jest.mock('../db/dbFacade');
+jest.mock('../db/dbInterface');
 jest.mock('../helpers/idMaker');
 jest.mock('../components/Home', () => () => null)
 
