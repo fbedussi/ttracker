@@ -21,7 +21,10 @@ var Activity = {
     create: function(props) {
         Object.assign(this, deepCloneDataObject(defaultProps));        
         merge(this, props);
-        this.id = activityIdMaker.next().value;
+
+        if (!this.hasOwnProperty('id')) {
+            this.id = activityIdMaker.next().value;
+        }
 
         //client and parentActivity has no properties in defatulProps, so merge doesn't merge anything, we need to copy them separately
         if (props && props.client) {

@@ -4,10 +4,14 @@ import {createClient, loadClient, initClientIdMaker} from '../backend/client';
 import {createActivity, loadActivity, initActivityIdMaker} from './activity';
 import {createBill, loadBill, initBillIdMaker} from './bill';
 
+import getCommandManager from './commandManager';
+
 import db from '../db/dbInterface';
 import auth from '../auth/authFacade';
 
 import {objHasDeepProp} from '../helpers/helpers';
+
+var commandManager;
 
 const App = {
     clients: [],
@@ -63,6 +67,8 @@ const App = {
         this.bills = bills.map((bill) => bill.resolveDependencies(clients));
         this.options = options;
 
+        commandManager = getCommandManager(this);
+
         return this;
     },
     saveOptions: function(options) {
@@ -96,15 +102,17 @@ const App = {
         }
 
         if (deleteActivities) {
-            const clientActivitiesIds = clientToDelete.activities.map((activity) => activity.id);
-            this.activities = this.activities
-                .filter((activity) => clientActivitiesIds
-                    .every((clientActivityId) => clientActivityId !== activity.id)
-                )
+            clientToDelete.activities
+                .forEach((clientActivity) => commandManager
+                    .execute(commandManager
+                        .createAction(['deleteActivity', clientActivity, true], ['createActivity', clientActivity])
+                    )
+                )    
             ;
         }
-        clientToDelete.delete(deleteActivities);
+        clientToDelete.delete();
         this.clients = this.clients.filter((client) => client.id !== id);
+        
 
         return this.exportForClient();
     },

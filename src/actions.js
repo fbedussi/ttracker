@@ -92,7 +92,7 @@ export function createNewClient() {
 
 export function deleteClient(client, deleteActvities) {
     try {
-        const deleteClientAction = commandManager.createAction(['deleteClient', client], ['createClient', client]);        
+        const deleteClientAction = commandManager.createAction(['deleteClient', client, deleteActvities], ['createClient', client, deleteActvities]);        
         const data = commandManager.execute(deleteClientAction);
     
         return {
