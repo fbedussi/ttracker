@@ -1,6 +1,6 @@
 import startAppAndLogin, { startAppAndLoadData } from './backend/app';
 import {onErrorReport} from './backend/errorReporter';
-import createCommandManager from './backend/commandManager';
+import getCommandManager from './backend/commandManager';
 
 const fileSaver = require('file-saver');
 
@@ -44,7 +44,7 @@ export function importData(jsonData) {
 
 function loadData(dispatch) {
     return (app) => {
-        commandManager = createCommandManager(app);
+        commandManager = getCommandManager(app);
 
         onErrorReport((error) => dispatch(showError(error)));
 

@@ -17,6 +17,7 @@ const store = {
     activities: [],
     activeTab: 'clients',
     options: {},
+    errorOn: false,
   })
 };
 

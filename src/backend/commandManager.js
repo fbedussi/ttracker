@@ -90,6 +90,6 @@ const commandManager = {
     }
 };
 
-export default function createCommandManager(app) {
-    return Object.create(commandManager).init(app);
+export default function getCommandManager(app) {
+    return commandManager.app ? commandManager : commandManager.init(app);
 }

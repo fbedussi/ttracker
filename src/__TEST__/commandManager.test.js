@@ -1,4 +1,4 @@
-import createCommandManager from '../backend/commandManager';
+import getCommandManager from '../backend/commandManager';
 
 const FakeApp = {
     entities: [{
@@ -29,7 +29,7 @@ const FakeApp = {
         }
     }),
     delete: jest.fn(function(entity) {
-        if (entity.hasOwnProperty('subEntity')) {
+        if (entity && entity.hasOwnProperty('subEntity')) {
             this.delete(entity.subEntity)
         }
     }),
@@ -41,7 +41,7 @@ var commandManager;
 
 beforeEach(() => {
     newFakeApp = Object.assign({}, FakeApp);    
-    commandManager = createCommandManager(newFakeApp);
+    commandManager = Object.create(getCommandManager(newFakeApp)).init(newFakeApp);
 });
 
 test('execute', () => {
