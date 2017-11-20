@@ -89,6 +89,10 @@ const App = {
     },
     createClient: function(props = {}) {
         var newClient = createClient(Object.assign({defaultHourlyRate: this.options.defaultHourlyRate}, props));
+
+        newClient.activities = newClient.activities.map((clientActivity) => createActivity(clientActivity));
+        this.activities = this.activities.concat(newClient.activities);
+        
         this.clients.push(newClient);
         
         return this.exportForClient();
@@ -102,24 +106,22 @@ const App = {
         }
 
         if (deleteActivities) {
-            clientToDelete.activities
-                .forEach((clientActivity) => commandManager
-                    .execute(commandManager
-                        .createAction(['deleteActivity', clientActivity, true], ['createActivity', clientActivity])
-                    )
-                )    
+            const clientActivitiesIds = clientToDelete.activities.map((activity) => activity.id);
+            this.activities = this.activities
+                .filter((activity) => clientActivitiesIds
+                    .every((clientActivityId) => clientActivityId !== activity.id)
+                )
             ;
         }
-        clientToDelete.delete();
+        clientToDelete.delete(deleteActivities);
         this.clients = this.clients.filter((client) => client.id !== id);
         
-
         return this.exportForClient();
     },
     updateClient: function(props) {
         if (!objHasDeepProp(props, 'id')) {
             throw new Error('Cannot update client, ID is missing');
-        }
+        }   
 
         this.clients = this.clients.map((client) => client.id === props.id ? client.update(props) : client);
 
@@ -214,8 +216,26 @@ const App = {
         return this.exportForClient();
     },
     createActivity: function(props) {
-        var newActivity = createActivity(Object.assign({hourlyRate: this.defaultHourlyRate}, props));
-        this.activities.push(newActivity);
+        if (props.parentActivity.hasOwnProperty('id')) {
+            this.addSubactivity(props.parentActivity.id, props);
+        } else {
+            var newActivity = createActivity(Object.assign({hourlyRate: this.defaultHourlyRate}, props));
+    
+            if (objHasDeepProp(props, 'client.id')) {
+                this.clients = this.clients.map((client) => {
+                    if (client.id === props.client.id) {
+                        newActivity.client = client;
+                        return client.addActivity(newActivity);
+                    } else {
+                        return client;
+                    }
+                }); 
+            }
+    
+            this.activities.push(newActivity);
+            newActivity.subactivities = []; 
+            props.subactivities.forEach((subactivity) => this.createActivity(subactivity));
+        }
 
         return this.exportForClient();
     },
