@@ -92,7 +92,7 @@ export function createNewClient() {
 
 export function deleteClient(client, deleteActvities) {
     try {
-        const deleteClientAction = commandManager.createAction(['deleteClient', client, deleteActvities], ['createClient', client, deleteActvities]);        
+        const deleteClientAction = commandManager.createAction(['deleteClient', client, deleteActvities], ['createClient', client]);        
         const data = commandManager.execute(deleteClientAction);
     
         return {
@@ -123,7 +123,7 @@ export function createNewActivity() {
 
 export function deleteActivity(activity, deleteSubactivities = false) {
     try {
-        const deleteActivityAction = commandManager.createAction(['deleteActivity', activity], ['createActivity', activity]);
+        const deleteActivityAction = commandManager.createAction(['deleteActivity', activity, deleteSubactivities], ['createActivity', activity]);
         const data = commandManager.execute(deleteActivityAction);
 
         return {
