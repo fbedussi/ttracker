@@ -49,7 +49,11 @@ var Bill = {
         
         Object.assign(this, Object.assign({}, deepCloneDataObject(defaultBillProps)));
         merge(this, props);
-        this.id = billIdMaker.next().value;
+
+        if (!props.hasOwnProperty('id')) {
+            this.id = billIdMaker.next().value;
+        }
+
         this.client = props.client;
         this.date = date;
         this.total = total;

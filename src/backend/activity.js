@@ -22,7 +22,7 @@ var Activity = {
         Object.assign(this, deepCloneDataObject(defaultProps));        
         merge(this, props);
 
-        if (!this.hasOwnProperty('id')) {
+        if (!props.hasOwnProperty('id')) {
             this.id = activityIdMaker.next().value;
         }
 
@@ -33,7 +33,7 @@ var Activity = {
         if (props && props.parentActivity) {
             this.parentActivity = props.parentActivity;
         }
-        
+
         db.create(DBCOLLECTION, this.exportForDb());
         
         return this;

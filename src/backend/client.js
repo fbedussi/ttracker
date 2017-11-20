@@ -28,7 +28,10 @@ var Client = {
     create: function(props) {
         Object.assign(this, Object.assign({}, deepCloneDataObject(defaultClientProps)));
         merge(this, props);
-        this.id = clientIdMaker.next().value;
+
+        if (!props.hasOwnProperty('id')) {
+            this.id = clientIdMaker.next().value;
+        }
         
         if (props && props.activities) {
             this.activities = props.activities;
