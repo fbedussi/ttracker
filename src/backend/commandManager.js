@@ -38,7 +38,7 @@ const commandManager = {
         var returnedData;
 
         lastAction
-            .reverse()
+            //.reverse()
             .forEach((subaction) => returnedData = this._execute(subaction.undo.actionName, subaction.undo.data))
         ;
         this._currentActionIndex = this._currentActionIndex - 1;
@@ -60,7 +60,13 @@ const commandManager = {
 
         return returnedData;        
     },
-    execute: function(action, subaction = false) {
+    execute: function(action) {
+        this._currentActionIndex = this._currentActionIndex + 1;
+        if (this._currentActionIndex < this._history.length) {
+            this._history = this._history.slice(0,this._currentActionIndex);
+        }
+        this._history = this._history.concat([[action]]);
+
         const returnedData = this._execute(action.do.actionName, action.do.data);
         
         if (!action.undo) {
@@ -69,16 +75,6 @@ const commandManager = {
         
         if (action.deferredUndoData) {
             action.undo.data = returnedData;
-        }
-
-        if (subaction) {
-            const currentAction = this._history[this._history.length - 1].concat(action);
-        } else {
-            this._currentActionIndex = this._currentActionIndex + 1;
-            if (this._currentActionIndex < this._history.length) {
-                this._history = this._history.slice(0,this._currentActionIndex);
-            }
-            this._history = this._history.concat([[action]]);
         }
 
         return returnedData;
