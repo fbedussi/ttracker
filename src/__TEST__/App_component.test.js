@@ -13,19 +13,35 @@ const store = {
   subscribe: () => { },
   dispatch: () => { },
   getState: () => ({
-    clients: [],
-    activities: [],
-    activeTab: 'clients',
+    data: {
+      clients: [],
+      activities: [],
+      bills: [],
+    },
     options: {},
-    errorOn: false,
+    ui: {
+      activeTab: 'clients',
+      undoSnackbarOpen: false,
+      undoMessage: '',
+    }
   })
 };
+
+const props = {
+  drawerOpen: false,
+  toggleUiElement: () => {},
+  errorOn: false,
+  errorMessage: '',
+  hideError: '',
+  toolbarOpen: false,
+  history,
+}
 
 it('renders without crashing', () => {
   const div = document.createElement('div');
   ReactDOM.render(<Provider store={store}>
     <BrowserRouter>
-      <App />
+      <App {...props}/>
     </BrowserRouter>
   </Provider>
     , div);
