@@ -255,9 +255,9 @@ export function updateTimeEntry(activity, timeEntry) {
     }
 }
 
-export function createNewBill(clientId, billTextTemplate, currency) {
+export function createNewBill(clientId, textTemplate, currency) {
     try {
-        const createNewBillAction = commandManager.createAction(['billClient', clientId, billTextTemplate, currency]);
+        const createNewBillAction = commandManager.createAction(['billClient', clientId, {textTemplate, currency}]);
         const data = commandManager.execute(createNewBillAction);
 
         return {
@@ -300,7 +300,7 @@ export function refreshBillText(billId) {
 
 export function deleteBill(bill) {
     try {
-        const deleteBillAction = commandManager.createAction(['deleteBill', bill], ['billClient', bill.client.id, bill.textTemplate, bill.currency]);
+        const deleteBillAction = commandManager.createAction(['deleteBill', bill], ['billClient', bill.client.id, bill]);
         const data = commandManager.execute(deleteBillAction);
 
         return {

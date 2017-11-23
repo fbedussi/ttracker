@@ -88,10 +88,16 @@ const App = {
         return this.bills.filter((bill) => bill.id === id)[0];  
     },
     createClient: function(props = {}) {
-        var newClient = createClient(Object.assign({defaultHourlyRate: this.options.defaultHourlyRate}, props));
+        const newClient = createClient(Object.assign({defaultHourlyRate: this.options.defaultHourlyRate}, props));
 
-        newClient.activities = newClient.activities.map((clientActivity) => createActivity(clientActivity));
-        this.activities = this.activities.concat(newClient.activities);
+        // const clientActivities = newClient.activities.concat([]);
+        // newClient.activities = [];
+        // clientActivities.forEach((clientActivity) => this.createActivity(clientActivity))
+
+        newClient.activities = newClient.activities.map((clientActivity) => this._createActivity(clientActivity));
+        
+        //newClient.activities = newClient.activities.map((clientActivity) => this.createActivity(clientActivity));
+        //this.activities = this.activities.concat(newClient.activities);
         
         this.clients.push(newClient);
         
@@ -106,12 +112,14 @@ const App = {
         }
 
         if (deleteActivities) {
-            const clientActivitiesIds = clientToDelete.activities.map((activity) => activity.id);
-            this.activities = this.activities
-                .filter((activity) => clientActivitiesIds
-                    .every((clientActivityId) => clientActivityId !== activity.id)
-                )
-            ;
+            // const clientActivitiesIds = clientToDelete.activities.map((activity) => activity.id);
+            // this.activities = this.activities
+            //     .filter((activity) => clientActivitiesIds
+            //         .every((clientActivityId) => clientActivityId !== activity.id)
+            //     )
+            // ;
+            
+            this.activities = this.activities.filter((activity) => activity.client !== clientToDelete);
         }
         clientToDelete.delete(deleteActivities);
         this.clients = this.clients.filter((client) => client.id !== id);
@@ -127,7 +135,7 @@ const App = {
 
         return this.exportForClient();
     },
-    billClient: function(clientId, textTemplate, currency) {
+    billClient: function(clientId, billProps) {
         var client = this._getClient(clientId);
         var bill;
 
@@ -135,11 +143,7 @@ const App = {
             throw new Error(`No client with ID ${clientId}`);
         }
 
-        bill = createBill({
-            client,
-            textTemplate,
-            currency
-        }, this.options);
+        bill = createBill(billProps, this.options);
 
         if (bill) {
             this.bills.push(bill);
@@ -158,14 +162,17 @@ const App = {
 
         const client = billToDelete.client;
         if (client) {
-            client.deleteBill(id);
+            client.deleteBill(id); //throws an error if is not the last client's bill
             this.bills = this.bills.filter((bill) => bill.id !== id);
-        } else if (this.bills[this.bills.length - 1] === billToDelete) {
-            billToDelete.delete();
-            this.bills = this.bills.filter((bill) => bill.id !== id);
-        }
+            return this.exportForClient();        
+        } 
         
-        return this.exportForClient();        
+        if (this.bills[this.bills.length - 1] !== billToDelete) {
+            throw new Error('Cannot delete bill, it\'s not the last bill');                        
+        }
+
+        billToDelete.delete();
+        this.bills = this.bills.filter((bill) => bill.id !== id);
     },
     updateBill: function(props) {
         if (!(props.hasOwnProperty('id') && objHasDeepProp(props, 'client.id'))) {
@@ -215,27 +222,29 @@ const App = {
 
         return this.exportForClient();
     },
-    createActivity: function(props) {
-        if (props.parentActivity.hasOwnProperty('id')) {
-            this.addSubactivity(props.parentActivity.id, props);
+    _createActivity: function(props) {
+        if (objHasDeepProp(props, 'parentActivity.id')) {
+            this._addSubactivity(props.parentActivity.id, props);
         } else {
             var newActivity = createActivity(Object.assign({hourlyRate: this.defaultHourlyRate}, props));
     
             if (objHasDeepProp(props, 'client.id')) {
-                this.clients = this.clients.map((client) => {
-                    if (client.id === props.client.id) {
-                        newActivity.client = client;
-                        return client.addActivity(newActivity);
-                    } else {
-                        return client;
-                    }
-                }); 
+                this.clients = this.clients.map((client) => 
+                    (client.id === props.client.id) ? newActivity.client = client.addActivity(newActivity) : client); 
             }
     
             this.activities.push(newActivity);
-            newActivity.subactivities = []; 
-            props.subactivities.forEach((subactivity) => this.createActivity(subactivity));
+            
+            if (objHasDeepProp(props, 'subactivities')) {
+                newActivity.subactivities = []; 
+                props.subactivities.forEach((subactivity) => this._createActivity(subactivity));
+            }
         }
+
+        return newActivity;
+    },
+    createActivity: function(props) {
+        this._createActivity(props);
 
         return this.exportForClient();
     },
@@ -288,10 +297,15 @@ const App = {
         
         return this.exportForClient();        
     },
-    addSubactivity: function(activityId, props) {
+    _addSubactivity: function(activityId, props) {
         const activity = this._getActivity(activityId).addSubactivity(props);
         const subactivity = activity.subactivities[activity.subactivities.length - 1];
         this.activities.push(subactivity);
+        
+        return this;        
+    },
+    addSubactivity: function(activityId, props) {
+        this._addSubactivity(activityId, props);
         
         return this.exportForClient();        
     },
