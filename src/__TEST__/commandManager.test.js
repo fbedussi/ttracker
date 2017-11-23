@@ -55,17 +55,17 @@ test('execute', () => {
     expect(newFakeApp.create).toBeCalledWith(entityToCreate);
 });
 
-test('execute without history', () => {
+test('execute action without undo', () => {
     const entityToUpdate = Object.assign({},newFakeApp.getEntity(0), {name: 'updated name'});
-
+    
     const updateEntityAction = commandManager.createAction(['update', entityToUpdate])
     commandManager.execute(updateEntityAction)
-
+    
     expect(newFakeApp.update).toBeCalledWith(entityToUpdate);
     expect(commandManager._history.length).toBe(0);
 });
 
-test('execute without multiple parameters', () => {
+test('execute action with multiple parameter', () => {
     const updateEntityAction = commandManager.createAction(['update', 1, 2])
     commandManager.execute(updateEntityAction)
 
@@ -120,12 +120,3 @@ test('redo very last action', () => {
     
     expect(exitCode).toBe(null);
 });
-
-test('deferred data', () => {
-    const createEntityAction = commandManager.createAction(['create'], ['delete'], true);
-    
-    commandManager.execute(createEntityAction)
-    commandManager.undo();
-    expect(newFakeApp.entities.length).toBe(1);
-});
-

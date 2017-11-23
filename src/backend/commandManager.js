@@ -5,13 +5,12 @@ const commandManager = {
     getApp: function() {
         return this._app;
     },
-    createAction: function(doAction, undoAction, deferredUndoData = false) {
+    createAction: function(doAction, undoAction) {
         const actionObj = {
             do: {
                 actionName: doAction[0],
                 data: doAction.slice(1),
             },
-            deferredUndoData,
         };
 
         if (undoAction) {
@@ -26,7 +25,7 @@ const commandManager = {
         return actionObj;
     },
     _execute: function(appMethodName, appMethodArgs) {
-        return this._app[appMethodName].apply(this._app, appMethodArgs); //concat is to ensure that ... operates on an array even if appMethodArgs is undefined
+        return this._app[appMethodName].apply(this._app, appMethodArgs);
     }, 
     undo: function() {
         const lastAction = this._history[this._currentActionIndex];
@@ -37,10 +36,7 @@ const commandManager = {
 
         var returnedData;
 
-        lastAction
-            //.reverse()
-            .forEach((subaction) => returnedData = this._execute(subaction.undo.actionName, subaction.undo.data))
-        ;
+        returnedData = this._execute(lastAction.undo.actionName, lastAction.undo.data);
         this._currentActionIndex = this._currentActionIndex - 1;
         
         return returnedData;
@@ -55,28 +51,31 @@ const commandManager = {
 
         var returnedData;
         
-        nextAction.forEach((subaction) => returnedData = this._execute(subaction.do.actionName, subaction.do.data));
+        returnedData = this._execute(nextAction.do.actionName, nextAction.do.data);
         this._currentActionIndex = nextActionIndex;
 
         return returnedData;        
     },
     execute: function(action) {
+        var returnedData;
+        try {
+            returnedData = this._execute(action.do.actionName, action.do.data);
+        } catch(e) {
+            return e;
+        }
+
+        if (!action.undo) {
+            return returnedData;    
+        }
+             
         this._currentActionIndex = this._currentActionIndex + 1;
+
         if (this._currentActionIndex < this._history.length) {
             this._history = this._history.slice(0,this._currentActionIndex);
         }
-        this._history = this._history.concat([[action]]);
-
-        const returnedData = this._execute(action.do.actionName, action.do.data);
         
-        if (!action.undo) {
-            return returnedData;
-        }
-        
-        if (action.deferredUndoData) {
-            action.undo.data = returnedData;
-        }
-
+        this._history = this._history.concat([action]);
+                
         return returnedData;
     },
     init: function(app) {
@@ -88,4 +87,4 @@ const commandManager = {
 
 export default function getCommandManager(app) {
     return commandManager.app ? commandManager : commandManager.init(app);
-}
+} 
