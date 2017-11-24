@@ -300,7 +300,7 @@ export function refreshBillText(billId) {
 
 export function deleteBill(bill) {
     try {
-        const deleteBillAction = commandManager.createAction(['deleteBill', bill], ['billClient', bill.client.id, bill]);
+        const deleteBillAction = commandManager.createAction(['deleteBill', bill], ['billClient', bill.client.id, bill]);   
         const data = commandManager.execute(deleteBillAction);
 
         return {

@@ -90,14 +90,7 @@ const App = {
     createClient: function(props = {}) {
         const newClient = createClient(Object.assign({defaultHourlyRate: this.options.defaultHourlyRate}, props));
 
-        // const clientActivities = newClient.activities.concat([]);
-        // newClient.activities = [];
-        // clientActivities.forEach((clientActivity) => this.createActivity(clientActivity))
-
         newClient.activities = newClient.activities.map((clientActivity) => this._createActivity(clientActivity));
-        
-        //newClient.activities = newClient.activities.map((clientActivity) => this.createActivity(clientActivity));
-        //this.activities = this.activities.concat(newClient.activities);
         
         this.clients.push(newClient);
         
@@ -112,13 +105,6 @@ const App = {
         }
 
         if (deleteActivities) {
-            // const clientActivitiesIds = clientToDelete.activities.map((activity) => activity.id);
-            // this.activities = this.activities
-            //     .filter((activity) => clientActivitiesIds
-            //         .every((clientActivityId) => clientActivityId !== activity.id)
-            //     )
-            // ;
-            
             this.activities = this.activities.filter((activity) => activity.client !== clientToDelete);
         }
         clientToDelete.delete(deleteActivities);
@@ -142,6 +128,8 @@ const App = {
         if (!client) {
             throw new Error(`No client with ID ${clientId}`);
         }
+
+        billProps.client = client;
 
         bill = createBill(billProps, this.options);
 
