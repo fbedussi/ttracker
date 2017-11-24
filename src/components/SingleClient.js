@@ -29,7 +29,7 @@ const mapDispatchToProps = (dispatch) => ({
     deleteClient: (client, deleteActivities) => dispatch(deleteClient(client, deleteActivities)),
     updateClient: (props) => dispatch(updateClient(props)),
     addNewActivityToClient: (clientId) => dispatch(addNewActivityToClient(clientId)),
-    createNewBill: (clientId, billTextTemplate, currency) => dispatch(createNewBill(clientId, billTextTemplate, currency)), 
+    createNewBill: (client, billTextTemplate, currency) => dispatch(createNewBill(client, billTextTemplate, currency)), 
 });
 
 
@@ -180,7 +180,7 @@ const SingleClient = ({
                 <h2 className="sectionSubtitle">Invoices
                 <FlatButton
                         icon={<ContentAdd />}
-                        onClick={() => createNewBill(client.id, billTextTemplate, currency)}
+                        onClick={() => createNewBill(client, billTextTemplate, currency)}
                     />
                 </h2>
                 <div className="invoicesWrapper cardsWrapper row">

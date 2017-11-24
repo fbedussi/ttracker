@@ -121,12 +121,16 @@ const App = {
 
         return this.exportForClient();
     },
-    billClient: function(clientId, billProps) {
-        var client = this._getClient(clientId);
+    billClient: function(billProps) {
+        if (!objHasDeepProp(billProps, 'client.id')) {
+            throw new Error(`Missing client`);
+        }
+            
+        var client = this._getClient(billProps.client.id);
         var bill;
 
         if (!client) {
-            throw new Error(`No client with ID ${clientId}`);
+            throw new Error(`No client with ID ${billProps.client.id}`);
         }
 
         billProps.client = client;
