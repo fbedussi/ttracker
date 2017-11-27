@@ -1,4 +1,3 @@
-- undo/redo
 - let add a client to an existing activity
 - MarkDown in bills text
 - responsive ui
