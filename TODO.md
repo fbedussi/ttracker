@@ -1,7 +1,4 @@
-- import/export data
-- undo/redo
+- let add a client to an existing activity
 - MarkDown in bills text
-- rework methods contract to include error objects
-- notification for db success/fail
 - responsive ui
 - multilanguage

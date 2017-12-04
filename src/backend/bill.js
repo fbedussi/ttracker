@@ -1,6 +1,6 @@
 import initIdMaker from '../helpers/idMaker';
 import merge from '../helpers/merge';
-import db from '../db/dbFacade';
+import db from '../db/dbInterface';
 import {deepCloneDataObject, objHasDeepProp} from '../helpers/helpers';
 
 var billIdMaker = null;
@@ -34,22 +34,26 @@ var Bill = {
     },
     create: function(props, options = {}) {
         if (!(objHasDeepProp(props, 'client.activities') && props.client.activities.length)) {
-            return false;
+            throw new Error('No activity to bill');
         }
         const lastBilledTime = props.client.bills.reduce((lastBilledTime, bill) => bill.date, 0);
         const date = Date.now();
         if (lastBilledTime > date) {
-            return false;
+            throw new Error('There is nothing new to bill');
         }
         const total = Math.round(props.client.activities.reduce((total, activity) => total + activity.getTotalCost(lastBilledTime), 0));
         
         if (total === 0 && !(objHasDeepProp(options, 'allowZeroTotalBill') && options.allowZeroTotalBill)) {
-            return false;
+            throw new Error('The bill\'s total is 0, yuo can to enable 0 total bills in the options pane');
         }
         
         Object.assign(this, Object.assign({}, deepCloneDataObject(defaultBillProps)));
         merge(this, props);
-        this.id = billIdMaker.next().value;
+
+        if (!props.hasOwnProperty('id')) {
+            this.id = billIdMaker.next().value;
+        }
+
         this.client = props.client;
         this.date = date;
         this.total = total;

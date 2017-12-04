@@ -4,10 +4,14 @@ import {createClient, loadClient, initClientIdMaker} from '../backend/client';
 import {createActivity, loadActivity, initActivityIdMaker} from './activity';
 import {createBill, loadBill, initBillIdMaker} from './bill';
 
-import db from '../db/dbFacade';
+import getCommandManager from './commandManager';
+
+import db from '../db/dbInterface';
 import auth from '../auth/authFacade';
 
 import {objHasDeepProp} from '../helpers/helpers';
+
+var commandManager;
 
 const App = {
     clients: [],
@@ -22,11 +26,11 @@ const App = {
     login: function(loginData) {
         return auth
             .logIn(Object.assign({method: 'email'}, loginData))
-            .then((user) => this.load(user))
+            .then((user) => this.loadData(user))
             //in case of error let it bubble up to the caller
         ;
     },
-    load: function(user) {
+    loadData: function(user) {
         initClientIdMaker(user);
         initActivityIdMaker(user);
         initBillIdMaker(user);
@@ -35,37 +39,37 @@ const App = {
             .openDb('ttracker', user)
             .then((db) => Promise //read data
                 .all([
-                    db
-                        .readAll('client')
-                        .then((clientsData) => clientsData
-                            .map((clientData) => loadClient(clientData))
-                        )
-                    ,
-                    db
-                        .readAll('activity')
-                        .then((activitiesData) => activitiesData
-                            .map((activityData) => loadActivity(activityData))
-                        )
-                    ,
-                    db
-                        .readAll('bill')
-                        .then((billsData) =>billsData
-                            .map((billData) => loadBill(billData))
-                        )
-                    ,
-                    db
-                        .readAll('option')
-                        .then((options) => options && options.length ? options[0]: {})
+                    db.readAll('client'),
+                    db.readAll('activity'),
+                    db.readAll('bill'),
+                    db.readAll('option'),
                 ])
             )
-            .then(([clients, activities, bills, options]) => { //resolve cross dependencies
-                this.activities = activities.map((activity) => activity.resolveDependencies(clients, activities));
-                this.clients = clients.map((client) => client.resolveDependencies(activities, bills));
-                this.bills = bills.map((bill) => bill.resolveDependencies(clients));
-                this.options = options;
-                return this;
-            })
+            .then(([clients, activities, bills, options]) => this.loadApp({clients, activities, bills, options}))
         ;
+    },
+    loadApp: function(data) {
+        const {clients, activities, bills, options} = data;
+        const loadedData = {};
+        loadedData.clients = clients.map((clientData) => loadClient(clientData));
+        loadedData.activities =  activities.map((activityData) => loadActivity(activityData));
+        loadedData.bills = bills.map((billData) => loadBill(billData));
+
+        //the common db interface provides everyting as an array, options must be converted to an object
+        loadedData.options = options && options.length ? options[0]: {};
+
+        return this._resolveDependencies(loadedData);
+    },
+    _resolveDependencies: function(data) {
+        const {clients, activities, bills, options} = data;
+        this.activities = activities.map((activity) => activity.resolveDependencies(clients, activities));
+        this.clients = clients.map((client) => client.resolveDependencies(activities, bills));
+        this.bills = bills.map((bill) => bill.resolveDependencies(clients));
+        this.options = options;
+
+        commandManager = getCommandManager(this);
+
+        return this;
     },
     saveOptions: function(options) {
         this.options = Object.assign({}, this.options, options);
@@ -84,47 +88,54 @@ const App = {
         return this.bills.filter((bill) => bill.id === id)[0];  
     },
     createClient: function(props = {}) {
-        var newClient = createClient(Object.assign({defaultHourlyRate: this.options.defaultHourlyRate}, props));
+        const newClient = createClient(Object.assign({defaultHourlyRate: this.options.defaultHourlyRate}, props));
+
+        newClient.activities = newClient.activities.map((clientActivity) => this._createActivity(clientActivity));
+        
         this.clients.push(newClient);
         
         return this.exportForClient();
     },
-    deleteClient: function(id, deleteActivities = false) {
+    deleteClient: function(client, deleteActivities = false) {
+        const id = client.id;
         const clientToDelete = this._getClient(id);
+
+        if (!clientToDelete) {
+            throw new Error(`No client with ID ${id}`);
+        }
+
         if (deleteActivities) {
-            const clientActivitiesIds = clientToDelete.activities.map((activity) => activity.id);
-            this.activities = this.activities
-                .filter((activity) => clientActivitiesIds
-                    .every((clientActivityId) => clientActivityId !== activity.id)
-                )
-            ;
+            this.activities = this.activities.filter((activity) => activity.client !== clientToDelete);
         }
         clientToDelete.delete(deleteActivities);
         this.clients = this.clients.filter((client) => client.id !== id);
-
+        
         return this.exportForClient();
     },
     updateClient: function(props) {
         if (!objHasDeepProp(props, 'id')) {
-            return this.exportForClient();
-        }
+            throw new Error('Cannot update client, ID is missing');
+        }   
+
         this.clients = this.clients.map((client) => client.id === props.id ? client.update(props) : client);
 
         return this.exportForClient();
     },
-    billClient: function(clientId, textTemplate, currency) {
-        var client = this._getClient(clientId);
+    billClient: function(billProps) {
+        if (!objHasDeepProp(billProps, 'client.id')) {
+            throw new Error(`Missing client`);
+        }
+            
+        var client = this._getClient(billProps.client.id);
         var bill;
 
         if (!client) {
-            return this.exportForClient();
+            throw new Error(`No client with ID ${billProps.client.id}`);
         }
 
-        bill = createBill({
-            client,
-            textTemplate,
-            currency
-        }, this.options);
+        billProps.client = client;
+
+        bill = createBill(billProps, this.options);
 
         if (bill) {
             this.bills.push(bill);
@@ -133,28 +144,31 @@ const App = {
 
         return this.exportForClient();
     },
-    deleteBill: function(id) {
-        const bill = this._getBill(id);
-        if (!bill) {
-            return this.exportForClient();
-        }
-        const client = bill.client;
-        if (!client) {
-            return this.exportForClient();
+    deleteBill: function(bill) {
+        const id = bill.id;
+        const billToDelete = this._getBill(id);
+        
+        if (!billToDelete) {
+            throw new Error(`No bill with ID ${id}`);
         }
 
-        try {
-            client.deleteBill(id);
+        const client = billToDelete.client;
+        if (client) {
+            client.deleteBill(id); //throws an error if is not the last client's bill
             this.bills = this.bills.filter((bill) => bill.id !== id);
-        } catch(e) {
-            throw e;
-        }
+            return this.exportForClient();        
+        } 
         
-        return this.exportForClient();        
+        if (this.bills[this.bills.length - 1] !== billToDelete) {
+            throw new Error('Cannot delete bill, it\'s not the last bill');                        
+        }
+
+        billToDelete.delete();
+        this.bills = this.bills.filter((bill) => bill.id !== id);
     },
     updateBill: function(props) {
         if (!(props.hasOwnProperty('id') && objHasDeepProp(props, 'client.id'))) {
-            return this.exportForClient();
+            throw new Error(`Bill ID od client missing`);
         }
 
         this._getClient(props.client.id).updateBill(props);
@@ -171,7 +185,7 @@ const App = {
         var activity;
 
         if (!client) {
-            return this.exportForClient();
+            throw new Error(`No client with ID ${clientId}`);
         }
 
         activity = createActivity({
@@ -189,7 +203,7 @@ const App = {
         var client = this._getClient(options.clientId);
 
         if (!client) {
-            return this.exportForClient();
+            throw new Error(`No client with ID ${options.clientId}`);
         }
 
         client.removeActivity(options.activityId, options.deleteActivity);
@@ -200,29 +214,50 @@ const App = {
 
         return this.exportForClient();
     },
+    _createActivity: function(props) {
+        if (objHasDeepProp(props, 'parentActivity.id')) {
+            this._addSubactivity(props.parentActivity.id, props);
+        } else {
+            var newActivity = createActivity(Object.assign({hourlyRate: this.defaultHourlyRate}, props));
+    
+            if (objHasDeepProp(props, 'client.id')) {
+                this.clients = this.clients.map((client) => 
+                    (client.id === props.client.id) ? newActivity.client = client.addActivity(newActivity) : client); 
+            }
+    
+            this.activities.push(newActivity);
+            
+            if (objHasDeepProp(props, 'subactivities')) {
+                newActivity.subactivities = []; 
+                props.subactivities.forEach((subactivity) => this._createActivity(subactivity));
+            }
+        }
+
+        return newActivity;
+    },
     createActivity: function(props) {
-        var newActivity = createActivity(Object.assign({hourlyRate: this.defaultHourlyRate}, props));
-        this.activities.push(newActivity);
+        this._createActivity(props);
 
         return this.exportForClient();
     },
-    deleteActivity: function(activityId, deleteSubActivities = false) {
-        const activity = this._getActivity(activityId);
-        if (!activity) {
-            return this.exportForClient();
+    deleteActivity: function(activity, deleteSubActivities = false) {
+        const id = activity.id;
+        const activityToDelete = this._getActivity(id);
+        if (!activityToDelete) {
+            throw new Error(`No activity with ID ${id}`);            
         }
-        if (objHasDeepProp(activity, 'client.id')) {
-            this.clients = this.clients.map((client) => client.id === activity.client.id ? client.removeActivity(activityId) : client); 
+        if (objHasDeepProp(activityToDelete, 'client.id')) {
+            this.clients = this.clients.map((client) => client.id === activityToDelete.client.id ? client.removeActivity(id) : client); 
         }
 
-        var removedActivityIds = activity.delete(deleteSubActivities);
+        var removedActivityIds = activityToDelete.delete(deleteSubActivities);
         this.activities = this.activities.filter((activity) => removedActivityIds.every((removedActivityId) => activity.id !== removedActivityId));
         
         return this.exportForClient();
     },
     updateActivity: function(props) {
         if (!objHasDeepProp(props, 'id')) {
-            return this.exportForClient();
+            throw new Error('Activity ID missing');
         }
 
         this._getActivity(props.id).update(props);
@@ -244,15 +279,25 @@ const App = {
         
         return this.exportForClient();        
     },
+    addTimeEntry: function(activityId, timeEntry) {
+        this._getActivity(activityId).addTimeEntry(timeEntry);
+        
+        return this.exportForClient();        
+    },
     updateTimeEntry: function(activityId, timeEntry) {
         this._getActivity(activityId).updateTimeEntry(timeEntry);
         
         return this.exportForClient();        
     },
-    addSubactivity: function(activityId, props) {
+    _addSubactivity: function(activityId, props) {
         const activity = this._getActivity(activityId).addSubactivity(props);
         const subactivity = activity.subactivities[activity.subactivities.length - 1];
         this.activities.push(subactivity);
+        
+        return this;        
+    },
+    addSubactivity: function(activityId, props) {
+        this._addSubactivity(activityId, props);
         
         return this.exportForClient();        
     },
@@ -262,6 +307,27 @@ const App = {
             clients: this.clients.map((client) => client.exportForClient()),
             bills: this.bills.map((bill) => bill.exportForClient()),
         }
+    },
+    exportData: function() {
+        var objToSave = Object.assign({},this);
+        objToSave.clients = this.clients.map((client) => client.exportForDb());
+        objToSave.activities = this.activities.map((activity) => activity.exportForDb());
+        objToSave.bills = this.bills.map((bill) => bill.exportForDb());
+
+        //Convert option to an array in order to conform to the common db interface
+        objToSave.options = [Object.assign({}, this.options)];
+    
+        return JSON.stringify(objToSave);
+    },
+    saveAllDataToDb: function() {
+        db.replaceAll('activity', this.activities.map((activity) => activity.exportForDb()));
+        db.replaceAll('client', this.clients.map((client) => client.exportForDb()));
+        db.replaceAll('bill', this.bills.map((bill) => bill.exportForDb()));
+
+        //Convert option to an array in order to conform to the common db interface        
+        db.replaceAll('option', [this.options]);
+        
+        return this;
     }
 }
 
@@ -269,8 +335,8 @@ const startAppAndLogin = (loginData) => {
     return Object.create(App).login(loginData);
 }
 
-export const StartAppAndLoadData = () => {
-    return Object.create(App).load();
+export const startAppAndLoadData = () => {
+    return Object.create(App).loadData();
 }
 
 export default startAppAndLogin;

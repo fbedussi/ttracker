@@ -22,6 +22,7 @@ import SingleActivity from './SingleActivity';
 import SingleClient from './SingleClient';
 import SingleBill from './SingleBill';
 import OptionsPane from './OptionsPane';
+import UndoSnackbar from './UndoSnackbar';
 
 import '../style/app.css';
 
@@ -39,7 +40,7 @@ const mapDispatchToProps = (dispatch) => ({
   hideError: () => dispatch(hideError()),
 });
 
-const App = ({
+export const App = ({
       drawerOpen,
       toggleUiElement,
       errorOn,
@@ -47,7 +48,8 @@ const App = ({
       hideError,
       toolbarOpen,
       history,
-    }) => (<MuiThemeProvider>
+    }) => (
+    <MuiThemeProvider>
       <div className="App">
         <AppBar
           className="hideInPrint appbar"
@@ -79,6 +81,7 @@ const App = ({
         <Route path="/activity/:activityId" component={SingleActivity} />
         <Route path="/client/:clientId" component={SingleClient} />
         <Route path="/bill/:billId" component={SingleBill} />
+        <UndoSnackbar/>
       </div>
     </MuiThemeProvider>);
 

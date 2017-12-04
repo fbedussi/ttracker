@@ -1,4 +1,4 @@
-import dbService from '../db/dbFacade';
+import dbService from '../db/dbInterface';
 
 function* idMaker(maxId) {
     while (true) {

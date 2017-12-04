@@ -1,6 +1,6 @@
 import initIdMaker from '../helpers/idMaker';
 import merge from '../helpers/merge';
-import db from '../db/dbFacade';
+import db from '../db/dbInterface';
 import {convertMsToH, deepCloneDataObject, objHasDeepProp} from '../helpers/helpers';
 
 var activityIdMaker = null;
@@ -21,7 +21,10 @@ var Activity = {
     create: function(props) {
         Object.assign(this, deepCloneDataObject(defaultProps));        
         merge(this, props);
-        this.id = activityIdMaker.next().value;
+
+        if (!props.hasOwnProperty('id')) {
+            this.id = activityIdMaker.next().value;
+        }
 
         //client and parentActivity has no properties in defatulProps, so merge doesn't merge anything, we need to copy them separately
         if (props && props.client) {
@@ -30,14 +33,14 @@ var Activity = {
         if (props && props.parentActivity) {
             this.parentActivity = props.parentActivity;
         }
-        
+
         db.create(DBCOLLECTION, this.exportForDb());
         
         return this;
     },
     load: function(props) {
         merge(this, props);
-        //this.subactivities = this.subactivities.map(activityProps => loadActivity(activityProps));
+
         if (props && props.client) {
             this.client = props.client;
         }
@@ -120,7 +123,7 @@ var Activity = {
         const removedSubactivity = this.subactivities.filter(subactivity => subactivity.id === id)[0];
 
         if (!removedSubactivity) {
-            return this;
+            throw new Error(`Activity ID ${this.id} has no subactivity with ID ${id}`);
         }
         
         this.subactivities = this.subactivities.filter(subactivity => subactivity.id !== id);
@@ -151,7 +154,7 @@ var Activity = {
         const lastTimeEntry = this.timeEntries[this.timeEntries.length - 1];
 
         if (!lastTimeEntry) {
-            return this;
+            throw new Error(`It appears this activity ID ${this.id} never started`);
         }
 
         lastTimeEntry.endTime = Date.now();
@@ -170,9 +173,16 @@ var Activity = {
 
         return this;
     },
+    addTimeEntry: function(timeEntry) {
+        this.timeEntries.push(deepCloneDataObject(timeEntry));
+        
+        db.update(DBCOLLECTION, this.exportForDb());
+        
+        return this;
+    },
     updateTimeEntry: function(props) {
         if (!props.hasOwnProperty('id')) {
-            return this;
+            throw new Error('Activity ID missing, cannot update activity');
         }
 
         this.timeEntries = this.timeEntries

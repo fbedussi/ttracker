@@ -18,7 +18,7 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-    deleteBill: (billId) => dispatch(deleteBill(billId)),
+    deleteBill: (bill) => dispatch(deleteBill(bill)),
     updateBill: (bill) => dispatch(updateBill(bill)), 
 });
 

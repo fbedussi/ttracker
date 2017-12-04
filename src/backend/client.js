@@ -2,7 +2,7 @@
 
 import initIdMaker from '../helpers/idMaker';
 import merge from '../helpers/merge';
-import db from '../db/dbFacade';
+import db from '../db/dbInterface';
 import {deepCloneDataObject} from '../helpers/helpers';
 
 var clientIdMaker = null;
@@ -28,7 +28,10 @@ var Client = {
     create: function(props) {
         Object.assign(this, Object.assign({}, deepCloneDataObject(defaultClientProps)));
         merge(this, props);
-        this.id = clientIdMaker.next().value;
+
+        if (!props.hasOwnProperty('id')) {
+            this.id = clientIdMaker.next().value;
+        }
         
         if (props && props.activities) {
             this.activities = props.activities;
@@ -130,7 +133,7 @@ var Client = {
         }, billsData);
 
         if (!billsData.billToUpdate) {
-            return this.exportForClient();
+            throw new Error('No bill to update');
         }
 
         if ((billsData.nextBill && props.date >= billsData.nextBill.date) || (billsData.prevBill && props.date <= billsData.prevBill.date)) {
