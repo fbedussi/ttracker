@@ -1,6 +1,6 @@
 {
   "name": "ttracker",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "dependencies": {
     "file-saver": "^1.3.3",
@@ -28,8 +28,8 @@
   },
   "homepage": "https://fbedussi.github.io/ttracker/",
   "config": {
-    "db": "indexedDb",
-    "authentication": false,
+    "db": "firebase",
+    "authentication": true,
     "firebase": {
       "apiKey": "AIzaSyD0KEukmxkpPdkwrEzIbmzJoczmhdTQFT0",
       "authDomain": "ttracker-18ad8.firebaseapp.com",
