@@ -39,6 +39,10 @@ class LoginForm extends Component {
           label="Login"
           onClick={() => this.submitHandler()}
         />
+        <p>To log in as a demo user:<br/>
+        E-mail: demo@demo.com<br/>
+        Password: demodemo
+        </p>
       </Paper>
     );
   }
